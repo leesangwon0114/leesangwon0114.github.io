@@ -9,6 +9,7 @@ I am software developer. Currently working in Nexon, focused in Python and C++.
 Education
 =============
 2017-Present Yonsei Univercity 석사(졸업예정)	Computer Engineering
+
 2010-2016 	 Hongik Univercity 학사(졸업)		Computer Engineering
 
 
