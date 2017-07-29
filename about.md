@@ -16,7 +16,7 @@ Education
 Career
 =============
 # Nexon Korea, Software Enigineer, 2016.01.18-Present
-*플랫폼 본부 플랫폼 개발실 글로벌런처팀
+* 플랫폼 본부 플랫폼 개발실 글로벌런처팀
 
 # Samsung Software Membership, Developer, 2014-2015
 * 생산기술연구소 설비공정 시뮬레이션 서비스(Cleint:(주)삼성전자) 2015.8-2015.11
