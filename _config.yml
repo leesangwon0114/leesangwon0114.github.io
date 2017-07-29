@@ -17,7 +17,7 @@ collections:
 
 social:
     - icon: fa-facebook
-      link: "#"
+      link: "#https://www.facebook.com/sangwon.lee.58760"
     - icon: fa-twitter
       link: "#"
     - icon: fa-linkedin
@@ -36,8 +36,6 @@ urls:
       url: /about/
     - text: My Projects
       url: /projects/
-    - text: XML Feed
-      url: /feed.xml
 
 url: "http://leesangwon0114.github.io"
 baseurl: ""
