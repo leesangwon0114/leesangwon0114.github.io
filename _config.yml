@@ -2,7 +2,7 @@ title: Leesangwon blog
 description: Leesangwon blog
 author: leesangwon0114
 github: http://leesangwon0114.github.io
-about: I am freelance developer. Currently doing more in backend, focused in Python and Django.
+about: I am software developer. Currently working in Nexon, focused in Python and C++.
 disqus_shortname: stackproblems
 google_analytics: UA-XXXXXXXX-Y
 avatar_url: /static/img/avatar.jpg
@@ -30,7 +30,7 @@ share:
 urls:
     - text: About Me
       url: /about/
-    - text: My Projects
+    - text: TestTemplate
       url: /projects/
 
 url: "http://leesangwon0114.github.io"
