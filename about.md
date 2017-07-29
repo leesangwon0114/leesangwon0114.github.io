@@ -7,13 +7,16 @@ permalink: /about/
 I am software developer. Currently working in Nexon, focused in Python and C++.
 
 Education
+
 2017-Present Yonsei Univercity 석사(졸업예정)	Computer Engineering
 2010-2016 	 Hongik Univercity 학사(졸업)		Computer Engineering
 
 
 Career
+
 Nexon Korea, Software Enigineer, 2016.01.18-Present
 - 플랫폼 본부 플랫폼 개발실 글로벌런처팀
+
 Samsung Software Membership, Developer, 2014-2015
 - 생산기술연구소 설비공정 시뮬레이션 서비스(Cleint:(주)삼성전자) 2015.8-2015.11
 - HMD를 이용한 가상여행 체험 서비스(RoadTrip) 2015.05-2015.08
