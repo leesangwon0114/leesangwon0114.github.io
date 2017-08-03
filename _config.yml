@@ -30,7 +30,7 @@ share:
 urls:
     - text: About Me
       url: /about/
-    - text: TestTemplate
+    - text: Projects
       url: /projects/
 
 url: "http://leesangwon0114.github.io"

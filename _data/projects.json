@@ -1,42 +1,44 @@
 [
 	{
-		"slug": "cool-project",
-		"name": "Cool project 1",
-		"image": "placeholder.jpg",
-		"url": "https://www.google.com",
-		"date": "Jan 2014",
-		"tags": ["Angular JS","API"]
+		"slug": "blackout-project",
+		"name": "blackout",
+		"image": "blackout.png",
+		"date": "Dec 2013",
+		"tags": ["C#","XNA"]
 	},
 	{
-		"name": "Cool project 2",
-		"image": "placeholder.jpg",
-		"url": "#",
-		"date": "May 2014",
-		"tags": ["Python","Django"]
+		"slug": "ssat-project",
+		"name": "SSAT",
+		"image": "ssat.jpg",
+		"date": "Jul 2014",
+		"tags": ["C#","WPF"]
 	},
 	{
-		"name": "Cool project 3",
-		"image": "placeholder.jpg",
-		"url": "#",
-		"date": "June 2014",
-		"tags": ["HTML","JQuery","Django"]
+		"slug": "readyfirst-project",
+		"name": "Ready First",
+		"image": "readyfirst.png",
+		"date": "Dec 2014",
+		"tags": ["Android","Nodejs","Redis"]
 	},
 	{
-		"name": "Cool project 4",
-		"image": "placeholder.jpg",
-		"date": "Oct 2016",
-		"tags": ["Python","nodejs"]
+		"slug": "sev-project",
+		"name": "SEV",
+		"image": "sev.png",
+		"date": "Nov 2014",
+		"tags": ["Unity"]
 	},
 	{
-		"name": "Cool project 5",
-		"image": "placeholder.jpg",
-		"date": "Oct 2016",
-		"tags": ["Python","nodejs"]
+		"slug": "roadtrip-project",
+		"name": "RoadTrip",
+		"image": "roadtrip.jpg",
+		"date": "May 2015",
+		"tags": ["Unity","VR"]
 	},
 	{
-		"name": "Cool project 6",
-		"image": "placeholder.jpg",
-		"date": "Oct 2016",
-		"tags": ["Python","nodejs"]
-	}
+		"slug": "samsung-project",
+		"name": "Samsung project ",
+		"image": "samsung.jpg",
+		"date": "Sep 2015",
+		"tags": ["ASP"]
+	},
 ]
