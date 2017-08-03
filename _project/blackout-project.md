@@ -4,5 +4,5 @@ title:  "Blackout"
 slug: "blackout-project"
 ---
 Blackout Project
-![Alt text](/projects/blackout1.png)
-![Alt text](/projects/blackout2.png)
+![Alt text](/static/projects/blackout1.png)
+![Alt text](/static/projects/blackout2.png)
