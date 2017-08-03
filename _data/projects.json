@@ -10,7 +10,7 @@
 		"slug": "ssat-project",
 		"name": "SSAT",
 		"image": "ssat.jpg",
-		"urs" : "https://drive.google.com/file/d/0B84Oa-bRp2huaEVCMmVRUzNFd3c/view"
+		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huaEVCMmVRUzNFd3c/view"
 		"date": "Jul 2014",
 		"tags": ["C#","WPF"]
 	},
@@ -18,6 +18,7 @@
 		"slug": "readyfirst-project",
 		"name": "Ready First",
 		"image": "readyfirst.png",
+		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huWE9UZFUwci1KN2s/view"
 		"date": "Dec 2014",
 		"tags": ["Android","Nodejs","Redis"]
 	},
