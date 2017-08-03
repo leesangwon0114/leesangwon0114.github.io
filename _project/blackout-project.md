@@ -1,6 +1,6 @@
 ---
 layout: project_single
-title:  "blackout"
+title:  "Blackout"
 slug: "blackout-project"
 ---
 Blackout Project.

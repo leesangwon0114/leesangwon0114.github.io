@@ -1,7 +1,7 @@
 [
 	{
 		"slug": "blackout-project",
-		"name": "blackout",
+		"name": "Blackout",
 		"image": "blackout.png",
 		"date": "Dec 2013",
 		"tags": ["C#","XNA"]
