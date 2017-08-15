@@ -3,7 +3,7 @@ body {
   background: url("/static/img/subtle_dots.png");
   line-height: 1.5em;
   font-weight: 300;
-  font-size: 16px;
+  font-size: 12px;
   color: #666;
 }
 hr {
@@ -88,7 +88,7 @@ div.col-sm-3 {
   color: #666;
 }
 div.col-sm-3 strong {
-  font-size: 16px;
+  font-size: 12px;
   color: #4A4A4A;
   font-weight: normal;
 }
