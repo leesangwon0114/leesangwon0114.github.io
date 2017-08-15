@@ -62,7 +62,7 @@ div.content pre {
   color: #FFF;
   overflow-x: auto;
   font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 13px;
   border: none;
 }
 div.content .highlight {
@@ -88,7 +88,7 @@ div.col-sm-3 {
   color: #666;
 }
 div.col-sm-3 strong {
-  font-size: 12px;
+  font-size: 13px;
   color: #4A4A4A;
   font-weight: normal;
 }
