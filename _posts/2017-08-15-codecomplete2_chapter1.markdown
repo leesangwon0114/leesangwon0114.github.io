@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "CodeComplete2<br>1장.<br>소프트웨어<br>구현으로의<br>초대"
+title:  "CodeComplete2&nbsp;1장.&nbsp;소프트웨어&nbsp;구현으로의&nbsp;초대"
 date:   2017-08-15 21:28:15 +0700
 categories: [codecomplete]
 ---
-### 1.1 [소프트웨어<br>구현(Construction)]
-구현 - 코드작성과 디버깅을 중심으로 이뤄지며, 상세설계, 단위테스트, 통합테스트를 비롯한 여러활동 포함\s\s
+### 1.1 [소프트웨어&nbsp;구현(Construction)]
+구현 - 코드작성과 디버깅을 중심으로 이뤄지며, 상세설계, 단위테스트, 통합테스트를 비롯한 여러활동 포함<br>
 = 코드작성 X, **프로그래밍 O**  why? 기계적인 작업 뿐만 아니라 창의성 + 판단력도 필요!
 
 ### 1.2 [구현이 중요한 이유]
