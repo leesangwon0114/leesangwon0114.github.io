@@ -14,7 +14,7 @@ Precision - 사용자가 필요로 하는 정보와 연관된 문서의 비율
 
 Recall - 가져온 컬렉션의 관련 문서의 비율
 
-![Alt text](http://leesangwon0114.github.io/static/1.1.png)
+![Alt text](http://leesangwon0114.github.io/static/img/IR/1.1.png)
 
 정확도(precision) = |A∩B| / |B|   = 시스템이 찾아온 것 중 정답인 비율 = 오답을 찾지 않을 확률
 
