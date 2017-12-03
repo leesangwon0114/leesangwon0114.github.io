@@ -2,9 +2,9 @@
 layout: post
 title:  "InformationRetrieval&nbsp;1.&nbsp;Boolean Retrieval"
 date:   2017-12-03 21:28:15 +0700
-categories: [InformationRetrival]
+categories: [InformationRetrieval]
 ---
-# Introduction
+# Introduction #
 
 ### Information retrieval
 정의 - 많은 양의 정보로부터 필요한 정보를 만족시키는 비구조적 text 문서를 찾는 것  
@@ -14,7 +14,7 @@ Precision - 사용자가 필요로 하는 정보와 연관된 문서의 비율
 
 Recall - 가져온 컬렉션의 관련 문서의 비율
 
-![Alt text](http://leesangwon0114.github.io/static/img/IR/1.1.png)
+![Alt text](http://leesangwon0114.github.io/static/1.1.png)
 
 정확도(precision) = |A∩B| / |B|   = 시스템이 찾아온 것 중 정답인 비율 = 오답을 찾지 않을 확률
 
@@ -89,7 +89,7 @@ M = 500000의 distinct 한 terms 가 있다고 가정
 좋은 대안은 ? 1인 record만 기록하는 것임
 
 
-### Inverted Index
+# Inverted Index #
 
 dictionary와 postings(document id) 로 구성
 
