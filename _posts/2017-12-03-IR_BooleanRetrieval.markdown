@@ -4,7 +4,7 @@ title:  "InformationRetrieval&nbsp;1.&nbsp;Boolean Retrieval"
 date:   2017-12-03 21:28:15 +0700
 categories: [InformationRetrieval]
 ---
-# Introduction #
+# Introduction
 
 ### Information retrieval
 정의 - 많은 양의 정보로부터 필요한 정보를 만족시키는 비구조적 text 문서를 찾는 것  
