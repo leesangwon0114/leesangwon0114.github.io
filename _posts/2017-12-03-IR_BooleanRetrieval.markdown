@@ -5,7 +5,7 @@ date:   2017-12-03 21:28:15 +0700
 categories: [InformationRetrieval]
 ---
 # Introduction
-
+---------------------------------------
 ### Information retrieval
 정의 - 많은 양의 정보로부터 필요한 정보를 만족시키는 비구조적 text 문서를 찾는 것  
 
@@ -43,7 +43,7 @@ Google(Boolean engines 이 잘 디자인된)은 Result set에 Rank를 매김
 -> 높은 hits 일 수록 좋은 rank를 가
 
 # Inverted Model
-
+---------------------------------------
 ### Unstructured data in 1650
 Shakespeare 연극에 BRUTUS AND CAESAR but not CALPURNIA?
 
@@ -136,5 +136,74 @@ BRUTUS는 document 1, 2, .. 174에 포함된다는 뜻
 
 ### Split the result into dictionary and postings file
 
-![Alt text](http://leesangwon0114.github.io/static/img/IR/1.7.png)
+![Alt text](http://leesangwon0114.github.io/static/img/IR/1.8.png)
 
+
+# Processing Boolean queries
+---------------------------------------
+
+### Simple conjunctive query
+
+BRUTUS AND CALPURNIA 쿼리라 가정
+
+Inverted Index를 이용해 찾기
+
+1.  Dictionarhy에 BRUTUS 위치를 찾아감
+
+2.  posting file에서 BRUTUS의 postings list를 가져옴
+
+3.  CALPURNIA 위치를 찾감
+
+4.  posting file에서 CALPURNIA의 postings list를 가져옴
+
+5.  두 list의 교집합을 user에게 리턴
+
+
+### Intersecting two posting lists
+
+두 리스트에서 교집합 찾는 좋은 방법은 sorting -> Linear 접근
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/1.9.png)
+
+
+더 크면 안봐도 되는 장점(선형적으로 탐색 가능)
+
+
+### Commerically successful Boolean retrievals:Westlaw
+
+query : "trade secret" /s disclos! /s prevent /s emplye!
+
+Proximitiy operators: /3 = 3 단어 아내에, /s는 같은 문장, /p 는 같은 단락 안에 또 다른 단어 찾을 수 있음
+
+Boolean search는 precision, transparency, control 하기 때문에 도서관 등 아직도 사용되는 것이 많음
+
+# Query optimization
+---------------------------------------
+
+### Query optimization
+
+query term 이 두 개 이상일 경우
+
+ex) BRUTUS AND CALPURNIA AND CAESAR
+
+어떤 순서로 먼저 하는 것이 좋을까??
+
+shortest positngs lsit 부터 하는 것이 가장 빠름
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/1.10.png)
+
+CAESAR 부터 보면 31 까지만 보면됨
+
+
+### More general optimization
+
+Exampel : (MADDING OR CROWD) and (IGNOBLE OR STRIFE)
+
+all terms의 frequencies를 가져옴
+
+각각의 () 마다의 frequencies를 더해서 size 측정
+
+사이즈가 큰 순서대로 수행
+
+
+ 
