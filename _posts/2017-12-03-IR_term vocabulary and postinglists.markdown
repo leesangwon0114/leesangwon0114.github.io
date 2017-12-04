@@ -143,3 +143,119 @@ A few rules
 
 # Skip pointers
 ---------------------------------------
+
+### Recall basic intersection algorithm
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/2.3.png)
+
+두개의 pointer를 이용하여 Linear 하게 search
+
+더 나은 방법은??
+
+### Skip Pointers
+
+posting을 skip 하는 방법
+
+**어디에 skip pointer를 넣을 것인가? **
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/2.4.png)
+
+두개의 posting 리스트에서 8 다음에 41, 11임
+
+11이 더 작으므로 11의 skip pointer를 이용하여 31로 바로 넘어갈 수 있음
+
+**Tradeoff**
+
+skips을 많이 넣을 경우 -> skip의 span이 줄어듬
+
+But skip pointer의 많은 비교가 필요...
+
+skips가 적을 경우 -> skip span이 너무 김
+
+skips를 성공할 확률이 적음
+
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/2.5.png)
+
+**Simple heuristic** : posting의 길이가 P라 할때 skip pointer를 √P 만큼 배치한다면 logN 정도로 탐색을 줄이는 효과를 볼 수 있음
+
+skip pointers가 많은 도움이 되지만 오늘날과 같이 CPU가 빠른 환경에서는 더이상 효과가 없음
+-> Linear하게 보는게 더이상의 이슈가 안됨
+
+
+# Phrase queries
+---------------------------------------
+
+### Phare queries
+
+stanford university 라는 질의의 답을 원한다고 가정
+
+The inventor *Stanford* Ovshinsky never went to *university* 는 매칭되지 않음 -> Stanford와 university가 떨어져 있어서
+
+이를 해결하기위한 inverted index의 확장 버전
+
+* biword index
+* positional index
+
+
+### Biword indexes
+
+terms의 연속된 쌍을 Index로 만듬
+
+ex) Friends, Romans, Countrymen 이라면 "friends romans" 와 "romans countrymen" 이라는 두가지 가 생김
+
+Longer phrase queries 에 대한 처리도 필요
+
+"stanford university palo alto" 같은 질의에서 4개의 단어가 포함됨
+
+Biword로 는 불가능
+
+**Extended biwords**
+
+N - nouns
+
+X - articles / prepositions
+
+NX*N from으로 extended biword 사용 가능
+
+    cacher in the rye = N X X N
+    king of Denmark = N X N
+
+### Issues with biword indexes
+
+왜 적게 사용하는가?
+
+False positives 함
+
+Index 가 많은 term vocabulary에서는 매우 많이 생김
+
+
+### Positional indexes
+
+posting 리스트에 doc id와 position에 관한 정보가 포함됨
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/2.6.png)
+
+<> 안에 있는 것들이 position
+
+To, Be가 모두 1, 4에 나오지만 to 다음 be가 나오는 document 는 4밖에 없음
+
+### Proximity search
+
+ex) employment /4 place
+
+document에서 Emplyment 와 4단어 안에 place 가 위치한 문서를 찾는것
+
+![Alt text](http://leesangwon0114.github.io/static/img/IR/2.7.png)
+
+positional index를 이용하는 검색
+
+frequent words 특히 stop words에는 inefficient 함
+
+
+### Combination scheme
+
+Biword index와 positional index를 적절하게 결합
+
+
+positonal query는 Boolean 보다 훨씬 비용이 비쌈
