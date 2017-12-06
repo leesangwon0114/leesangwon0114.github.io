@@ -78,14 +78,17 @@ hello라는 term이 있을 때 index를 hello$, ello$h, llo$he, lo$hel, o$hell, 
 
 Spell 수정이 사용되는 곳
 
-1. 문서가 정확하게하여 정확한 indexed 되도록 하기 위해
+1 문서가 정확하게하여 정확한 indexed 되도록 하기 위해
 
 > dictionary에 missspelling 되는 것을 적게하는 것이 목표
+> 
 > 특히 OCR 문서 같은 곳에 필히 필요로됨
+> 
 > 그러나 documents 자체를 변경하기 보다는 query-document mapping을 변경하는 경우가 많음
 
-2. user queries를 정확하게 하여 정답을 알려주기 위해
+2 user queries를 정확하게 하여 정답을 알려주기 위해
 > 잘못된 질의를 물어봄(Did you mean...?) - 의도한 것이 고쳐진 것이였는지
+> 
 > Iphone 같은 경우 물어보지 않고 바로 고침
 
 
