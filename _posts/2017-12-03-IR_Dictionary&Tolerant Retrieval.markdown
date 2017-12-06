@@ -53,9 +53,6 @@ dictionary data structure는 term 단어, 문서빈도수, postings list의 poin
 # Tolerant Retrieval(정보검색을 유연하게)
 ---------------------------------------
 
-## Wild-card Queries
----
-
 ### Wild-Card Queries : *
 
 mon* : mon으로 시작하는 단어를 포함하는 모든 문서를 찾는 것
@@ -76,9 +73,6 @@ hello라는 term이 있을 때 index를 hello$, ello$h, llo$he, lo$hel, o$hell, 
 
 ![Alt text](http://leesangwon0114.github.io/static/img/IR/3.2.png)
 
-
-## Spell Correction
----
 
 ### Spell correction
 
