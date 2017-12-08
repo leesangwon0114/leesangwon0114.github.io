@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "InformationRetrieval&nbsp;4.&nbsp;Scoring,Term Weighting & Vector Space Model"
-date:   2017-12-03 21:28:15 +0700
+date:   2017-12-08 21:28:15 +0700
 categories: [InformationRetrieval]
 ---
 # Ranked Retrieval
