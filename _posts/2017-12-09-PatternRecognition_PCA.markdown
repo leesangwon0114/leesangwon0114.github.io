@@ -32,7 +32,7 @@ dimensionality reduction 방법을 사용해 feature를 뽑아낼 수 있음
 
 dimension을 reduction 하는 것이 주목적
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.PNG)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.png)
 
 위의 그림은 2차원을 1차원으로 차원을 축소시킴
 
@@ -164,7 +164,7 @@ lambda가 0아 아니므로 위의 A-lambda*I가 역행렬이 존재하면 안�
 
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/1.13.PNG)
 
-### V^T는 (3*9) 행렬이므로 V^T * Sample1 하면 (3*9) * (9*1) 이 됨으로 (3*1)로 차원이 줄어듬
+### V^T는 (3x9) 행렬이므로 V^T * Sample1 하면 (3x9) * (9x1) 이 됨으로 (3x1)로 차원이 줄어듬
 
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/1.14.PNG)
 
