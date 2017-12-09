@@ -32,7 +32,7 @@ dimensionality reduction 방법을 사용해 feature를 뽑아낼 수 있음
 
 dimension을 reduction 하는 것이 주목적
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.PNG)
 
 위의 그림은 2차원을 1차원으로 차원을 축소시킴
 
@@ -54,11 +54,11 @@ c로 Project 시키면 모든 점 4개가 해당 백터에 표현됨
 
 ### PCA(2)
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.2.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.2.PNG)
 
 분산을 가장 크게하는 축(u)를 어떻게 찾을 것인가?
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.3.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.3.PNG)
 
 위에서 봤던 Sample에서 a축을 찾았을 때랑 c축을 찾았을 때 각각 평균분산 구해보면 c가 분산이 더 크므로 더 좋은 Projection 축임
 
@@ -67,7 +67,7 @@ c로 Project 시키면 모든 점 4개가 해당 백터에 표현됨
 
 Projection한 Sample(N개)들을 X^^으로 표현하면 아래와 같은 수식으로 나타낼 수 있음
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.4.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.4.PNG)
 
 평균은 원래 Sample들의 평균을 내서 U^T에 Projection 한 결과와 같음
 
@@ -102,26 +102,26 @@ L(x, lambda) 를 각각 x, lambda에 대해 미분해서 0을 만드는 x, lambd
 
 U^T*U = 1 이라는 조건은 Projection 시킬 U를 찾는데 길이가 1인 백터 즉 normalized 된 백터를 쓰겠다는 것임
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.5.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.5.PNG)
 
 L(u, lambda) 에서 lambda에 대해 미분하면 U^T*u-1 =0 이므로 추가된 조건을 만족함
 
 이제 u에 대해 미분한 것이 0인 것만 찾으면 됨
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.6.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.6.PNG)
 
 미분해보면 결국 U는 Covariance matrix ∑ 의 eigenvector임
 
 = Sample들의 covariance matrix의 eigenvector를 구하면됨
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.7.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.7.PNG)
 
 아까 Sample들의 covariance matrix를 구하고 eigenvalue가 가장 큰 것을 선정해 Projected 시켜보면 분산이 1.7688 로 제일 큰 값을 찾을 수 있었음
 
 ### PCA Algorithms
 
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.8.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.8.PNG)
 
 eigenvalues중 큰 것 d개만 뽑아서 (n*d) 의 matrix U를 만듬
 
@@ -131,16 +131,16 @@ eigenvalues중 큰 것 d개만 뽑아서 (n*d) 의 matrix U를 만듬
 
 #### 이미지를 1차원의 vector로 표현하고 sample 들의 평균을 구함
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.9.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.9.PNG)
 
 ####  Sample에서 Sample들의 평균을 빼서 이미지를 centered 시킴
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.10.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.10.PNG)
 
 
 #### centered 된 matrix의 Covariance matrix를 구함
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.11.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.11.PNG)
 
 #### centered 된 matrix * (centered 된 matrix)^T로 표현 가능
 
@@ -148,13 +148,13 @@ cf) Cov(x,y) = E((x-m)(Y-m)) = E(x*y) - E(x)*E(y)
 
 #### Covatriance matrix의 eigenvector와 eigenvalue를 구함
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.12.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.12.PNG)
 
 #### cf)
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.16.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.16.PNG)
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.17.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.17.PNG)
 
 det(A-lambda*I) = 0 인 것을 풀면됨
 
@@ -162,15 +162,15 @@ lambda가 0아 아니므로 위의 A-lambda*I가 역행렬이 존재하면 안�
 
 #### V가 결국 아래 행렬처럼 나옴 
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.13.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.13.PNG)
 
 ### V^T는 (3*9) 행렬이므로 V^T * Sample1 하면 (3*9) * (9*1) 이 됨으로 (3*1)로 차원이 줄어듬
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.14.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.14.PNG)
 
 #### Test
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.15.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.15.PNG)
 
 y의 값이 다음과 같이나오고 이는 X^^2와 가장 값이 유사함
 
