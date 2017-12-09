@@ -56,7 +56,7 @@ SVD - Singular Value Decomposition
 
 S^2 이 eigen value의 역할을 하는 것이 핵심
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/2.7.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/2.8.png)
 
 ---
 ### Limitations of PCA
