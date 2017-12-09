@@ -61,3 +61,5 @@ K-means 알고리즘에서 거리 계산할 때 cosine similarity를 이용
 
 ### Voronoi Diagram
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/5.8.png)
+
+참고 : http://darkpgmr.tistory.com/96
