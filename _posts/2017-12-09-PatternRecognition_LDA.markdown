@@ -24,3 +24,6 @@ projection 시킨 데이터들에서 같은 클래스에 속하는 데이터들�
 
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/3.2.png)
 
+J(w) 값은 분모를 작게 분자를 크게하므로 최종적으로 J(w) 값을 크게하는 것이 목표임
+
+
