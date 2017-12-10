@@ -207,7 +207,7 @@ all terms의 frequencies를 가져옴
 
 각각의 () 마다의 frequencies를 더해서 size 측정
 
-사이즈가 큰 순서대로 수행
+사이즈가 증가하는 순서대로 수행(작은 것 부터 수행)
 
 
  
