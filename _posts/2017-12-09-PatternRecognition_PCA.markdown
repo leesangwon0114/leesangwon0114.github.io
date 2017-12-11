@@ -164,7 +164,7 @@ lambda가 0아 아니므로 위의 A-lambda*I가 역행렬이 존재하면 안�
 
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/1.13.PNG)
 
-### V^T는 (3x9) 행렬이므로 V^T * Sample1 하면 (3x9) * (9x1) 이 됨으로 (3x1)로 차원이 줄어듬
+#### V^T는 (3x9) 행렬이므로 V^T * Sample1 하면 (3x9) * (9x1) 이 됨으로 (3x1)로 차원이 줄어듬
 
 ![Alt text](http://leesangwon0114.github.io/static/img/PR/1.14.PNG)
 
