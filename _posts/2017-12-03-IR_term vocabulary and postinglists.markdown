@@ -121,7 +121,7 @@ ex) automate, automatic, automation 은 automat가 됨
 
 ### Porter algorithm
 
-영어에서 일반적으로 잘 알려진 어근 추출 방
+영어에서 일반적으로 잘 알려진 어근 추출 방법
 
 단어의 접미사를 제거하거나 다른 단어로 대치하는 역할을 하는 알고리즘
 
