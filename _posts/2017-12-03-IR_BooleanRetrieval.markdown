@@ -44,7 +44,7 @@ wi 를 사용할 수 없는 Case(Boolean Model은 제한적으로 사용)
 Boolean retrieval에서는 Set of Document 가 return 됨 -> 집합이라 순서가 없음
 
 Google(Boolean engines 이 잘 디자인된)은 Result set에 Rank를 매김
--> 높은 hits 일 수록 좋은 rank를 가
+-> 높은 hits 일 수록 좋은 rank를 가짐
 
 # Inverted Model
 ---------------------------------------
