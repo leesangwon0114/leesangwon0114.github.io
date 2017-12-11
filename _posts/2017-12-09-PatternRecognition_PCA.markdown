@@ -32,7 +32,7 @@ dimensionality reduction 방법을 사용해 feature를 뽑아낼 수 있음
 
 dimension을 reduction 하는 것이 주목적
 
-![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.png)
+![Alt text](http://leesangwon0114.github.io/static/img/PR/1.1.PNG)
 
 위의 그림은 2차원을 1차원으로 차원을 축소시킴
 
