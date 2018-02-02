@@ -1,6 +1,6 @@
 ---
 layout: project_single
-title:  "Churn analysis using cnn in Blade &amp; Soul"
+title:  "Churn Analysis Using CNN in Blade &amp; Soul"
 slug: "chun-project"
 ---
 연세대학교 공학대학원 1학기 인공지능 수업에서 Blade & Soul 데이터를 통한 유저 이탈 예측 프로젝트 진행
