@@ -9,14 +9,14 @@
 	},
 	{
 		"slug": "chun-project",
-		"name": "Churn analysis using cnn",
+		"name": "Churn Analysis Using CNN",
 		"image": "cnn.png",
 		"date": "JUN 2017",
 		"tags": ["Tensorflow", "python"]
 	},
 	{
 		"slug": "samsung-project",
-		"name": "Samsung project ",
+		"name": "Samsung Project ",
 		"image": "samsung.png",
 		"date": "Sep 2015",
 		"tags": ["ASP"]
