@@ -1,33 +1,25 @@
 [
 	{
-		"slug": "blackout-project",
-		"name": "Blackout",
-		"image": "blackout.png",
-		"date": "Dec 2013",
-		"tags": ["C#","XNA"]
+		"slug": "graph-project",
+		"name": "Recommand System Using Graph",
+		"image": "graph.png",
+		"url" : "https://drive.google.com/open?id=1b_PqzhNCPdxNbYYt-m64pOEXz5bCkR_A",
+		"date": "DEC 2017",
+		"tags": ["neo4j, python"]
 	},
 	{
-		"slug": "ssat-project",
-		"name": "SSAT",
-		"image": "ssat.jpg",
-		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huaEVCMmVRUzNFd3c/view?usp=sharing",
-		"date": "Jul 2014",
-		"tags": ["C#","WPF"]
+		"slug": "chun-project",
+		"name": "Churn analysis using cnn",
+		"image": "cnn.png",
+		"date": "JUN 2017",
+		"tags": ["Tensorflow, python"]
 	},
 	{
-		"slug": "readyfirst-project",
-		"name": "Ready First",
-		"image": "readyfirst.png",
-		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huWE9UZFUwci1KN2s/view?usp=sharing",
-		"date": "Dec 2014",
-		"tags": ["Android","Nodejs","Redis"]
-	},
-	{
-		"slug": "sev-project",
-		"name": "SEV",
-		"image": "sev.png",
-		"date": "Nov 2014",
-		"tags": ["Unity"]
+		"slug": "samsung-project",
+		"name": "Samsung project ",
+		"image": "samsung.png",
+		"date": "Sep 2015",
+		"tags": ["ASP"]
 	},
 	{
 		"slug": "roadtrip-project",
@@ -38,10 +30,33 @@
 		"tags": ["Unity","VR"]
 	},
 	{
-		"slug": "samsung-project",
-		"name": "Samsung project ",
-		"image": "samsung.png",
-		"date": "Sep 2015",
-		"tags": ["ASP"]
+		"slug": "readyfirst-project",
+		"name": "Ready First",
+		"image": "readyfirst.png",
+		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huWE9UZFUwci1KN2s/view?usp=sharing",
+		"date": "Dec 2014",
+		"tags": ["Android","Nodejs","Redis"]
 	},
+		{
+		"slug": "sev-project",
+		"name": "SEV",
+		"image": "sev.png",
+		"date": "Nov 2014",
+		"tags": ["Unity"]
+	},
+	{
+		"slug": "ssat-project",
+		"name": "SSAT",
+		"image": "ssat.jpg",
+		"url" : "https://drive.google.com/file/d/0B84Oa-bRp2huaEVCMmVRUzNFd3c/view?usp=sharing",
+		"date": "Jul 2014",
+		"tags": ["C#","WPF"]
+	},
+		{
+		"slug": "blackout-project",
+		"name": "Blackout",
+		"image": "blackout.png",
+		"date": "Dec 2013",
+		"tags": ["C#","XNA"]
+	}
 ]
