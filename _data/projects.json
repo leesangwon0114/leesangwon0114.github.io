@@ -5,14 +5,14 @@
 		"image": "graph.png",
 		"url" : "https://drive.google.com/open?id=1b_PqzhNCPdxNbYYt-m64pOEXz5bCkR_A",
 		"date": "DEC 2017",
-		"tags": ["neo4j, python"]
+		"tags": ["neo4j", "python"]
 	},
 	{
 		"slug": "chun-project",
 		"name": "Churn analysis using cnn",
 		"image": "cnn.png",
 		"date": "JUN 2017",
-		"tags": ["Tensorflow, python"]
+		"tags": ["Tensorflow", "python"]
 	},
 	{
 		"slug": "samsung-project",
