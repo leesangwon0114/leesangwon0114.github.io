@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "TimeSeriesAnalysis&nbsp;1.&nbsp;시계열분석과 수요예측"
-date:   2018-03-07 21:28:15 +0700
+date:   2018-03-07 21:30:15 +0700
 categories: [TimeSeriesAnalysis]
 ---
 연세대학교 경제대학원 시계열 분석 정동빈 교수 강의를 듣고 정리한 것 입니다.
