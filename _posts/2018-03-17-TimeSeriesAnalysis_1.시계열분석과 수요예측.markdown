@@ -103,10 +103,14 @@ categories: [TimeSeriesAnalysis]
 그 외의 모형들 다 노벨 문학상을 받은 모형들임
 
 
+----------
+#### 프로세서, 실현값, 모형
+
 ![Alt text](http://leesangwon0114.github.io/static/img/TA/1.1.PNG)
 
+----------
 
-정량적 data(metric - 측정할 수 있다)
+#### 정량적 data(metric - 측정할 수 있다)
 
 (연속형)
 
