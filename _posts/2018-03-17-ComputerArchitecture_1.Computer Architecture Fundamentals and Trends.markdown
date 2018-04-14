@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Computer Architecture&nbsp;1.&nbsp;Fundamentals and Trends"
+title:  "Computer Architecture&nbsp;1.&nbsp;Fundamentals and Trends(1/2)"
 date:   2018-03-07 21:28:15 +0700
 categories: [ComputerArchitecture]
 ---
