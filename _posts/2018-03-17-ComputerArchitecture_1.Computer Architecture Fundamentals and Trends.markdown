@@ -405,6 +405,8 @@ DLP(Data-level parallelism) 여러데이터 한번에
 
 TLP(Thread-level parallelism) 여러 스레드
 
+RLP(Request-level parallelism)
+
 최대 성능을 얻기위해 응용프로그램 재구성해야함
 
 
