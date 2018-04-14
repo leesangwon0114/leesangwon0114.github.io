@@ -140,6 +140,7 @@ conditional 중 EQ/NE가 86%로 대부분임(LT/GE/GT/LE 보다)
 
 - simpe한 == 비교를 사용
 
+---
 
 #### Encoding Instruction Set
 
@@ -149,6 +150,8 @@ Encoding -
 code size 가 중요하면 instruction size를 변형시켜 사용하고 performance가 중요하면 fixed 된 instruction 길이를 사용함
 
 하나의 address에 하나의 operand 배정해 사용
+
+---
 
 #### MIPS(DLX) Architecture
 
