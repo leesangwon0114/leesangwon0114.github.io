@@ -227,7 +227,9 @@ Blocking - 배열이 크면 부분 부분 계산 후 값을 저장
 
 ---
 
-### # Reduce the miss penalty 로 넘어감
+### Reduce the miss penalty 로 넘어감
+
+---
 
 #### 1. Read Priority over Write on Miss
 
