@@ -39,10 +39,12 @@ Structural hazards, Data hazards, Control hazards 중 Control hazards가 CPI에 
 
 #### [5] Write back 구조의 Cache에서 read miss (cache가 full 상태)시 이를 처리하는 과정을 기술하고 성능적 측면에서 이 과정을 분석해 보고 개선 방안을 제시하시오
 
-read miss 시 write back에서는 아직 메모리에 안쓰였으니까 업데이트 되어 dirty flag가 1이므로 write buffer에 있는 것 write해준 후 read 해야함.
+read miss가 dirty block을 replacing 해야하는 상황 발생
+
+일반적으로 read miss 시 write back에서는 아직 메모리에 안쓰였으니까, 업데이트 되어 dirty flag가 1이므로 메모리에 write해준 후 read 해야함.
 
 이 때 read만 하려고 했는데 write까지 해야하는 성능적인 이슈가 존재
 
 이를 개선하기위해 Read에 우선순위를 두는 방법이 존재
 
--> 업데이트 된 값을 먼저 read를 해준 후 write buffer가 write
+-> 먼저 write buffer에 dirty block을 copy 한후 read를 해준 후 write buffer가 write
