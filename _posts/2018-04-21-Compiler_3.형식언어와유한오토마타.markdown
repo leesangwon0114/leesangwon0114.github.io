@@ -1,22 +1,17 @@
 ---
 layout: post
 title:  "Compiler&nbsp;3.&nbsp;형식언어와 유한 오토마타"
-date:   2018-04-16 04:28:15 +0700
+date:   2018-04-16 05:28:15 +0700
 categories: [Compiler]
 ---
 
-#### 컴파일러의 구조
+#### 촘스키 계층 구조
 
-C언어에서 의미있는 단어를 토큰이라고함
+![Alt text](http://leesangwon0114.github.io/static/img/Compiler/3.1.PNG)
 
-어떤 토근이 사용되어있는지 구분하는 것이 - 어휘분석
+Example
 
-토큰들이 문법에 맞는지 검사 - 구문분석
+![Alt text](http://leesangwon0114.github.io/static/img/Compiler/3.2.PNG)
 
-형 type 검사를 하는 - 의미분석
+---
 
-의미 분석으로 생성된 코드의 실행시간을 줄이거나 기억 장소를 줄이기 위한 - 코드 최적화
-
-목적기계의 특성을 고려하여 - 목적코드 생성
-
-![Alt text](http://leesangwon0114.github.io/static/img/Compiler/2.1.PNG)
