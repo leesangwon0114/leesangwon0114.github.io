@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MLStudy&nbsp;Install Tensorflow-gpu in Ubuntu"
+title:  "MLStudy&nbsp;. Install Tensorflow-gpu in Ubuntu"
 date:   2018-05-24 07:28:15 +0700
 categories: [MLStudy]
 ---
