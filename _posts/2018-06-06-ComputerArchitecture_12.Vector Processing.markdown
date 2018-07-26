@@ -32,7 +32,7 @@ SCALA - single data object 에 스케일 연산(단위데이터 연산)해 singl
 
 이런 SCALAR의 집합 = VECTOR
 
-![Alt text](http://leesangwon0114.github.io/static/img/CA/12.1.PNG)
+![Alt text](/static/img/CA/12.1.PNG)
 
 ---
 
