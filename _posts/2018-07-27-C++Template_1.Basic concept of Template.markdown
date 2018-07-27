@@ -1,0 +1,125 @@
+---
+layout: post
+title:  "C++Template&nbsp;1.&nbsp;Basic concept of Template"
+date:   2018-07-27 04:28:15 +0700
+categories: [c++]
+---
+
+#### Template 개념
+
+```c
+int square(int a) {
+    return a*a;
+}
+
+double square(double d) {
+    return d*d;
+}
+
+int main() {
+    square(3);
+    square(3.3);
+}
+```
+함수 오버로딩을 통해 두개의 square 함수가 있지만 사용자는 하나의 함수처럼 사용
+
+제작자 입장에서 두개 함수의 코드가 유사함 -> 유사한 코드가 반복되면 자동생성 되는 것이 좋음(C에서는 macro 사용)
+
+---
+
+#### 자동생성되는 함수(macro)
+
+```c
+// 함수를 만드는 틀
+#define MAKE_SQUARE(T)  \
+T square(T a) {         \
+    return a*a;         \
+}                       \
+
+// 틀에 타입을 전달해서 함수를 생성한다.
+MAKE_SQUARE(int)
+MAKE_SQUARE(double)
+
+int main() {
+    square(3);
+    square(3.3);
+}
+```
+
+함수를 만들어 내는 틀을 만들고 각 타입에 따라 함수를생성함(매크로만 있어도 충분)
+
+단점 : main의 3은 사용자가 int 인거 암, 코드를 생성하긴 하는데 컴파일러가 하는것이 아니라 전처리가함(컴파일러는 이미 3이 int 인 것을 아는데 전처리기는 모름)
+
+해결책 -> 컴파일러가 코드생성할 수 있도록 변경
+
+---
+
+#### 자동생성되는 함수(Template)
+
+```c
+template<typename T>
+T square(T a) {
+    return a*a;
+}
+
+int main() {
+    square<int>(3); // 이 순간 int square(int) 생성
+    square<double>(3.3);  // 이 순간 double square(double) 생성
+
+    square(3);  // 이렇게만 적어도 3이 int 인거 아니까 컴파일러는 자동으로 결정해줌
+}
+```
+
+Template는 함수를 만들어 내는 틀
+
+실제로 쓰이곳에서 컴파일러가 타압을 추론하여 코드를 생성
+
+
+```c
+template<typename T>
+
+template<class T>
+```
+
+두개 차이 없음
+
+---
+
+#### Template 필요성
+
+```c
+class Complex
+{
+    int re, im;
+public:
+    Complex(int r, int i): re(r), im(i) {}
+};
+
+int main() {
+    Complex c1(1, 2);
+    Complex c2(1.1, 2.2);
+}
+```
+double을 사용하면 int 이니 정보 손실
+
+위의 코드에 double을 바꾸면 속도가 느려짐(double 개산...) - overhead 잇음
+
+사용자가 결정할 수 있게 Template으로 바꿈
+
+
+```c
+template<typename T>
+class Complex
+{
+    T re, im;
+public:
+    Complex(T r, T i): re(r), im(i) {}
+};
+
+int main() {
+    Complex<int> c1(1, 2);
+    Complex<double> c2(1.1, 2.2);
+}
+```
+
+**라이브러리 설계자는 Complex 의 틀 (template) 만 제공하고 내부 타입은 사용자가 결정하게 하자**
