@@ -1,0 +1,179 @@
+---
+layout: post
+title:  "C++Template&nbsp;2.&nbsp;Template Instantiation#1"
+date:   2018-07-30 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### Template Instantiation
+
+컴파일러가 함수(클래스) 템플릿으로 부터 실제 함수(클래스)를 만들어 내는 과정
+
+- 명시적 인스턴스화(explicit instantiation)
+- 암시적 인스턴스화(implicit instantiation)
+
+---
+
+#### Template 이 생성한 코드 확인
+
+결과 확인
+
+1. 어셈블리 코드 확인
+    - cl file.cpp /FAs -> file.asm 파일 생성
+    - g++ file.cpp -S -> file.s 파일 생성
+
+```cpp
+int add(int a, int b) {
+    return a+b;
+}
+
+template<typename T>
+T square(T a) {
+    return a*a;
+}
+
+int main() {
+    // square(3);
+    // square(3.3);
+}
+```
+-> asm 결과 확인해 보면 add 는 있지만 square 는 없는 것 확인 가능
+-> square 주석을 해제하고 다시 asm 코드 만들면 square 버전 생성된 것 확인가능
+
+---
+
+```cpp
+template<typename T> class Test
+{
+public:
+    void foo() {}
+    void goo() {}
+};
+
+template<typename T>
+T square(T a) {
+    return a*a;
+}
+
+int main() {
+    
+}
+```
+
+템플릿으로 부터 실제 C++ 코드를 만들어 내는 과정 -> Template instantiation
+
+---
+
+#### 명시적 인스턴스화(explicit instantiation)
+
+1. 템플릿을 사용해서 특정 타입의 함수(클래스)를 생성해 달라고 명시적으로 지시하는 것.
+2. 함수 / 클래스 선언과 유사한 모양으로 작성
+
+```cpp
+template<typename T> class Test
+{
+public:
+    void foo() {}
+    void goo() {}
+};
+
+template class Test<int>; // 클래스 명시적 인스턴스화 -> foo, goo 모두 인스턴스화됨
+template void Test<int>::foo(); // foo 만 인스턴스화 가능
+
+template<typename T>
+T square(T a) {
+    return a*a;
+}
+
+template int square<int>(int); // 명시적 인스턴스화(완벽한 모양)
+template int square<>(int); // int 생략 가능
+template int square(int); // int, <> 생략 가능
+
+int main() {
+    
+}
+```
+---
+
+#### 암시적 인스턴스화(implicit instantiation)
+
+1. 명시적 인스턴스화를 하지 않고 템플릿을 사용하는 경우, 암시적으로 인스턴스화가 발생
+2. 2가지 형태로 사용가능
+- 사용자가 타입을 직접 전달
+- template argument type deduction: 함수 인자를 통해서 컴파일러가 타입을 추론하는 것(class template type deduction은 C++ 17 부터 지원)
+
+3. 클래스 템플릿의 경우 사용하지 않은 멤버함수는 인스턴스화가 되지 않는다 -> lazy instantiation
+
+```cpp
+template<typename T> class Test
+{
+public:
+    void foo() {}
+    void goo() {}
+};
+
+template<typename T>
+T square(T a) {
+    return a*a;
+}
+
+int main() {
+    int n = square(3); // 컴파일러가 이 코드를 보고 인스턴스화(컴파일러에 의해 타입결정)
+    int n2 = square<int>(3);
+
+    Test<int> t1;
+    t1.foo();   // foo 만 인스턴스화함
+}
+```
+---
+
+#### Class template type deduction
+
+##### template argument type deduction
+
+1. 사용자가 템플릿 인자를 명시적으로 지정하지 않은 경우 컴파일러가 인자를 보고 추론(deduction)하는 것
+2. 타입을 결정하는 방식 중요(type deduction rule 참고)
+3. 클래스 템플릿의 경우, C++17 부터 타입 추론을 지원
+- 생성자의 인자를 통해서 타입을 결정
+- 사용자가 작성한 "**Class template type deduction guide**"를 통해서 타입을 결정
+
+```cpp
+template<typename T> class Vector
+{
+    T* buff;
+public:
+    Vector() {}
+    Vector(int sz, T initValue) {}
+
+    template<typename C>Vector(C& c) {}
+};
+
+// user define deduction guide
+Vector()->Vector<int>;
+
+template<typename C>
+Vector(C& c)->Vector<typename C::value_type>;
+
+int main() {
+    Vector<int> v1(10, 3); // 10개를 3으로 초기화.
+
+    Vector      v2(10, 3); // C++ 17
+
+    Vector  v3; // default 생성자는 T랑 관계가 없어 추론할 수 있는 guide 가 없음(class template argument deduction failed error 발생)
+
+    // list<int> s = {1,2,3};
+    list s = {1,2,3}; // C++17 style..
+
+    Vector v4(s)
+}
+```
+
+##### class template argument type deduction
+
+1. C++ 17 부터 지원
+2. 생성자를 통한 타입 결정
+3. 사용자가 "user define deduction guide" 제공
+
+---
