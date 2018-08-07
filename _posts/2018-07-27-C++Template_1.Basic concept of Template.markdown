@@ -5,7 +5,7 @@ date:   2018-07-27 04:28:15 +0700
 categories: [c++]
 ---
 
-codenuri 강석민 강사 강의 내용 정리
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
 
 #### Template 개념
 
