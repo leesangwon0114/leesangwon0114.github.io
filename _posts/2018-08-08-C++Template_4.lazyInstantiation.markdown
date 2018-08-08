@@ -1,0 +1,177 @@
+---
+layout: post
+title:  "C++Template&nbsp;4.&nbsp;lazyInstantiation"
+date:   2018-08-08 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### lazy instantiation
+
+```cpp
+class A
+{
+    int data;
+public:
+    void foo(int n) { *n = 10; }    // error : int 역참조 불가
+}
+
+int main() {
+    A a;
+}
+```
+
+위의 코드를 아래처럼 바꾸면 컴파일 시 error 를 발생하지 않음
+
+```cpp
+template<typename T>class A
+{
+    T data;
+public:
+void foo(T n) { *n = 10; }    // error
+
+}
+
+int main() {
+    A<int> a;
+    // a.foo(0);
+}
+```
+
+foo 함수는 사용된적이 없어 instantiation 되지 않음 -> 지연된 인스턴스화
+
+a.foo(0);를 추가해 사용하면 인스턴스화 되고 이때 컴파일 에러 발생
+
+---
+
+```cpp
+struct Resource1
+{
+    Resoruce1() { cout << "Resource1()" << endl;}
+    ~Resoruce1() { cout << "~Resource1()" << endl;}
+};
+
+struct Resource2
+{
+    Resoruce2() { cout << "Resource2()" << endl;}
+    ~Resoruce2() { cout << "~Resource2()" << endl;}
+};
+
+struct Test
+{
+    Resource1 res1;
+    static Resource2 res2;
+};
+Resource2 Test::res2;   // 1. 생성자
+
+
+int main() {
+    cout << "main" << endl; // 2. 
+    Test t; // 3. Resource1 생성자
+}
+```
+
+출력결과
+
+![Alt text](/static/img/C++/4.1.PNG)
+
+Test 를 template으로 변경해보면?
+
+```cpp
+struct Resource1
+{
+    Resoruce1() { cout << "Resource1()" << endl;}
+    ~Resoruce1() { cout << "~Resource1()" << endl;}
+};
+
+struct Resource2
+{
+    Resoruce2() { cout << "Resource2()" << endl;}
+    ~Resoruce2() { cout << "~Resource2()" << endl;}
+};
+
+template<typename T> struct Test
+{
+    Resource1 res1;
+    static Resource2 res2;
+};
+template<typename T> Resource2 Test<T>::res2;   // 1. 생성자
+
+
+int main() {
+    cout << "main" << endl; // 2. 
+    Test<int> t; // 3. Resource1 생성자
+
+    // t.res2;
+}
+```
+
+Resource2() 가 불리지 않음
+
+t.res2; 와 같이 접근하는 코드를 만들면 불림
+
+---
+
+#### if 문과 lazy instantiation
+
+1. if 문은 **실행시간 조건문** 이므로 컴파일 시간에 조건이 false 로 결정되어도 if문에 있는 코드는 사용되는 것으로 간주됨
+2. C++17 if constexpr은 **컴파일 시간 조건문** 이므로 조건이 false로 결정되면 if 문에 있는 코드는 사용되지 않은 것으로 간주됨
+
+
+```cpp
+template<typename T> void foo(T n)
+{
+    *n = 10;
+};
+
+int main()
+{
+    foo(0); // 컴파일 시 error (int로 결정되었으므로..)
+}
+
+```
+
+if 문을 넣어보면?
+
+```cpp
+template<typename T> void foo(T n)
+{
+    *n = 10;
+};
+
+int main()
+{
+    if (false) {}   // if 문은 실행시간 조건 조사(최적화에서 없어져도 컴파일러는 사용한다고봄)
+        foo(0); // error 역시 발생
+    }
+
+    // C++ 17
+    if constexpr (false) // static if
+        foo(0);     // compile 정상
+}
+
+```
+
+---
+
+#### 함수 오버로딩과 lazy instantiation
+
+1. 동일한 이름의 함수가 여러개 있을 때 어떤 함수를 호출할지 결정하는 것은 컴파일 시간에 이루어 진다. 선택되지 않은 함수가 템플릿이라면 인스턴스화 되지 않음
+
+```cpp
+template<typename T> void foo(T n, int)
+{
+    *n = 3.4;
+};
+
+template<typename T> void foo(T n, dobule)
+{
+};
+
+int main()
+{
+    foo(1, 3.4);    // 정상 컴파일됨 (int 버전이 이상해도 인스턴스화 되지 않으므로)
+}
+
+```
