@@ -62,3 +62,229 @@ int main()
 출력결과
 
 ![Alt text](/static/img/C++/5.1.PNG)
+
+---
+
+#### Template type deduction
+
+#### Template Argument Type Deduction
+1. 컴파일러가 함수 인자를 보고 템플릿의 타입을 결정하는 것 
+2. 함수 인자의 타입과 완전히 동일한 타입으로 결정되지 않는다.
+
+아래 모두 T는 int 로 결정됨
+
+
+```cpp
+
+template<typename T> void foo(T a) 
+{
+    ++a;
+}
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+
+    foo(n); // T: int
+    foo(c); // T: const int ? int
+    foo(r); // T: int& ? int    (원래 원본은 바뀌지 않는 것을 기대)
+}
+```
+
+---
+
+1. 규칙1. 템플릿 인자가 값 타입일 때(T a)
+- 함수 인자가 가진 const, volatile, reference 속성을제거하고 T의 타입을 결정
+- 주의! - 인자가 가진 const 속성만 제거 된다.
+
+```cpp
+
+// 함수 템플릿 인자가 값 타입(T a) 일 때.
+template<typename T> void foo(T a) 
+{
+    cout << type_id_with_cvr<T>().pretty_name() << endl;
+}
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+    const int& cr = c;
+
+    foo(n); // T: int
+    foo(c); // T: int
+    foo(r); // T: int
+    foo(cr); // T: int
+
+    const char* s1 = "hello";   // s1을 따라가면 const
+    foo(s1);    // T: char const*
+
+    const char* const s2 = "hello";
+    foo(S2);    // T: char const*
+}
+```
+
+---
+
+2. 규칙2. 템플릿 인자가 참조 타입일 때(T& a)
+- 함수 인자가 가진 reference 속성만 제거하고 T의 타입을 결정
+- const 와 volatile 속성은 유지한다. 단, 템플릿 인자가 const T& 일 경우는 함수 인자가 가진 const를 제거하고 T 타입을 결정
+
+```cpp
+
+// 함수 템플릿 인자가 참조 타입(T& a) 일 때.
+template<typename T> void foo(T& a) 
+{
+    cout << type_id_with_cvr<T>().pretty_name() << endl;
+    cout << type_id_With_cvr<decltype(a)>().pretty_name() << endl;
+}
+
+// 함수 템플릿 인자가 const 참조 타입(const T& a) 일 때.
+template<typename T> void goo(const T& a) 
+{
+    cout << type_id_with_cvr<T>().pretty_name() << endl;
+    cout << type_id_With_cvr<decltype(a)>().pretty_name() << endl;
+}
+
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+    const int& cr = c;
+
+    foo(n); // T: int,  a: int&
+    foo(c); // T: const int,  a: const int& (const를 일반참조로 가르킬 수 없음->const 유지시킴)
+    foo(r); // T: int,  a: int&
+    foo(cr); // T: const int, a: const int&
+
+    
+    goo(n); // T: int,  a: const int&
+    goo(c); // T: int,  a: const int&
+    goo(r); // T: int,  a: const int&
+    goo(cr); // T: int, a: const int&
+}
+```
+---
+
+#### 정리
+
+
+```cpp
+
+template<typename T> void foo(T a)  {}
+template<typename T> void foo(T& a)  {}
+template<typename T> void foo(const T& a)  {}
+template<typename T> void foo(T&& a)  {}
+
+int n = 10;
+const int& cr = n;
+foo(cr);
+
+int x[3] = {1,2,3};
+foo(x); // 배열을 함수 템플릿에 전달할 때 주의점
+
+```
+
+1.규칙1
+
+2.규칙2
+
+3.규칙3. 템플릿 인자가 forwarding 레퍼런스일때(T&&)
+- lvalue와 rvalue를 모두 전달 받는다.
+
+4.규칙4. 배열을 전달받을때 - argument decay 발생
+
+----
+
+#### array name
+
+```cpp
+
+int main()
+{
+    int n;  // 변수 이름: n, 타입: int
+    int *p1 = &n;   
+
+    double d;   // 변수 이름: d, 타입: double
+    double *p2 = &d;
+
+    int x[3] = {1,2,3}; // 변수이름: x, 타입: int[3] (이름을 빼면 타입만 남음)
+
+    // 배열 x의 주소..
+    int (*p3)[3] = &x;    // *과 [] 연산자 2개가 있어 우선순위 높이기 위해 괄호를 붙임
+
+    int *p4 = x; // 배열의 주소 아님..
+}
+
+```
+
+
+```cpp
+
+int main()
+{
+    int n1 = 10; 
+    int n2 = n1; // 모든 변수는 자신과 동일한 타입의 변수로 초기화(복사) 될 수 있다.
+
+    double d1 = 3.4;
+    double d2 = d1;
+
+    int x1[3] = {1,2,3}; // x1의 타입 : int[3]
+    int x2[3] = x1; // error. 배열은 크기가 커 자산과 동일한 타입의 배열로 복사가 안됨...
+
+    int *p1 = x1; // 대신 배열의 이름은 첫번째 요소의 주소로 암시적 형변환 된다.
+
+}
+
+```
+
+```cpp
+
+int main()
+{
+    int x1[3] = {1,2,3}; 
+    
+    int(*p1)[3] = &x; // 배열의 주소
+    int *p2 = x; // 배열의 이름이 배열의 첫번째 요소의 주소로 암시적 형변환 된 표현
+
+    printf("%p, %p\n", p1, p1+1);   //12
+    printf("%p, %p\n", p2, p2+1);   //4
+}
+
+```
+![Alt text](/static/img/C++/5.2.PNG)
+
+---
+
+```cpp
+
+int main()
+{
+    int x1[3] = {1,2,3}; 
+    
+    int(*p1)[3] = &x; // 배열의 주소
+    int *p2 = x; // 배열의 이름이 배열의 첫번째 요소의 주소로 암시적 형변환 된 표현
+
+    printf("%p, %p\n", p1, p1+1);   //12
+    printf("%p, %p\n", p2, p2+1);   //4
+
+    // p1: 배열의 주소, *p1: 배열
+    (*p1)[0] = 10;
+
+    // p2: 요소의 주소, (int*)
+    *p2 = 10;
+}
+
+```
+
+배열의 이름이 배열의 첫번째 요소의 주소로 암시적 형변환 된다는 원리 이해하기!
+
+---
+
+#### argument decay
+
