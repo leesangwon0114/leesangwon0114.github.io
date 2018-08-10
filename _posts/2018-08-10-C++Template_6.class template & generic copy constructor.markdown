@@ -1,0 +1,141 @@
+---
+layout: post
+title:  "C++Template&nbsp;6.&nbsp;class template & generic copy constructor"
+date:   2018-08-10 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### class template
+
+1. 템플릿과 타입
+ - Complex : template
+ - Complex<T> : type
+
+2. 멤버함수 안에서는 Complex<T> 대신 Complex를 사용할 수 있다.
+
+```cpp
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    void foo(Complex c) // void foo(Complex<T> c)
+    {
+        Complex c2;     // Complex<T> c2;
+    }
+};
+
+/*
+void foo(Complex c) // error (타입이 아니므로)
+{
+
+}
+*/
+
+int main()
+{
+    Complex      c1;    // error
+    Complex<int> c2;    // ok.
+}
+
+```
+
+1. 디폴트 값 표기
+ - int a = 0;
+ - T a = T(); // C++98
+ - T a = {};  // C++11
+
+2. 멤버 함수를 외부에 구현하는 모양
+
+3. static member data 의 외부 선언
+
+4. 클래스 템플릿의 멤버 함수 템플릿
+
+```cpp
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    // 1
+    Complex(T a= {}, T b= {}) : re(a), im(b) {}
+
+    T getReal() const;
+
+    static int cnt;
+
+    template<typename U> T func(const U& c);
+};
+// 2
+template<typename T> T Complex<T>::getReal() const
+{
+    return re;
+}
+
+// 3
+template<typename T> int Complex<T>::cnt = 0;
+
+// 4
+template<typename T> template<typename U>
+T Complex<T>::func(const U& c)
+{
+
+}
+
+int main()
+{
+}
+
+```
+
+---
+
+#### generic copy constructor
+
+```cpp
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    Complex(T a= {}, T b= {}) : re(a), im(b) {}
+};
+
+int main()
+{
+    Complex<int> c1(1, 1); // ok
+    Complex<int> c2 = c1;   // ok
+
+    Complex<double> c3 = c1; // ?? Complex<int> 와 Complex<double>은 다른 타입
+    // -> 복사 생성자는 같은 타입으로 초기화 될 때 사용된다.
+}
+
+```
+
+위의 코드 문제점 해결하기 위해 복사생성자를 만듬
+
+```cpp
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    Complex(T a= {}, T b= {}) : re(a), im(b) {}
+    
+    // 일반적인 복사 생성자. -> 자신과 동일한 타입만 인자로 받을 수 있다.
+    Complex(const Complex<T>& c) {}
+
+    Complex(const Complex<T>& c) {}
+};
+
+int main()
+{
+    Complex<int> c1(1, 1);
+    Complex<int> c2 = c1;
+
+    Complex<double> c3 = c1; // error
+}
+
+```
