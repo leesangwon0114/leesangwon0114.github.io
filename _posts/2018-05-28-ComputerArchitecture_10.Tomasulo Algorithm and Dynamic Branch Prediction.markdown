@@ -13,7 +13,7 @@ Control & Buffers 가 분산되어 있음 vs 집중화됨
 
 - FU Buffers 는 reservation stations이라고 부름
 
-Function Units과 reservatino stations은 Common Data Bus로 연결되어 있음(Broadcast)
+Function Units과 reservation stations은 Common Data Bus로 연결되어 있음(Broadcast)
 
 Load, Store 도 RS로 간주해서 생각
 
@@ -89,7 +89,7 @@ Control: reservation stations vs central scoreboard
 
 #### Tomasulo Summary
 
-Reservations statins 을 통해 dynamic renaming 을 수행(WAR, WAW 해저드 제거, HW적으로 loop unrolling 수행하는 것 처럼 보임)
+Reservations stations 을 통해 dynamic renaming 을 수행(WAR, WAW 해저드 제거, HW적으로 loop unrolling 수행하는 것 처럼 보임)
 
 basic blocks에 제한되어 있지 않음
 

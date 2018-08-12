@@ -69,7 +69,7 @@ SD, LD 이동시킬 때 컴파일러가 뺀 만큼 더해주니까 이동가능
 
 #### Compiler Perspectives on Code Movement: Dependencies vs Hazards
 
-Compiler 적인 측변에서 code 이동을 어떤 관점에서 하는지?
+Compiler 적인 측면에서 code 이동을 어떤 관점에서 하는지?
 
 컴파일러가 보는 것은 dependencies, 하드웨어 명령어들에서 발생하는 문제는 Hazards
 
