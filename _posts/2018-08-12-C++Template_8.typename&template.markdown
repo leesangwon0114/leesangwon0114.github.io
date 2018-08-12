@@ -1,0 +1,184 @@
+---
+layout: post
+title:  "C++Template&nbsp;8.&nbsp;typename&template"
+date:   2018-08-12 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### typename
+
+```cpp
+
+class Test
+{
+public:
+	enum {value1 = 1};
+	static int value2;
+	
+	typedef int INT;
+	using SHORT = short;	// C++ 11
+
+	class innerClass {};
+};
+
+int Test::value2 = 1;
+
+int main()
+{
+	int n1 = Test::value1;
+	int n2 = Test::value2;
+
+	Test::INT a;
+	Test::SHORT b;
+	Test::innerClass c;
+}
+
+```
+
+1. 클래스 이름:: 으로 접근 가능한 요소들
+
+- 값: enum 상수, static 멤버 변수
+- 타입: typedef, using
+
+
+---
+
+```cpp
+
+int p = 0;
+
+class Test
+{
+public:
+	// .....
+	enum {DWORD = 5}
+	typedef int DWORD;
+};
+
+template<typename T>
+typename T::DWORD foo(T t) // T: Test
+{
+	// 아래 한 줄을 해석해 보기
+	T::DWORD * p;	//	 값: 5*p
+					//   타입: 지역변수 p를 선언한다.(포인터)
+	// Test::DWORD * p; // T 대신 Test 로 적으면 문제 안됨
+	return 0;
+}
+int main()
+{
+	Test t;
+	foo(t);
+}
+
+```
+
+T::DWORD * p => 컴파일러가 무조건 값으로 해석
+
+typename T::DWORD * p => 컴파일러가 타입으로 해석
+
+**템플릿 의존적인 타입의 이름에 접근할때는 typename 키워드를 붙여야한다!!**
+
+- T::DWORD -> 컴파일러가 DWORD를 값으로 해석
+- typename T::DWORD -> 컴파일러가 DWORD를 타입으로 해석
+
+**템플릿이 아닌 경우에는 typename 을 붙이면 안된다!!**
+
+- typename T::DWORD* p // ok
+- typename Test::DWORD* p // error
+
+---
+
+#### value_type #1
+
+```cpp
+
+#include <iostrea>
+#include <vector>
+#include <list>
+
+using namespace std;
+
+/*
+void print_first_element(vector<int>& v)
+{
+	int n = v.front();
+	cout << n << endl;
+}
+*/
+/*
+// 모든 타입의 vector 를 받도록
+template<typename T>
+void print_first_element(vector<T>& v)
+{
+	T n = v.front();
+	cout << n << endl;
+}
+*/
+
+// 모든 타입의 컨테이너를 받도록
+template<typename T>
+void print_first_element(T& v)
+{
+	// T: list<double>
+	// T::value_type => list<double>::value_type
+	// double 이 필요하다.
+	? n = v.front();
+	typename T::value_type n = v.front();
+	auto n = v.front();	// C++11
+	cout << n << endl;
+}
+
+int main()
+{
+	vector<double> v = {1,2,3};
+	list<double> v = {1,2,3};
+	print_first_element(v);
+}
+
+```
+
+STL list 클래스를 보면 모든 컨테이너는 자신이 저장하는 타입이 있다.
+-> 타입을 value_type 이라는 이름으로 알려준다.
+
+list<int>::value_type n = s.front();	// int
+
+---
+
+#### class template type deduction using value_type
+
+
+```cpp
+#include <list>
+
+using namespace std;
+
+template<typename T> class Vector
+{
+	T* buff;
+	int size;
+public:
+	Vector(int sz, T value) {}
+
+	template<typename C> Vector(C c) {}
+};
+
+template<typename C> 
+Vector(C c)->Vector< typename C::value_type >;
+
+int main()
+{
+	Vector v(10, 3);
+	list s = {1,2,3};
+
+	Vector v2(s);	//
+
+	// 다른 컨테이너의 반복자로 초기화한 Vector
+	Vector v3(s.begin(), s.end());
+
+	int x[10] = {1,2,3,4,5,6,7,8,9,10};
+	Vector v4(x, x+10);
+}
+
+```
