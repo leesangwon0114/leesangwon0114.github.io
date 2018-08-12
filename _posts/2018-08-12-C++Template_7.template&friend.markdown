@@ -1,0 +1,244 @@
+---
+layout: post
+title:  "C++Template&nbsp;7.&nbsp;template&friend"
+date:   2018-08-12 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### template & friend function #1
+
+##### 일반적인 Point << operator 구현
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+class Point
+{
+	int x, y;
+public:
+	Point(int a = 0, int b = 0) : x(a), y(b) {}
+
+	friend ostream& operator<<(ostream& os, const Point& p);
+};
+
+ostream& operator<<(ostream& os, const Point& p)
+{
+	return os << p.x << ", " << p.y;
+}
+
+
+int main()
+{
+    Point p(1, 2);
+	cout << p << endl;
+}
+
+```
+
+##### class template 으로 구현
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Point
+{
+	T x, y;
+public:
+	Point(T a = 0, T b = 0) : x(a), y(b) {}
+
+	friend ostream& operator<<(ostream& os, const Point<T>& p);
+};
+
+template<typename T>
+ostream& operator<<(ostream& os, const Point<T>& p)
+{
+	return os << p.x << ", " << p.y;
+}
+
+
+int main()
+{
+    Point<int> p(1, 2);
+	cout << p << endl;
+}
+
+```
+
+-> 컴파일 하면 error 발생
+
+##### 위의 예제 error 이유
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void foo(T a)
+{
+	cout << "T" << endl;
+}
+
+// 1
+void foo(int a)
+{
+	cout << "int" << endl;
+}
+
+// 2
+void foo(int a);
+
+int main()
+{
+    foo(3);
+}
+
+```
+
+1. 함수 템플릿 보다는 일반 함수가 우선해서 선택된다.( exactly matching )
+
+2. 함수 템플릿 있어도 동일한 타입의 인자를 가지는 일반 함수의 선언만 있으면 link 에러가 발생
+
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Point{};
+
+template<typename T> void foo(Point<T> a)
+{
+	cout << "T" << endl;
+}
+
+void foo(Point<int> a)
+{
+	cout << "int" << endl;
+}
+
+
+int main()
+{
+	Point<int> p;
+    foo(3);
+}
+
+```
+
+---
+
+operator << 는 Point 의 모든 타입에 대해 동작하는 함수 템플릿이 지만 main 에서 int 를 사용해 컴파일러는 int 버전의 Point class 를 만들었으며 여기서 특정버전 즉 int 에 해당하는 friend ostream& operator<<(ostream& os, const Point<int>& p); 가 생기면서 특정 버전 함수의 선언이 생겨버려 링크에러가 발생하는 것임
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Point
+{
+	T x, y;
+public:
+	Point(T a = 0, T b = 0) : x(a), y(b) {}
+
+	// 함수 자체가 template이 아니고 class 의 T가 결정되면 일반함수가 됨
+	friend ostream& operator<<(ostream& os, const Point<T>& p);
+};
+
+// 함수 템플릿. (모든 타입을 처리하는 함수가 있더라도 특정 타입에 대해 friend 선언부가 제공되고 있고 컴파일러는 특정버전 함수를 찾고 있으므로 선언만 있어 error 가 발생
+template<typename T>
+ostream& operator<<(ostream& os, const Point<T>& p)
+{
+	return os << p.x << ", " << p.y;
+}
+
+
+int main()
+{
+    Point<int> p(1, 2);
+	cout << p << endl;
+}
+
+```
+
+##### 해결법
+
+1. friend 함수 선언시에 함수 자체를 템플릿 모양으로 선언
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Point
+{
+	T x, y;
+public:
+	Point(T a = 0, T b = 0) : x(a), y(b) {}
+
+	template<typename U>
+	friend ostream& operator<<(ostream& os, const Point<U>& p);
+};
+
+template<typename T>
+ostream& operator<<(ostream& os, const Point<T>& p)
+{
+	return os << p.x << ", " << p.y;
+}
+
+
+int main()
+{
+    Point<int> p(1, 2);
+	cout << p << endl;
+}
+
+```
+
+-> friend로 N:N 관계가 생성됨(class Point 와 operator 간)
+
+---
+
+2. friend 함수를 일반 함수로 구현하고, 구현을 클래스 템플릿 내부에 포함한다.
+
+-> 1:1의 관계가 됨(class Point 와 operator 간)
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Point
+{
+	T x, y;
+public:
+	Point(T a = 0, T b = 0) : x(a), y(b) {}
+
+	template<typename T>
+	friend ostream& operator<<(ostream& os, const Point<T>& p) {
+		return os << p.x << ", " << p.y;
+	}
+};
+
+
+int main()
+{
+    Point<int> p(1, 2);
+	cout << p << endl;
+}
+
+```
+
+---
+
+##### 정리
+
+1. friend 함수 선언시에 함수 자체를 템플릿 모양으로 선언(N:N 관계 형성)
+
+2. friend 함수를 일반함수로 구현하고, 구현을 템플릿 내부에 포함한다.(1:1 관계 형성)
+
