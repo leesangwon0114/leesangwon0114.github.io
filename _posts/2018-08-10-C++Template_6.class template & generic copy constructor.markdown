@@ -182,7 +182,9 @@ int main()
 ##### 일반화된 복사생성자
 
 1. 클래스 템플릿의 멤버함수 템플릿으로 구현하는 복사 생성자
-2. "U(int)가 T(double)로 복사(대입) 가능하다 면 Complex<U> 도 Complex<T>에 복사(대입) 가능해야한다.
+
+2. U(int)가 T(double)로 복사(대입) 가능하다 면 Complex<U> 도 Complex<T>에 복사(대입) 가능해야한다.
+
 3. friend class 로 선언되어야 한다.
 
 ---
