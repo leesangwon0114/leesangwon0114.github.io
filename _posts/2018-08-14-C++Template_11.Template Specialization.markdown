@@ -1,0 +1,239 @@
+---
+layout: post
+title:  "C++Template&nbsp;11.&nbsp;Template Specialization"
+date:   2018-08-14 05:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### Specialization 개녕
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+// primary template
+template<typename T> class Stack
+{
+public:
+	void push(T a) {cout << "T" << endl;}
+}
+
+// partial specialization(부분 특수화, 부분 전문화)
+template<typename T> class Stack<T*>
+{
+public:
+	void push(T* a) {cout << "T*" << endl;}
+}
+
+// specialization(특수화, 전문화)
+template<> class Stack<char*>
+{
+public:
+	void push(char* a) {cout << "char*" << endl;}
+}
+
+int main()
+{
+	Stack<int> s1; s1.push(0);
+	Stack<int*> s1; s1.push(0);
+	Stack<char*> s1; s1.push(0);
+}
+
+```
+
+위의 경우 틀(template)이 3개라 소스코드는 커지지만 목적코드의 기계어 코드는 3개 같음!
+
+---
+
+#### specialization 예제
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T, typename U> struct Test
+{
+	static void foo() {cout << "T, U" << endl;}
+};
+
+template<typename T, typename U> struct Test<T*, U>
+{
+	static void foo() {cout << "T*, U" << endl;}
+};
+
+template<typename T, typename U> struct Test<T*, U*>
+{
+	static void foo() {cout << "T*, U*" << endl;}
+};
+
+// 핵심 (typename U 제거)
+template<typename T> struct Test<T, T>
+{
+	static void foo() {cout << "T, T" << endl;}
+};
+
+/*
+// error -> Test<int, int> 가 위에 거와 아래거 컴파일러가 무엇을 사용할지 모름(특수화 버전이 우선되어 int, int 도 추가로 필요함)
+template<typename T> struct Test<int, T>
+{
+	static void foo() {cout << "int, T" << endl;}
+};
+*/
+
+template<typename T> struct Test<int, T>
+{
+	static void foo() {cout << "int, T" << endl;}
+};
+
+template<typename T> struct Test<int, int>
+{
+	static void foo() {cout << "int, int" << endl;}
+};
+
+template<typename T> struct Test<int, short>
+{
+	static void foo() {cout << "int, short" << endl;}
+};
+
+template<typename T, typename U, typename V> 
+struct Test<T, Test<U, V>>
+{
+	static void foo() {cout << "T, Test<U, V>" << endl;}
+};
+
+int main()
+{
+	Test<int, double>::foo(); // T, U
+	Test<int*, double>::foo(); // T*, U
+	Test<int*, double*>::foo(); // T*, U*
+	Test<int, int>::foo(); // T, T
+	Test<int, char>::foo(); // int, U
+	Test<int, short>::foo(); // int, short
+	Test<int, Test<char,shrot>>::foo(); // T, Test<U,V>
+}
+
+```
+---
+
+##### Partial specialization 만들 때 핵심 사항
+
+1. Primary template 의 템필릿 인자가 2개라면, 사용자는 반드시 템플릿 인자를 2개 전달해야 함(디폴트 인자가 없다면)
+
+2. 하지만, 부분 특수화(partial specialization) 버전을 만들 때 템플릿 인자의 개수는 Primary template의 인자의 개수와 다를 수 있다. 단, 부분 특수화의 선언에는 반드시 템플릿 인자를 2개 전달해야 함(<int, int>, <int, short>)
+
+3. 재귀적 모양의 partial specialization을 만드는 모양이 중요
+
+---
+
+#### specialization 주의 사항
+
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> struct Test
+{
+	static void foo() {cout << typeid(T).name() << endl;}
+};
+
+template<typename T> struct Test<T*>
+{
+	static void foo() {cout << typeid(T).name() << endl;}
+};
+
+int main()
+{
+	Test<int>::foo();	// int
+	Test<int*>::foo();	// int ? int* -> T는 int 가 되어 int 가 출력됨(T* 부분 특수화 시)
+}
+
+```
+
+부분 특수화 시 타입이 결정되는 원리 중요
+
+---
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T, int N = 10> struct Stack
+{
+	T buff[N];
+};
+
+template<typename T, int N> struct Stack<T*, N>
+{
+	T buff[N];
+};
+
+int main()
+{
+	Stack<int, 10> s1;
+	Stack<int>     s2; // N=10
+
+	Stack<int*>     s3; // N=10
+}
+
+```
+
+primary 에 default 적으면 부분특수화에서는 빼주어야하며 실제로는 primary default 값으로 사용됨
+
+---
+
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> 침ㄴㄴ Stack
+{
+public:
+	T pop() {}
+	void push(T a);
+};
+
+template<typename T> void Stack<T>::push(T a)
+{
+	cout << "T" << endl;
+}
+
+template<> void Stack<char*>::push(char* a)
+{
+	cout << "char*" << endl;
+}
+
+/*
+// error 특정 멤버함수만 부분특수화 할 수 없음.
+template<> void Stack<T*>::push(char* a)
+{
+	cout << "char*" << endl;
+}
+*/
+
+int main()
+{
+	Stack<int> s1; s1.push(0);
+	Stack<char*> s1; s2.push(0);
+}
+
+```
+특정한 멤버함수 하나만 부분특수화 할 수 없음
+
+---
+
+주의사항
+
+1. Partial Specialization 버전에는 T의 타입이 결정되는 방식
+
+2. Partial Specialization 버전에는 default 값을 표시하지 않는다.
+
+3. 클래스 전체가 아닌 특정 멤버 함수만 specialization 할 수 있다. 하지만 특정 멤버 함수만 partial specialization 할 수 는 없다.

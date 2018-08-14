@@ -1,0 +1,108 @@
+---
+layout: post
+title:  "C++Template&nbsp;10.&nbsp;using&variable template"
+date:   2018-08-14 04:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### template alias
+
+```cpp
+
+// typedef int DWROD;
+// typedef void(*F)(int);
+
+using DWORD = int;
+using F = void(*F)(int);
+
+int main()
+{
+	DWORD n;	// int
+
+	F f;	// 함수포인터
+}
+
+```
+
+typedef vs using 차이: template 을 type으로 사용가능 여부
+
+```cpp
+
+template<typename T, typename U> struct Pair
+{
+	T v1;
+	U v2;
+};
+
+// typedef Pair Point // error
+
+template<typename T, typename U>
+using Point = Pair<T, U>;
+
+template<typename T>
+using Point2 = Pair<T, T>;
+
+template<typename T>
+using Point2 = Pair<T, short>;
+
+int main()
+{
+	Point<int, double> p; // Pair<T,U>
+
+	Point2<int> p2;	// Pair<int, int>
+
+	Point3<int> p3;	// Pair<int, short>
+}
+
+```
+
+1. typedef: type의 별칭만 만들 수 있다.
+
+2. using: type 뿐 아니라 template 이 별칭도 만들 수 있다.
+
+---
+
+#### variable template
+
+
+```cpp
+
+#include <iostream>
+#include <map>
+#include <string>
+
+using namespace std;
+
+// #define PI 3.14
+
+// 변수도 타입을 다르게 사용할 수 있음
+// constexpr double pi = 3.14;
+// constexpr float pi = 3.14;
+
+template<typename T> // -> variable template
+constexpr T pi = 3.14;
+
+template<typename T> void foo(T a, T b)
+{
+
+}
+
+int main()
+{
+	float f = 3.3;
+	// foo(f, pi);
+	foo(f, pi<float>);
+
+	double d = pi<double>;
+}
+
+```
+
+##### 템플릿의 종류
+
+1. 함수 템플릿
+2. 클래스 템플릿
+3. 변수 템플릿
+
