@@ -1,0 +1,83 @@
+---
+layout: post
+title:  "C++Template&nbsp;13.&nbsp;Template meta programming"
+date:   2018-08-15 05:38:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### template meta programming
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+// template meta programming
+tempalte<int N> struct factorial
+{
+	// enum {value = N*factorial<N-1>::value};
+	static constexpr int value = N*factorial<N-1>::value
+}
+
+// 재귀의 종료를 위해 특수화 문법 사용
+tempalte<> struct factorial<1>
+{
+	// enum {value = 1};
+	static constexpr int value = 1
+}
+
+int main()
+{
+	int n = factorial<5>::value;
+
+	// 5 * f<4>::value
+	// 	   4 * f<3>::value
+	//		   3 * f<2>::value
+	//			   2 * f<1>::value
+
+	cout << n << endl;	// 120
+}
+
+```
+
+template 이 풀리는 것은 컴파일 시간임
+
+컴파일 시간에 최종적으로 120을 구함
+
+컴파일 타임에 연산하는 프로그래밍을 template meta programming 이라함
+
+재귀를 사용하는 것이 핵심인데 재귀의 종료를 위해 특수화 문법 사용
+
+C++11에 constexpr 이 나오면서 구조체에 enum대신 constexpr 사용
+
+---
+
+#### constexpr
+
+``` cpp
+template<int N> struct check{};
+
+// constexpr 함수 - c++11
+
+constexpr int add(int a, int b)
+{
+	return a+b;
+}
+
+int main()
+{
+	int n = add(1,2);
+
+	check<add(1,2)> c;	// 실행시간이면 error 지만 컴파일 시간이면 ok;
+
+	int n1 = 1, n2 = 2;
+
+	int c = add(n1, n2); // ok
+	check<add(n1, n2)> c; // error
+}
+
+```
+
+컴파일 시간이 컴파일 상수를 주면 컴파일 시간에 계산하고 일반 변수를 주면 실행시간에 계산됨

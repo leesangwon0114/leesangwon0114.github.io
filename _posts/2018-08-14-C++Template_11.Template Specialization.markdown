@@ -7,7 +7,7 @@ categories: [c++]
 
 codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
 
-#### Specialization 개녕
+#### Specialization 개념
 
 ```cpp
 
@@ -194,7 +194,7 @@ primary 에 default 적으면 부분특수화에서는 빼주어야하며 실제
 #include <iostream>
 using namespace std;
 
-template<typename T> 침ㄴㄴ Stack
+template<typename T> class Stack
 {
 public:
 	T pop() {}
@@ -226,6 +226,7 @@ int main()
 }
 
 ```
+
 특정한 멤버함수 하나만 부분특수화 할 수 없음
 
 ---

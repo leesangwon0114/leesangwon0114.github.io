@@ -1,0 +1,365 @@
+---
+layout: post
+title:  "C++Template&nbsp;12.&nbsp;Template Specialization활용"
+date:   2018-08-15 05:28:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### IfThenElse template
+
+```cpp
+
+#include <iostream>
+#include <typeinfo>
+using namespace std;
+
+template<bool b, typename T, typename F> struct IfThenElse
+{
+	typedef T type;
+};
+
+template<typename T, typename F> struct IfThenElse<false, T, F>
+{
+	typedef F type;
+};
+
+int main()
+{
+	IfThenElse<true, int, double>::type t0;	// int
+	IfThenElse<false, int, double>::type t0;	// double
+
+	cout << typeid(t0).name() << endl;
+	cout << typeid(t1).name() << endl;
+}
+
+```
+
+If then else 처럼 보임
+
+---
+
+##### 컴파일 시간 bool 값에 따라 type을 선택하는 도구
+
+```cpp
+
+#include <iostream>
+#include <type_trait>
+using namespace std;
+
+template<bool b, typename T, typename F> struct IfThenElse
+{
+	typedef T type;
+};
+
+template<typename T, typename F> struct IfThenElse<false, T, F>
+{
+	typedef F type;
+};
+
+// 비트 관리 및 보관을 위한 클래스.
+template<size_t N> struct Bit
+{
+	// int bitmap; // 32bit 관리
+
+	// using type = typename IfThenElse<(N<=8), char, int>::type;
+
+	// C++11의 표준에서는 conditional이라 부름
+	using type = conditional<(N<=8), char, int>::type;
+}
+
+int main()
+{
+	Bit<32> b1;
+	Bit<8> b2;
+
+	cout << sizeof(b1) << endl; // 4
+	cout << sizeof(b2) << endl; // 1
+}
+
+```
+
+---
+
+#### couple template
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+int main()
+{
+	couple<int, double> c1;
+
+	printN(c1);
+}
+
+```
+
+---
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+int main()
+{
+	couple<int, double> c2;
+	couple<int, couple<int, char>> c3;
+	couple<int, couple<int, couple<int,char>>> c4;
+
+	printN(c2);	// 2
+	printN(c3);	// 2
+	printN(c4);	// 2
+}
+
+```
+
+출력이 모두 2가 나오므로 부분 특수화 필요
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+// 2번째 인자가 couple 일 경우
+template<typename A, typename B, typename C> struct couple<A, couple<B, C>>
+{
+	A v1;
+	couple<B, C> v2;
+
+	enum {N = couple<B, C>::N + 1};
+};
+
+int main()
+{
+	couple<int, double> c2;
+	couple<int, couple<int, char>> c3;
+	couple<int, couple<int, couple<int,char>>> c4;
+
+	printN(c2);	// 2
+	printN(c3);	// 3
+	printN(c4);	// 4
+}
+
+```
+
+##### 핵심
+
+1. 템플릿의 인자로 자기 자신의 타입이 전달하는 코드
+
+2. 부분특수화를 만들 때 템플릿 인자의 개수
+
+3. N을 값으로 표현하는 방법
+
+---
+
+첫번째 인자에 couple 이 들어갈 수 있음
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+// 2번째 인자가 couple 일 경우
+template<typename A, typename B, typename C> struct couple<A, couple<B, C>>
+{
+	A v1;
+	couple<B, C> v2;
+
+	enum {N = couple<B, C>::N + 1};
+};
+
+// 1번째 인자가 couple 일 경우
+template<typename A, typename B, typename C> struct couple<couple<A,B>, C>
+{
+	couple<A, B> v1;
+	C v2;
+
+	enum {N = couple<A, B>::N + 1};
+};
+
+/*
+int main()
+{
+	couple<int, double> c2;
+	couple<couple<int, int>, int> c3;
+	couple<couple<int, couple<int,int>>, int> c4;
+
+	printN(c2);	// 2
+	printN(c3);	// 3
+	printN(c4);	// 4
+}
+*/
+
+// 1, 2 번째 인자 모두 couple 일 경우
+template<typename A, typename B, typename C, typename D> struct couple<couple<A,B>, copule<C,D>>
+{
+	couple<A, B> v1;
+	couple<C, D> v2;
+
+	enum {N = couple<A, B>::N + couple<C, D>::N};
+};
+
+int main()
+{
+	couple<couple<int, int>, couple<int, int>> c4;
+	printN(c4);	// 4
+}
+
+```
+
+---
+
+couple이 couple<int, int, int, int> 인 것이 더 좋아보임(아래 해결책)
+
+couple 의 선형화
+
+#### tuple using couples
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+int main()
+{
+	couple<int, couple<int, double>> c3;
+
+	xtuple<int, int, double> t3;	// 선형적으로 쓸 수 있는 tuple 만들어 보기
+}
+```
+
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printN(const T& cp)
+{
+	cout << T::N << endl;
+};
+
+template<typename T, typename U> struct couple
+{
+	T v1;
+	U v2;
+
+	enum {N=2};
+};
+
+struct Null {}; // empty class
+
+// 2개 이상 5개 미만의 타입 전달
+template<typename P1,
+		typename P2,
+		typename P3 = Null,
+		typename P4 = Null,
+		typename P5 = Null>
+class xtuple
+	: public couple<P1, xtuple<P2, P3, P4, P5, Null>>
+{
+
+}
+
+// 재귀의 종료를 위해 부분 특수화
+template<typename P1, typename P2>
+class xtuple<P1, P2, Null, Null, Null> : public couple<P1, P2>
+{
+
+}
+
+int main()
+{
+	//									 couple<short, double>
+	//						couple<long, xtuple<short, double, Null, Null, Null>>
+	//			   couple<c, xtuple<long, short, double, Null, Null>>
+	// couple<int, xtuple<char, long, short, double, Null>>
+	xtuple<int, char, long, short, double> t5;
+
+	cout << sizeof(t5) << endl; // 40(구조체 패딩으로 인해 좀 커짐)
+}
+
+```
+
+---
+
+##### 상속을 사용한 couple template 의 선형화 기술
+
+1. empty class Null
+- 아무 멤버도 없는 클래스
+- 크기는 한상 1이다.(sizeof(Null))
+- 아무 멤버도 없지만 **타입** 이므로 함수 오버로딩이나 템플릿 인자로 활용 가능
+
+2. 상속을 사용하는 기술
+
+3. 개수의 제한을 없앨 수 없을까? -> C++11 Variadic template
