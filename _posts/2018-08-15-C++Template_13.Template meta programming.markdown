@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "C++Template&nbsp;13.&nbsp;Template meta programming"
-date:   2018-08-15 05:38:15 +0700
+date:   2018-08-15 05:48:15 +0700
 categories: [c++]
 ---
 

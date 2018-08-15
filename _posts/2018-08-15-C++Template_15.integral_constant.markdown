@@ -1,0 +1,358 @@
+---
+layout: post
+title:  "C++Template&nbsp;15.&nbsp;integral_constant"
+date:   2018-08-15 06:08:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### int2type
+
+``` cpp
+
+void foo(int n) {}
+void foo(double d) {}
+
+int main()
+{
+	foo(3);	// foo(int)
+	foo(3.4);	// foo(double)
+
+	// 아래의 코드가 각각 다른 함수를 호출하게 할 수 없을까?
+	foo(0);
+	foo(1);
+}
+
+```
+
+1. 함수 오버로딩은 인자의 개수가 다르거나, 인자의 타입이 다를 때 사용한다.
+
+2. 인자의 개수와 타입이 동일 할 때, 인자의 값 만으로는 오버로딩 할 수 없다.
+
+---
+
+``` cpp
+template<int N> stuct int2type
+{
+	enum {value = N};
+}
+
+void foo(int n) {}
+
+int main()
+{
+	foo(0);
+	foo(1);	// 0, 1 은 같은 타입, foo(0), foo(1)은 같은 함수 호출.
+
+	int2type<0> t0;
+	int2type<1> t1;
+
+	foo(t0)
+	foo(t1) // t0, t1은 다른 타입이므로 foo(t0), foo(t1)은 다른 함수 호출
+}
+```
+
+t0와 t1은 다른 타입.
+
+##### int2type 개념
+
+1. 컴파일 시간 정수형 상수를 각각의 독립된 타입으로 만드는 도구.
+
+2. int2type을 사용하면 컴파일 시간에 결정된 정수형 상수를 모두 다른 타입으로 만들 수 있다.(77, 78 은 같은 타입이지만 int2type<77>, int2type<88>은 다른 타입니다)
+
+3. int2type을 사용하면 컴파일 시간에 결정된 정수형 상수를 가지고 함수 오버로딩에 사용하거나, 템플릿 인자, 상속 등에서 사용할 수 있다.
+
+---
+
+#### using int2type
+
+``` cpp
+#include<iostream>
+using namespace std;
+
+template<typename T> struct xis_pointer
+{
+	static constexpr bool value = false;
+}
+
+template<typename T> struct xis_pointer<T*>
+{
+	static constexpr bool value = true;
+}
+
+template<typename T> void printv(T v)
+{
+	/* // 1
+	if (xis_pointer<T>::value)
+		cout << v << ":" << *v << endl;
+	else 
+		cout << v << endl;
+	*/
+
+	// 2
+	if constexpr(xis_pointer<T>::value)
+		cout << v << ":" << *v << endl;
+	else 
+		cout << v << endl;
+}
+
+int main()
+{
+	int n = 3;
+	printv(n);	// error.
+	printv(&n);
+}
+
+```
+
+if 문은 컴파일 시간의 조건문이 아니라 실행시간의 조건문임
+
+컴파일 시 false 가 결정됬지만 if 문은 실행해 봐야 아니까 if 문 밑에 구문을 컴파일하는데 *v 할 수 없으니까 error 발생
+
+##### 핵심개념
+
+1. if문은 실행시간 조건문이다. 컴파일 시간에 조건이 false 로 결정되어도 if 문의 코드는 컴파일이 된다.
+
+2. c++17의 if constexpr 구문을 사용하면 조건문이 false 로 결정 될 때, if 문의 코드를 컴파일에서 제외할 수 있다.
+
+---
+
+##### C++ 17 이전 해결방법
+
+``` cpp
+#include<iostream>
+using namespace std;
+
+template<typename T> struct xis_pointer
+{
+	static constexpr bool value = false;
+}
+
+template<typename T> struct xis_pointer<T*>
+{
+	static constexpr bool value = true;
+}
+
+template<typename T> void printv_pointer(T v)
+{
+	cout << v << ":" << *v << endl;
+}
+
+template<typename T> void printv_not_pointer(T v)
+{
+	cout << v << endl;
+}
+
+
+template<typename T> void printv(T v)
+{
+	if (xis_pointer<T>::value)
+		printv_pointer(v);
+	else 
+		printv_not_pointer(v);
+}
+
+int main()
+{
+	int n = 3;
+	printv(n);	// error.
+	printv(&n);
+}
+
+```
+
+지연된 인스턴스화를 이용하려고 만듬
+
+그러나 if 문은 실행시간 조건문
+
+if 문은 실행시간 조건문이다. 컴파일 시간에 조건이 false  로 결정되어도, if 문의 안에서 호출한 함수 템플릿은 template instantiation 된다.
+
+---
+
+우리가 필요한 것은 컴파일 시간 분기가 필요!
+
+``` cpp
+#include<iostream>
+using namespace std;
+
+template<int N> stuct int2type
+{
+	enum {value = N};
+}
+
+template<typename T> struct xis_pointer
+{
+	static constexpr bool value = false;
+}
+
+template<typename T> struct xis_pointer<T*>
+{
+	static constexpr bool value = true;
+}
+
+template<typename T> void printv_imp(T v, int2type<1>)
+{
+	cout << v << ":" << *v << endl;
+}
+
+template<typename T> void printv_imp(T v, int2type<0>)
+{
+	cout << v << endl;
+}
+
+
+template<typename T> void printv(T v)
+{
+	printv_imp(v, int2type<xis_pointer<T>::value>());
+	// 포인터: 1, 아님: 0
+	// 0하고 1을 타입으로 만들어 주는 int2type 사용!
+	// int2type<1>()	// 임시객체 생성
+}
+
+int main()
+{
+	int n = 3;
+	printv(n);	// error.
+	printv(&n);
+}
+
+```
+
+동일한 이름을 가지는 함수가 여러개 있을 때, 어느 함수를 호출할지 결정하는 것은 컴파일 시간에 이루어짐. 
+
+선택되지 않은 함수가 템플릿이었다면 instantiation 되지 않는다.
+
+포일터일때(1)와 포인터가 아닐때(0)을 서로 다른 타입화 해서 함수오버로딩의 인자로 활용한다.
+
+이걸 c++ 표준으로 들어온 것이 integral_constant 임!!
+
+---
+
+#### integral_constant
+
+1. int 뿐 아니라 모든 정수 계열(boo, char, short, int, long, long long)의 상수 값ㅇ르 타입을 만들 수 있게 하자.(참고, 실수는 템플릿 인자로 사용할 수 없다.)
+
+2. integral_constant: 모든 정수 계열의 컴파일 시간 상수를 타입으로 만드는 템플릿
+
+3. true_type, false_type
+- true/false: 참 거짓을 나타내는 값, 서로 같은 타입
+- true_type/false_type: 참 거짓을 나타내는 타입, 서로 다른 타입
+
+4. is_pointer 등의 type traits를 만들 때 integral_constant 를 기반 클래스로 사용한다.
+- T가 포인터가 아니라면, value = false, 기반 클래스는 false_type
+- T가 포인터라면 value = true, 기반 클래슨느 true_type
+
+``` cpp
+#include<iostream>
+using namespace std;
+
+template<typename T, T N> struct integral_constant
+{
+	static constexpr T value = N;
+}
+
+integral_constant<int, 0> t0;
+integral_constant<int, 1> t1;
+integral_constant<short, 0> t3;
+
+typedef integral_constant<bool, true> true_type;
+typedef integral_constant<bool, false> false_type;
+
+
+// is_pointer 만들 때..
+template<typename T>
+struct is_pointer : true_type
+{
+}
+
+int main()
+{
+
+}
+
+```
+
+---
+
+1. is_pointer<T>에서
+- T가 포인터가 아니면 value = false, 기반 클래스는 false_type
+- T가 포인터라면 value = true, 기반 클래스는 true_type
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T>
+void printv_imp(T v, true_type)
+{
+	cout << v << ":" << *v << endl;
+}
+
+tempalte<typename T>
+void printv_imp(T v, false_type)
+{
+	cout << v << endl;
+}
+
+tempalte<typename T> void printv(T v)
+{
+	print_imp(v, is_pointer<T>());
+}
+
+int main()
+{
+	int n = 3;
+	printv(n);
+	printv(&n);
+}
+```
+
+---
+
+#### type query using traits
+
+##### 템플릿을 만들 때 타입을 조사하는 방법
+
+1. <type_traits> 헤더 포함
+
+2. ::value 값을 조사하는 방법(is_pointer<T>::value)
+- if문 사용시에는 *v 등의 표현을 사용할 수 없다.
+- C++17의 if constexpr 사용시에는 *v 사용할 수 있다.
+- C++17 부터는 is_pointer_v<T> 표현식도 제공
+
+3. true_type/false_type을 사용한 함수 오버로등(C++17 이전)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T> void foo_imp(T v, true_type)
+{
+	*v = 10;
+}
+
+template<typename T> void foo_imp(T v, false_type)
+{
+}
+
+template<typename T> void foo(T v)
+{
+	if (is_pointer<T>::value)
+	{
+		*v = 10;
+	} else {
+
+	}
+	foo_imp(v, is_pointer<T>());
+}
+
+int main()
+{
+	int n = 0;
+	foo(n);
+	foo(&n);
+}
+
+```

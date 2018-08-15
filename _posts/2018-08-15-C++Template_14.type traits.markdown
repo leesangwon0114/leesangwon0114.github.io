@@ -1,0 +1,241 @@
+---
+layout: post
+title:  "C++Template&nbsp;14.&nbsp;type traits"
+date:   2018-08-15 05:58:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### type traits & is_pointer
+
+##### type traits 개념
+
+1. 컴파일 시간에 타입에 대한 정보를 얻거나 변형된 타입을 얻을 때 사용하는 도구(메타함수)
+
+2. <type_traits> 헤도로 제공됨(since C++11)
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printv(T v)
+{
+	cout << v << endl;
+}
+
+int main()
+{
+	int n = 3;
+	double d = 3.4;
+
+	printv(n);
+	printv(d);
+	printv(&d);
+}
+
+```
+
+---
+
+T 가 point 인지 아닌지 확인하는 traits 만들기
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> struct xis_pointer
+{
+	enum {value=false};
+}
+
+// 핵심: 포인터 타입에 대해서 부분 특수화!
+template<typename T> struct xis_pointer<T*>
+{
+	enum {value=true};
+}
+
+template<typename T> void printv(T v)
+{
+	if(xis_pointer<T>::value) 
+	{
+		cout << "pointer" << endl;
+	} else {
+		cout << "not pointer" << endl;
+	}
+}
+
+int main()
+{
+	int n = 3;
+	printv(n);	// not pointer
+	printv(&n); // pointer
+}
+
+```
+
+##### type query 를 위한 type traits 만드는 일반적인 방법
+
+1. primary template 에서 false 리턴(value=false)
+
+2. partial specialization에서 true 리턴(value=true)
+
+---
+
+
+```cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> struct xis_pointer
+{
+	// enum {value=false};
+	static constexpr bool value = false;
+}
+
+// 비상수 포인터만 가능
+// 상수 포인터도 true가 나와야함
+// 모든 포인터 고려해서 부분 특수화 해야함
+template<typename T> struct xis_pointer<T*>
+{
+	// enum {value=true};
+	static constexpr bool value = true;
+}
+
+template<typename T> struct xis_pointer<T* const>
+{
+	// enum {value=true};
+	static constexpr bool value = true;
+}
+
+
+template<typename T> struct xis_pointer<T* volatile>
+{
+	// enum {value=true};
+	static constexpr bool value = true;
+}
+
+
+template<typename T> struct xis_pointer<T* const volatile>
+{
+	// enum {value=true};
+	static constexpr bool value = true;
+}
+
+
+int main()
+{
+	cout << xis_pointer<int>::value << endl;
+	cout << xis_pointer<int*>::value << endl;
+	cout << xis_pointer<int* const>::value << endl;
+	cout << xis_pointer<int* volatile>::value << endl;
+	cout << xis_pointer<int* const volatile>::value << endl;
+	cout << xis_pointer<int* volatile const>::value << endl;
+}
+
+```
+
+#### is_array
+
+##### is_array 만들기
+
+1. primary template 에서는 false 리턴
+
+2. 배열 모양으로 부분특수화 모양을 만들고 true 리턴
+
+3. 타입을 정확히 알아야함
+- intx[3]에서 x는 변수이름, 나머지 요소 int[3]은 타입이다.
+
+4. unknown size array type(T[])에 대해서도 부분 특수화를 제공한다.
+
+``` cpp
+
+#include<iostream>
+using namespace std;
+
+tempalte<tupename T> struct xis_array
+{
+	static constexpr bool value = false;
+}
+
+tempalte<tupename T, size_t N> struct xis_array<T[N]>
+{
+	static constexpr bool value = true;
+}
+
+tempalte<tupename T> struct xis_array<T[]>
+{
+	static constexpr bool value = true;
+}
+
+
+template<typename T> void foo(T& a)
+{
+	// unknown 타입에 대해서도 true 리턴해야함
+	if (xis_array<int[]::value)
+	if (xis_array<T>::value) 
+	{
+		cout << "array" << endl;
+	} else {
+		cout << "not array" << endl;
+	}
+}
+
+int main()
+{
+	int x[3] = {1,2,3};
+	foo(x);
+}
+```
+
+int a; // 변수 이름 a, 타입 int
+
+doulbe d; // 변수 이름 d, 타입 double
+
+int x[3]; // 변수 이름 x, 타입 int[3] (T[N])
+
+---
+
+배열의 크기도 구할 수 있다.
+- C++11 표준 - extent<T,0>::value
+
+함수 템플릿의 인자를 값(T)으로 만들 경우 배열을 전달하면 T의 타입은 배열이 아닌 포인터로 결정된다.
+
+``` cpp
+
+#include<iostream>
+using namespace std;
+
+tempalte<tupename T> struct xis_array
+{
+	static constexpr bool value = false;
+	static constexpr size_t size = -1;
+}
+
+tempalte<tupename T, size_t N> struct xis_array<T[N]>
+{
+	static constexpr bool value = true;
+	static constexpr size_t size = N;
+}
+
+// 값으로 받으면 안됨(type deduction, 포인터로 넘어감)
+// template<typename T> void foo(T a)
+template<typename T> void foo(T& a)
+{
+	if (xis_array<T>::value) 
+	{
+		cout <<"배열의 크기: " << xis_array<T>::size << endl;
+	} else {
+		cout << "not array" << endl;
+	}
+}
+
+int main()
+{
+	int x[3] = {1,2,3};
+	foo(x);
+}
+```

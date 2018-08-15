@@ -1,0 +1,84 @@
+---
+layout: post
+title:  "C++Template&nbsp;16.&nbsp;type modification"
+date:   2018-08-15 06:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### remove_pointer
+
+##### type traits 기능
+
+1. type에 대한 query - is_pointer<>, is_array<>, extent<>
+
+2. type 에 대한 변형 타입 구하기 - remove_pointer<>, add_pointer<>
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> void foo(T a)
+{
+	bool b = is_pointer<T>::value;
+
+	typename remove_pointer<T>::type t;
+
+	cout << typeid(t).name() << endl;
+}
+
+int main()
+{
+	int n = 10;
+	foo(n);
+	foo(&n);
+}
+
+```
+
+---
+
+remove_pointer 구현해보기
+
+##### 변형 타입을 구하는 traits 만드는 방법
+
+1. primary template 을 만들고 typedef T type 을 제공한다(C++11 using 도 사용 가능)
+
+2. 부분 특수화를 통해서 원하는 타입을 얻을 수 있도록 T 타입을 분할 한다.
+
+3. cv(const, volatile) 버전이 필요한지를 고려한다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T> struct xremove_pointer
+{
+	typedef T type;
+}
+
+// int * 가 T * 로 매칭되니 T는 int 이고 typedef 하면 int 가 나옴
+template<typename T> struct xremove_pointer<T*>
+{
+	typedef T type;
+}
+
+template<typename T> void foo(T a)
+{
+	typename xremove_pointer<T>::type t;
+
+	cout << typeid(t).name() << endl;
+}
+
+int main()
+{
+	int n = 10;
+	foo(n);
+	foo(&n);
+}
+
+```
+
+![Alt text](/static/img/C++/16.1.PNG)
