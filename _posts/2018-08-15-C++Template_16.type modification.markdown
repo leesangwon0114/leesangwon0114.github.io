@@ -82,3 +82,165 @@ int main()
 ```
 
 ![Alt text](/static/img/C++/16.1.PNG)
+
+---
+
+remove_pointer 이용해서 모든 포인터 제거해보기
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T> struct xremove_pointer
+{
+	typedef T type;
+}
+
+template<typename T> struct xremove_pointer<T*>
+{
+	typedef T type;
+}
+
+int main()
+{
+	xremove_pointer<int**>::type n; // int?
+	cout << typeid(n).name() << endl;
+}
+
+```
+
+출력결과
+
+int* 가 나옴 -> 모든 포인터를 제거해서 int 만 나오도록 해보기
+
+---
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T> struct xremove_all_pointer
+{
+	typedef T type;
+}
+
+template<typename T> struct xremove_all_pointer<T*>
+{
+	typedef typename xremove_all_pointer<T>::type type;
+}
+
+int main()
+{
+	xremove_all_pointer<int**>::type n; // int
+	cout << typeid(n).name() << endl;
+}
+
+```
+
+재귀 표현식을 사용해서 임의의 타입에서 모든 포인터를 제거하는 기술
+
+---
+
+#### result_type, argument_type
+
+##### 함수의 정보를 구하는 traits 만들기
+
+1. primary template 을 만들고 typedef T type 을 제공한다.
+
+2. 부분 특수화를 통해서 원하는 타입을 얻을 수 있도록 T 타입을 분할 한다.
+
+3. 부분 특수화를 통해서 함수타입(double(short, int)) 모양인 T를 리턴 타입(double)과 나머지(인자타입)로 분리한다.
+- T(double(short,int)) -> R(A1, A2)
+
+4. prmiary template의 typedef T type 이 필요 없는 경우는 제거해도 된다.
+
+
+
+``` cpp
+
+double hoo(short a, int b) { return 0; }
+
+template<typename T> struct result_type
+{
+	typedef T type;
+}
+
+template<typename R, typename A1, typename A2> struct result_type<R(A1, A2)>
+{
+	typedef R type;
+}
+
+template<typename T> void foo(T& t)
+{
+	// T: dobule(short, int)
+	typename result_type<T>::type ret;
+
+	cout << typeid(ret).name() << endl; // double
+}
+
+int main()
+{
+	foo(hoo);	// double
+}
+
+```
+
+result_type<int>::type ret; 로 적으면 int 만 나옴
+
+primary tempalte 의 typedef T type 을 주석처리해야함(의도적으로 에러를 내려면 제거해도됨)
+
+---
+
+##### 함수의 인자타입을 구하는 traits
+
+``` cpp
+
+double hoo(short a, int b) { return 0; }
+
+template<typename T, size_t N> struct arguemnt_type
+{
+	// typedef T type;
+}
+
+/*
+// type을 적을 수 없어 잘못됨
+template<typename R, typename A1, typename A2, size_t N> struct arguemnt_type<R(A1, A2), N>
+{
+	typedef ? type;
+}
+*/
+
+template<typename R, typename A1, typename A2> struct arguemnt_type<R(A1, A2), 0>
+{
+	typedef A1 type;
+}
+
+template<typename R, typename A1, typename A2> struct arguemnt_type<R(A1, A2), 1>
+{
+	typedef A2 type;
+}
+
+template<typename T> void foo(T& t)
+{
+	// T: dobule(short, int)
+	typename arguemnt_type<T, 0>::type ret;
+
+	cout << typeid(ret).name() << endl; // short
+}
+
+int main()
+{
+	foo(hoo);	// short
+}
+
+```
+
+인자의 개수의 제한이 없도록 만들려면 가변인자 템플릿 배우고 만들 것임
+
+##### 참고
+
+C++ 11 표준에서 함수의 리턴 타입을 구하기
+
+- result_of(until C++17), invoke_result(since C++17)
+- 예제에서 구현한 방식과는 전혀 다른 방식으로 구현되어 있음.
+- decltype 사용해서 구현.(일반함수, 함수객체, 람다표현식등 모든 callable object 고려)
