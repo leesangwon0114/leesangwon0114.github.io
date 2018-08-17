@@ -1,0 +1,238 @@
+---
+layout: post
+title:  "C++Template&nbsp;17.&nbsp;traits summary"
+date:   2018-08-17 06:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### C++ 표준 type_traits #1
+
+1. <type_traits> include
+2. is_pointer, is_array, extent(배열의 크기), remove_pointer, result_of / invoke_result
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> void foo(T a)
+{
+	typename remove_pointer<T>::type t;
+
+	bool b = is_pointer<T>::value;
+
+}
+
+int main()
+{
+	int n = 10;
+	foo(&n);
+}
+
+```
+
+---
+
+#### C++ 표준 type_traits 사용법
+
+1. 변형된 타입을 얻는 traits
+- typename remove_pointer<T>::type n;
+- remove_pointer_t<T> n; -> C++14 부터 지원
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+/*
+// C++14 부터 지원됨
+template<typename T>
+using remove_pointer_t = typename remove_pointer<T>::type;
+*/
+
+template<typename T> void foo(T a)
+{
+	// 포인터를 제거한 타입을 구하고 싶다.
+	// typename remove_pointer<T>::type t;
+	remove_pointer_t<T> n;
+	cout << typeid(n).name() << endl; // int
+
+	bool b = is_pointer<T>::value;
+
+}
+
+int main()
+{
+	int n = 10;
+	foo(&n);
+}
+
+```
+
+2. 타입의 정보를 조사하는 traits
+- bool b = is_pointer<T>::value
+- bool b = is_pointer_v<T>; -> C++17 부터 지원
+- 함수 오버로딩 사용(true_type, false_type)
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+/*
+// C++ 17부터 지원
+// variable template
+template<typename T>
+inline constexpr bool is_pointer_v = is_pointer<T>::value;
+*/
+
+void foo_imp(true_type) {}
+void foo_imp(false_type) {}
+
+template<typename T> void foo(T a)
+{
+	// T가 포인터 인지 알고 싶다.
+	// bool b = is_pointer<T>::value;
+	bool b = is_pointer_v<T>;
+
+	//if (is_pointer_v<T>)
+	// C++ 17
+	if constexpr (is_pointer_v<T>)
+	{
+		cout << *a << endl;
+	}
+	foo_imp(is_pointer<T>());
+}
+
+int main()
+{
+	int n = 10;
+	foo(&n);
+}
+
+```
+
+---
+
+#### C++ 표준 type_traits #2
+
+##### is_array<T>::value, extent<T,0>::value
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// array => pointer : decay
+// template<typename T> void foo(T a)
+template<typename T> void foo(T& a)
+{
+	if(is_array<T>::value)
+	{
+		cout << "array" << endl;
+		cout << extent<T, 0>::value << endl; //3
+		cout << extent<T, 1>::value << endl; //2
+	}
+}
+
+int main()
+{
+	int x[3][2] = {1,2,3,4,5,6};
+
+	foo(x);
+}
+
+```
+
+---
+
+##### is_same<T, U>::value
+
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T, typename U> void foo(T a, U b)
+{
+	bool ret = is_same<T, U>::value;
+
+	cout << ret << endl;
+}
+
+int main()
+{
+	foo(0,0);
+}
+
+```
+
+##### remove_cv<T,U>::type
+
+const 와 volatile 제거한 type을 꺼내서 비교해 보기
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T, typename U> void foo(T a, U b)
+{
+	bool ret = is_same<typename remove_cv<T>::type, typename remove_cv<U>::type>::value;
+
+	cout << ret << endl;
+}
+
+int main()
+{
+	foo<int, const int>(0,0);
+}
+
+```
+
+##### decay<T,U>::type
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// array => pointer : decay 이용
+template<typename T, typename U> void foo(T a, U b)
+{
+	bool ret = is_same<decay<T>::type, decay<U>::type>::value;
+	cout << ret << endl;
+}
+
+int main()
+{
+	foo<int[3], int*>(0,0);
+}
+
+```
+
+##### is_base_of<T,U>::type
+
+상속관계
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T, typename U> void foo(T a, U b)
+{
+	boot ret = is_base_of<T, U>::value;
+	// www.cppreference.com 의 type supports
+	cout << ret << endl;
+}
+
+int main()
+{
+	foo<int[3], int*>(0,0);
+}
+
+```
