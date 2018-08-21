@@ -1,0 +1,177 @@
+---
+layout: post
+title:  "C++Template&nbsp;18.&nbsp;variadic Template"
+date:   2018-08-21 01:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### variadic template
+
+##### 가변인자 템플릿
+
+1. C++ 11 부터 지원되는 문법.
+2. 가변인자 템플릿(클래스 템플릿, 함수 템플릿)의 기본 모양
+3. 가변 인자 템플릿의 템플릿 인자인 Types는 여러개의 타입을 나타낸다.
+4. 가변 인자 함수 템플릿의 함수 인자인 args 안에는 여러 개의 값이 들어 있다. "parameter Pack" 이라고 한다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+// 가변인자 클래스 템플릿. (T 대신 여러개의 타입을 관용상 Types 로 적음)
+template<typename ... Types> class tuple
+{
+};
+
+// 가변인자 함수 템플릿
+template<typename ... Types>
+void foo(Types ... args)
+{
+}
+
+int main()
+{
+	tuple<> t0;
+	tuple<int> t1;
+	tuple<int, char> t2;
+
+	foo();
+	foo(1);
+	foo(1, 3.4, "A");
+}
+
+```
+
+---
+
+#### parameter pack
+
+1. Parameter Pack
+2. sizeof...(args): Parameter Pack 에 있는 요소의 갯수
+3. Pack Expansion
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void goo(int n, double d, const char* s)
+{
+	cout << "goo : " << n << " " << d << " " << s << endl;
+}
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	// args: Parameter Pack
+	cout << sizeof...(args) << endl; // 3
+	cout << sizeof...(Types) << endl; // 3
+
+	// goo(args); // error.
+	goo(args...); // pack expansion(goo(1, 3.4, "AAA"))
+}
+
+int main()
+{
+	// foo();
+	// foo(1);
+	foo(1, 3.4, "AAA"); // Types: int, double, const char*
+	                    // args: 1, 3.4 "AAA"
+}
+
+```
+
+---
+
+#### Pack expansion #1
+
+1. parameter pack 을 사용하는 패턴을 만들고 ...을 찍는 것임 -> 패턴(e1), 패턴(e2), 패턴(e3)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void goo(int a, int b, int c)
+{
+	cout << "goo : " << a << " " << b << " " << c << endl;
+}
+
+void hoo(int a) { return -a; }
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	// int x[] = {args...}; // pack expansion {1,2,3}
+
+	// int x[] = {(++args)...}; // {2,3,4}
+
+	// int x[] = {hoo(args...)}; // hoo(1,2,3) error
+
+	int x[] = {hoo(args)...}; // {hoo(1), hoo(2), hoo(3)}
+
+	goo(args...); // goo(1,2,3) // ok
+	goo(hoo(args...)); // goo(hoo(1,2,3)) // error
+	goo(hoo(args)...); // goo(hoo(1), hoo(2), hoo(3)) // ok
+
+	for (auto n:x)
+		cout << n << endl;
+}
+
+int main()
+{
+	foo(1,2,3); // Types: int, int, int
+		    // args: 1, 2, 3
+}
+
+```
+
+2. ...의 위치에 주의한다.
+- goo(hoo(args...)) -> goo(hoo(e1, e2, e3));
+- goo(hoo(args)...) -> goo(hoo(e1), hoo(e2), hoo(e3))
+
+3. Pack Expansion은 함수 호출의 인자 또는 list 초기화를 사용한 표현식에서만 사용할 수 있다
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+int print(int a)
+{
+	cout << a << ", ";
+	return 0;
+}
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	// print(args); // error 함수인자로 직접쓸 수 없음
+	// print(args...) // print(1,2,3) error
+
+	print(args)...;	// print(1), print(2), print(3) // error!! 3번
+
+	// int x[] = {args...}; // {1,2,3}
+	// 위에가 동작하니까
+	int x[] = {print(args)...}  // {print(1), print(2), print(3)} // 출력은 1,2,3, 이고 배열은 0으로 초기화되어 있음
+
+	// int x[] = {0, print(args)...} // foo() 일 때 배열 초기화 {} 인거 error 처리방법
+
+	// print 의 return 값이 void 인 경우 처리방법
+	// int x[] = {0, (print(args), 0)...}  // (print(1), 0) -> print(1)을 실행하고 전체 수직의 return 값은 , 뒤의 0으로 학겠다는 C 문법
+
+	initializaer_list<int> e = {(print(args), 0)...} // empty 가 되더라도 문제 없어서 앞에 0, 빼도됨
+}
+
+int main()
+{
+	foo(1,2,3); // Types: int, int, int
+		    // args: 1, 2, 3
+
+	// foo() // 아무것도 없으면 배열 초기화가 int x[] = {} 가 되서 error 발생함
+}
+
+```
+
+---
+
+#### Pack expansion #2
