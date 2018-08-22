@@ -86,7 +86,7 @@ int main()
 
 #### Pack expansion #1
 
-1. parameter pack 을 사용하는 패턴을 만들고 ...을 찍는 것임 -> 패턴(e1), 패턴(e2), 패턴(e3)
+1.parameter pack 을 사용하는 패턴을 만들고 ...을 찍는 것임 -> 패턴(e1), 패턴(e2), 패턴(e3)
 
 ``` cpp
 #include <iostream>
@@ -126,11 +126,11 @@ int main()
 
 ```
 
-2. ...의 위치에 주의한다.
+2....의 위치에 주의한다.
 - goo(hoo(args...)) -> goo(hoo(e1, e2, e3));
 - goo(hoo(args)...) -> goo(hoo(e1), hoo(e2), hoo(e3))
 
-3. Pack Expansion은 함수 호출의 인자 또는 list 초기화를 사용한 표현식에서만 사용할 수 있다
+3.Pack Expansion은 함수 호출의 인자 또는 list 초기화를 사용한 표현식에서만 사용할 수 있다
 
 ``` cpp
 #include <iostream>

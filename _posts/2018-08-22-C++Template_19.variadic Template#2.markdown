@@ -11,7 +11,7 @@ codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
 
 ##### parameter pack 에서 각 요소를 꺼내는 방법
 
-1. Pack Expanstion -> 배열 또는 tuple 에 담는다.
+1.Pack Expanstion -> 배열 또는 tuple 에 담는다.
 
 ``` cpp
 #include <iostream>
@@ -38,7 +38,7 @@ int main()
 
 ---
 
-2. 재귀호출과 유사한 호출식을 사용한다.
+2.재귀호출과 유사한 호출식을 사용한다.
 - 모든 인자를 가변 인자로 하지말고, 1번째 인자는 이름 있는 변수로 받는다.
 
 ``` cpp
@@ -72,7 +72,7 @@ foo 내부에서 static 쓰면 원하는 결과 출력 못함
 
 ---
 
-3. fold expression(C++17)
+3.fold expression(C++17)
 
 ``` cpp
 #include <iostream>
