@@ -1,0 +1,169 @@
+---
+layout: post
+title:  "C++Template&nbsp;19.&nbsp;variadic Template#2"
+date:   2018-08-22 01:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### using recursive
+
+##### parameter pack 에서 각 요소를 꺼내는 방법
+
+1. Pack Expanstion -> 배열 또는 tuple 에 담는다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	// int x[] = {args...};
+
+	tuple<Types...> tp(args...);
+
+	cout << get<0>(tp) << endl;
+	cout << get<1>(tp) << endl;
+	cout << get<2>(tp) << endl;
+}
+
+int main()
+{
+	foo(1, 3.4, "AA"); // args : 1, 3.4, "AA"
+}
+
+```
+
+---
+
+2. 재귀호출과 유사한 호출식을 사용한다.
+- 모든 인자를 가변 인자로 하지말고, 1번째 인자는 이름 있는 변수로 받는다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void foo() {} // 재귀의 종료를 위해서
+
+template<typename T, typename ... Types>
+void foo(T value, Types ... args)
+{
+	cout << value << endl;
+
+	foo(args...); // foo(3.4, "AA")
+		      // foo("AA")
+		      // foo()
+}
+
+int main()
+{
+	foo(1, 3.4, "AA"); // value : 1, args : 3.4, "AA"
+}
+
+```
+
+재귀호출 처럼 보이지만 함수가 각각 있는 것임
+
+foo 내부에서 static 쓰면 원하는 결과 출력 못함
+
+작은 함수만 사용해야함!(함수가 많이 만들어 질 수 있음)
+
+---
+
+3. fold expression(C++17)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void foo() {} // 재귀의 종료를 위해서
+
+template<typename T, typename ... Types>
+void foo(T value, Types ... args)
+{
+	// int x[] = {args...}; // pack expansion
+
+	int n = (args + ...); // fold expression -> 1+(2+(3+4))
+
+	int n = (... + args); // ((1+2)+3)+4
+	
+	int n = (args + ... + 10); // 1+(2+(3+(4+10)))
+
+	int n = (10 + ... + args); // (((10+1) + 2) + 3) + 4
+
+	return n;
+}
+
+int main()
+{
+	foo(1, 2, 3, 4); // args: 1,2,3,4
+	cout << n << endl;
+}
+
+```
+
+1. 이항 연산자를 사용해서 parameter pack 안에 있는 요소에 연산을 수행하는 문법
+2. parameter pack의 이름에서 ...을 붙이지 않고 사용한다.
+- args... : pack expansion
+- args + ... : fold expression
+3. 4가지 형태
+- unary right fold: {args op ...} -> E1 op (E2 op (E3 op E4))
+- unary left fold: {... op args} -> ((E1 op E2) op E3) op E4
+- binary right fold: {args op ... op init} -> E1 op (E2 op(E3 op (E4 op init)))
+- binary left fold: {init op ... op args} -> (((init op E1) op E2) op E3) op E4
+
+---
+
+cout 객체도 이용 가능
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	(cout << ... << args); // cout 이 초기값으로 봄(cout return 은 cout)
+	// ((cout << 1) << 2) << 3
+}
+
+int main()
+{
+	// (((cout << 1) << 2) <<3);
+	foo(1,2,3);
+}
+
+```
+
+---
+
+parameter pack을 사용하는 패턴도 사용할 수 있다.
+
+fold expression을 사용해 가변인자 요소들을 vector 에 넣어주는 역할을 함.
+
+``` cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+	// (args, ...); // 1, (2,3)
+
+	(v.push_back(args), ...);
+	// v.push_back(1), (v.push_back(2), v.pushback(3));
+	// c에서 , 연산은 앞에서 실행하고 뒤에꺼 실행
+
+	for (auto n:v)
+		cout << n << endl;
+}
+
+int main()
+{
+	foo(1,2,3);
+}
+
+```
