@@ -37,7 +37,7 @@ int main()
 
 #### C++ 표준 type_traits 사용법
 
-1. 변형된 타입을 얻는 traits
+1.변형된 타입을 얻는 traits
 - typename remove_pointer<T>::type n;
 - remove_pointer_t<T> n; -> C++14 부터 지원
 
@@ -71,7 +71,7 @@ int main()
 
 ```
 
-2. 타입의 정보를 조사하는 traits
+2.타입의 정보를 조사하는 traits
 - bool b = is_pointer<T>::value
 - bool b = is_pointer_v<T>; -> C++17 부터 지원
 - 함수 오버로딩 사용(true_type, false_type)
