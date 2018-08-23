@@ -1,0 +1,208 @@
+---
+layout: post
+title:  "C++Template&nbsp;20.&nbsp;variadic Template활용"
+date:   2018-08-23 01:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### result using variadic template
+
+##### 함수의 정보를 구하는 traits 만들기
+
+1. primary template 을 만들고 typedef T type 을 제공한다.
+2. 함수 타입인 T 안에 있는 리턴 타입(double)을 얻을 수 있도록 부분 특수화한다.
+- T -> R(A1, A2)
+3. 인자 개수에 제한을 없애기위해서 가변 인자 템플릿 사용.
+- T -> R(Types...)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+double hoo(short a, int b) {return 0;}
+
+int goo() {return 0;}
+
+template<typename T> struct result_type
+{
+	typedef T type;
+}
+
+template<typename R, typename ... Types> struct result_type<R(Types...)>
+{
+	typedef R type;
+}
+
+template<typename T>
+void foo(const T& t)
+{
+	typename result_type<T>::type ret;
+
+	cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+	foo(hoo);	// double
+	foo(goo);	// int
+}
+
+```
+
+---
+
+result_type을 잘못사용했을 때 에러를 처리하는 방법
+
+1. typedef T type을 제공하지 않는다.
+2. static_assert()를 사용해서 에러 메시지 출력
+3. primary template 을 선언만 제공한다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+double hoo(short a, int b) {return 0;}
+
+int goo() {return 0;}
+
+template<typename T> struct result_type 
+//3 주석처리 : 선언부는 반드시 필요
+/*
+{
+	// 1
+	// typedef T type;
+	// 2
+	// static_assert(is_function<T>::value, "error");
+}
+*/
+
+
+template<typename R, typename ... Types> struct result_type<R(Types...)>
+{
+	typedef R type;
+}
+
+template<typename T>
+void foo(const T& t)
+{
+	typename result_type<T>::type ret;
+
+	cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+	int n = 0;
+	foo(n); // primary로 가서 그냥 int 나옴
+}
+
+```
+
+---
+
+#### argument using variadic template
+
+##### 함수의 정보를 구하는 traits 만들기
+
+1.primary template 을 만들고 typedef T type 을 제공한다.
+2.함수 타입인 T 안에 있는 함수 인자 타입을 얻을 수 있도록 부분 특수화한다.
+- T -> R(A1, A2), T -> R(A1, Types...)
+
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+double hoo(short a, int b, char c) {return 0;}
+
+template<size_t N, typename T> struct argument_type
+{
+	typedef T type;
+}
+
+template<typename R, typename A1, typename ... Types>
+struct argument_type<0, R(A1, Types...)>
+{
+	typedef A1 type;
+}
+
+template<typename T>
+void foo(const T& t)
+{
+	typename argument_type<0, T>::type ret;
+
+	cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+	foo(hoo);	// double
+	foo(goo);	// int
+}
+
+```
+
+---
+
+argument type에 0을 전달하지 않고 1, 2 를 전했을 때 구하는법
+
+3.N번째 인자 타입 구하는 방법
+- 0번째 인자의 타입을 구하는 부분 특수화 작성
+- N번째 인자의 타입을 구하는 부분 특수화 작성하고 N==0이 될때까지 Recursive 를 사용한다(Recursive 사용시, 함수의 0번째 인자를 제거하고 N-1을 사용한다.)
+
+argument_type<2, R(A1, A2, A3)>::type
+
+재귀로 가면 앞에꺼 하나 버릴 수 있음
+
+argument_type<1, R(A2, A3)>::type
+
+argument_type<0, R(A3)>::type
+
+0일 때는 부분 특수화 사용하니 type 구함
+
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+double hoo(short a, int b, char c) {return 0;}
+
+template<size_t N, typename T> struct argument_type
+{
+	typedef T type;
+}
+
+// N==0
+template<typename R, typename A1, typename ... Types>
+struct argument_type<0, R(A1, Types...)>
+{
+	typedef A1 type;
+}
+
+// N일때
+template<size_t N, typename R, typename A1, typename ... Types>
+struct argument_type<N, R(A1, Types...)>
+{
+	typedef typename argument_type<N-1, R(Types...)>::type type;
+}
+
+template<typename T>
+void foo(const T& t)
+{
+	typename argument_type<2, T>::type ret;
+
+	cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+	foo(hoo);	// double
+	foo(goo);	// int
+}
+
+```
+
+---
+
