@@ -1,0 +1,101 @@
+---
+layout: post
+title:  "C++Template&nbsp;20.&nbsp;variadic Template활용#2"
+date:   2018-08-27 01:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+#### get using variadic template #1
+
+##### 기반 클래스에 메버에 접근 하는 방법
+
+1. 기반 클래스의 멤버와 파생클래스의 멤버의 이름이 동일 할 때는 자신(파생클래스)의 멤버가 우선시 된다.
+2. 기반 클래스의 멤버에 접근하는 방법
+- d.Base::value
+- static_cast<Base&>(d).value;
+3. 값 캐스팅과 참조 캐스팅
+- static_cast<Base>(d): 임시 객체 생성 lvalue 가 될 수 없다.
+- static_case<Base&>(d): 임시객체를 생성 안함. lvalue 가 될 수 있다.
+
+``` cpp
+
+#include <iostream>
+using namespace std;
+
+struct Base
+{
+	int value = 10;
+}
+
+struct Derived : public Base
+{
+	int value = 20;
+}
+
+int main()
+{
+	Derived d;
+
+	cout << d.value << endl;	// 20
+	cout << d.Base::value << endl; // 10
+
+	cout << static_cast<Base>(d).value << endl; // 10 -> 임시 객체의 10임
+	cout << static_cast<Base&>(d).value << endl; // 10
+
+	static_cast<Base>(d).value = 30; // error (lvalue 가 될 수 없음)
+	static_cast<Base&>(d).value = 30; // ok
+}
+
+```
+
+---
+
+##### tuple의 요소에 접근하는 get 만들기
+
+1. tuple 이 0번째 요소는 자기 자신이 보관한다.
+2. tuple 의 N번째 요소는 N번째 기반 클래스가 저장 한다.
+3. N번째 요소의 타입과 N번째 요소를 저장하는 타입(N번째 기반 클래스 타입)을 알아야 한다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename ... Types> struct xtuple
+{
+	static constexpr int N = 0;
+}
+
+template<typename T, typename ... Types> struct xtuple<T, Types...> : public xtuple<Types...>
+{
+	T value;
+
+	xtuple() = default;
+	xtuple(const T& v, const Types& ... args) : value(v), xtuple<Types...>(args...) {}
+	static constexpr int N = xtuple<Types...>::N + 1;
+}
+
+int main()
+{
+	xtuple<int, double, char> t3(1, 3.4, 'A');
+
+	cout << t3.value << endl; // 1
+	// cout << static_cast<기반클래스&>(t3).value << endl;
+	cout << static_cast<xtuple<double, char>&>(t3).value << endl; // 3.4
+	cout << static_cast<xtuple<char>&>(t3).value << endl; // A
+
+	char c = xget<2>(t3);
+}
+
+template<size_t N, typename TP> // TP는 튜플
+튜플TP의 N번째 요소의 타입&
+xget(TP& tp)
+{
+	return static_cast<TP의 N번째 기반클래스&>(tp).value;
+}
+
+```
+
+---
+
