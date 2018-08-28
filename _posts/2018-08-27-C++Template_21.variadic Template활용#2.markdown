@@ -116,8 +116,11 @@ int main()
 ##### tuple_element
 
 1.tuple이 가진 N 번째 요소의 타입을 구하는 템플릿
+
 2.primary template 을 만든다. -> 의도적으로 선언만 할 수도 있다.
+
 3.0번째 요소를 구하는 부분 특수화를 만든다.
+
 
 ``` cpp
 #include <iostream>
