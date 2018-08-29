@@ -1,0 +1,299 @@
+---
+layout: post
+title:  "C++Template&nbsp;23.&nbsp;TemplateDesign_CRTP"
+date:   2018-08-29 02:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+---
+
+#### Curiously Recurring Template Pattern(CRTP)
+
+Base를 만들 때 자신의 파생 클래스를 알 수 있는가? No
+
+익것을 알게하는 기법을 CRTP라 부름
+
+``` cpp
+
+class Base
+{
+
+}
+
+class Derived : public Base
+{
+
+}
+
+int main()
+{
+	Derived d;
+}
+
+```
+
+---
+
+1.기반 클래스에서 파생 클래스의 이름을 사용할 수 있게 하는 기법
+
+-> Template 의 인자로 자신의 이름을 넘김
+
+2.파생클래스르 만들 때 기반 클래스의 템플릿 인자로 자신의 이름을 전달해준다.
+
+``` cpp
+
+tempalte<typename T> class Base
+{
+public:
+	Base()
+	{
+		cout << typeid(T).name() << endl;
+	}
+}
+
+class Derived : public Base<Derived>
+{
+
+}
+
+int main()
+{
+	Derived d;
+}
+
+```
+
+---
+
+#### CRTP 활용
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Window
+{
+public:
+	void msgLoop()
+	{
+		OnClick();
+	}
+	void OnClick() {
+		cout << "Window OnClick" << endl;
+	}
+}
+
+class FrameWindow : public Window
+{
+public:
+	void OnClick() {
+		cout << "FrameWindow OnClick" << endl;
+	}
+}
+
+int main()
+{
+	FrameWindow fw;
+	fw.msgLoop();
+}
+
+```
+
+출력이 여전히 Window OnClick 일 출력됨
+
+Window클래스의 msgLoop는 void msgLoop(Windows* const this) 이므로 this->OnClick() 이므로 Window OnClick 함수가 불리는 것임
+
+가상함수를 만들면 해결되지만 가상함수를 만들지 않고 FrameWindow 를 부르도록 해보자
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+tempalte<typename T> class Window
+{
+public:
+	void msgLoop()
+	{
+		static_cast<T*>(this)->OnClick();
+	}
+	void OnClick() {
+		cout << "Window OnClick" << endl;
+	}
+}
+
+class FrameWindow : public Window<FrameWindow>
+{
+public:
+	void OnClick() {
+		cout << "FrameWindow OnClick" << endl;
+	}
+}
+
+int main()
+{
+	FrameWindow fw;
+	fw.msgLoop();
+}
+
+```
+
+FrameWindow OnClick이 출력됨
+
+> 활용 1. 비가상함수를 가상함수처럼 동작하게 만들기
+
+- this 포인터를 파생클래스 타입으로 캐스팅 한 후 함수호출
+- Microsoft 의 ATL 라이브러리에 많이사용되었음
+
+---
+
+> 활용 2. 싱글톤 만들기
+
+1.싱글톤 : 하나의 객체만 생성할 수 있게 하는 디자인 패턴
+- private 생성자
+- 복사와 대입금지
+- 하나의 객체를만들어서 리턴하는 static 멤버함수
+
+``` cpp
+
+class Cursor
+{
+private:
+	Cursor() {}
+public:
+	Cursor(const Cursor& c) = delete;
+	void operator=(const Cursor& c) = delete;
+
+	static Cursor& getInstance()
+	{
+		static Cursor instance;
+		return instance;
+	}
+}
+
+int main()
+{
+	Cursor& c1 = Cursor::getInstance();
+	Cursor& c2 = Cursor::getInstance();
+}
+```
+
+CRTP 적용
+
+``` cpp
+
+template<typename T> class Singleton
+{
+protected:
+	Singleton() {}
+public:
+	Singleton(const Singleton& c) = delete;
+	void operator=(const Singleton& c) = delete;
+
+	static T& getInstance()
+	{
+		static T instance;
+		return instance;
+	}
+}
+
+class Mouse : public Singleton<Mouse>
+{
+
+}
+
+int main()
+{
+	Mouse& m = Mouse::getInstance();
+}
+
+```
+
+---
+
+> 활용 3. Unique 한 기반 클래스 만들기
+
+1. 기반 클래스의 static member data는 모든 파생 클래스에 의해 공유된다.
+2. 파생클래스 별로 다른 static member data가 필요한 경우, 서로 다른 기반 클래스를 사용해야 한다.
+3. CRTP를 사용하면 모든 파생 클래스 별로 다른 타입의 기반 클래스를 만들 수 있다.
+
+``` cpp
+
+#include <iostream>
+using namespace std;
+
+class Object
+{
+public:
+	static int cnt;
+	Object() { ++cnt; }
+	~Object() { --cnt;}
+
+	static int getCount() {return cnt;}
+}
+
+int Object::cnt = 0;
+
+class Mouse : public Object
+{
+
+}
+
+class Keyboard : public Object
+{
+
+}
+
+int main()
+{
+	// Object c1;
+	Mouse m1, m2;
+	Keyboard k1, k2;
+
+	// cout << c1.getCount() << endl;
+	cout << k1.getCount() << endl;
+}
+```
+
+출력이 4 임
+
+마우스가 사용하는 것과 키보드가 사용하는 것을 다른 기반 클래스로 만들기 위해 template 이용
+
+``` cpp
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Object
+{
+public:
+	static int cnt;
+	Object() { ++cnt; }
+	~Object() { --cnt;}
+
+	static int getCount() {return cnt;}
+}
+
+template<typename T> int Object<T>::cnt = 0;
+
+class Mouse : public Object<Mouse>
+{
+
+}
+
+class Keyboard : public Object<Keyboard>
+{
+
+}
+
+int main()
+{
+	Mouse m1, m2;
+	Keyboard k1, k2;
+
+	cout << k1.getCount() << endl;
+}
+```
+
+출력 2로 의도대로 출력됨
