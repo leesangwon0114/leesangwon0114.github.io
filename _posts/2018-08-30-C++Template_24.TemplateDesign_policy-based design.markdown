@@ -1,0 +1,179 @@
+---
+layout: post
+title:  "C++Template&nbsp;24.&nbsp;TemplateDesign_policy-based design"
+date:   2018-08-30 02:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+---
+
+#### Policy Base Design
+
+lock을 할지 안할지 사용자들이 선택하도록 하자.
+
+``` cpp
+
+template<typename T> class List
+{
+public:
+	void push_front(const T& a)
+	{
+		// lock()
+		// .....
+		// unlock()
+	}
+}
+
+List<int> s; // 전역변수, 멀티스레드에 안전하지 않다.
+
+int main()
+{
+	s.push_front(10);
+}
+
+```
+
+---
+
+``` cpp
+
+template<typename T, typename ThreadModel> class List
+{
+	ThreadModel tm;
+public:
+	void push_front(const T& a)
+	{
+		tm.lock();
+		// .....
+		tm.unlock();
+	}
+}
+
+class NoLock
+{
+public:
+	inline void lock() {}
+	inline void unlock() {}
+}
+
+class MutexLock
+{
+public:
+	inline void lock() {}
+	inline void unlock() {}
+}
+
+// List<int, NoLock> s;
+List<int, MutexLock> s;
+
+int main()
+{
+	s.push_front(10);
+}
+
+```
+
+컴파일러 최적화 거치면 NoLock이 사라지고 코드가 제거되 성능저하 없어짐
+
+MutexLock는 inline으로 기계어 코드로 대체되어 실제 lock 건 것과 같은 효과(함수호출 오버헤드도 없음)
+
+> Policy Base Design
+
+1. 클래스가 사용하는 정책을 템플릿 인자를 통해서 교체 할 수 있게 만드는 디자인
+2. 성능 저하 없이 정책을 교체할 수 있다.
+3. 대부분 정책은 담은 "단위전략 클래스"는 지켜야 하는 규칙이 있다.
+- 규칙을 표현하는 코딩 방식은 없다.(인터페이스 사용시 가상 함수이므로 약간의 오버헤드 발생)
+- 우리가 만든 동기화 정책클래스는 "lock/unlock" 함수가 필요하다.
+- 템플릿 기반 라이브러리, 특히 STL에서널리 사용되는 디자인 기법
+
+---
+
+#### STL allocator
+
+Vector 에서 resize 할 때 버퍼 재할당 필요
+
+플랫폼 별로 메모리 할당 함수 다름 -> 정책 사용
+
+``` cpp
+
+// 메모리 할당기
+template<typename T> class allocator
+{
+public:
+	T* allocate() {}
+	void deallocate() {}
+}
+
+// STL의 Vector
+template<typename T, typename Ax = allocator<T>> class vector
+{
+	T* buff;
+	Ax ax;
+public:
+	void resize(int n)
+	{
+		// 버퍼 재할당이 필요 하다면 어떻게 ?
+		// new, malloc, calloc, win32 api, linux system call
+		T* p = ax.allocate(n);
+		ax.deallocate(p);
+	}
+}
+
+int main()
+{
+	vector<int> v(10);
+	v.resize(20);
+
+	// 내가 원하는 정책으로 메모리 할당
+	vector<int, MyAlloc<int>> v2(10);
+}
+
+```
+
+---
+
+#### rebind
+
+``` cpp
+
+template<typename T> class allocator
+{
+public:
+	T* allocate() { return new T[sz]; }
+	void deallocate() { delete[] p; }
+
+	template<typename U> struct rebind
+	{
+		typename allocator<U> other;
+	}
+}
+
+template<typename T, typename Ax = allocator<T>> class list
+{
+	struct NODE
+	{
+		T data;
+		NODE *next, *prev;
+	}
+	// Ax ax; // allocator<int> -> NODE를 꺼내야하는데 잘못된 것임(list 인데)
+	// allocator<int>::rebind<NODE>::other ax; // allocator<NODE> ax;
+	typename Ax::template rebind<NODE>::other ax; // alocator<NODE> ax;
+public:
+	void push_front(const T& a)
+	{
+		ax.allocate(1);
+	}
+}
+
+int main()
+{
+	list<int> s;
+	s.push_front(10);
+}
+
+```
+
+rebind를 이용해 ax.allocate(1)이 int 를 할당하는 것이 아니라 Node 를 할당하게 됨
+

@@ -1,0 +1,117 @@
+---
+layout: post
+title:  "C++Template&nbsp;25.&nbsp;TemplateDesign_SFINAE"
+date:   2018-08-30 03:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+---
+
+#### SFINAE
+
+> 함수 찾는 순서 1. exactly matching
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T>
+void foo(T t) {cout << "T" << endl;}
+void foo(int t) {cout << "int" << endl;}
+void foo(...) {cout << "..." << endl;}
+
+int main()
+{
+	foo(3); // int 호출
+}
+
+```
+
+> 함수 찾는 순서 2. template
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T>
+void foo(T t) {cout << "T" << endl;}
+// void foo(int t) {cout << "int" << endl;}
+void foo(...) {cout << "..." << endl;}
+
+int main()
+{
+	foo(3); // temlate 호출
+}
+
+```
+
+> 함수 찾는 순서 3. variable argument
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T>
+// void foo(T t) {cout << "T" << endl;}
+// void foo(int t) {cout << "int" << endl;}
+void foo(...) {cout << "..." << endl;}
+
+int main()
+{
+	foo(3); // ... 호출
+}
+
+```
+
+... 과 template 이 같이 있을 때 template 을 사용함!
+
+---
+
+##### SFINAE 개념
+
+return 타입을 int로 한다고 해도 여전히 템플릿을 사용할 것임
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T>
+int foo(T t) {cout << "T" << endl; return 0;}
+void foo(...) {cout << "..." << endl;}
+
+int main()
+{
+	foo(3);
+}
+
+```
+
+T가 int 로 결정되어 함수를 만들어 내려고 하는데 int 안에 type이 없어(int::type foo(int t)) error 일 것임
+
+> 컴파일 에러가 나올지 가변인자를 사용할 것인지?
+
+C++에서는 에러가 아니라 가변인자를 부른다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T>
+typename T::type foo(T t) {cout << "T" << endl; return 0;}
+void foo(...) {cout << "..." << endl;}
+
+int main()
+{
+	foo(3);
+}
+
+```
+
+1. Substitution Failure Is Not An Error
+2. 함수 템플릿을 사용 시 T의 타입이 결정되고 함수를 생성(instantiation) 하려고 할 때 리턴 타입이나 함수 인자 등에서 치환에 실패하면 컴파일 에러가 아니라, 함수 후보군에서 제외한다.
+3. 동일한 이름의 다른 함수가 있다면 다른 함수를 사용하게 한다.
+
+---
+
