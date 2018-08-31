@@ -115,3 +115,212 @@ int main()
 
 ---
 
+#### enable_if
+
+1. C++ 표준에서 지원하는 도구
+2. 1번째 인자가 true 일 경우만 type이 정의 된다.
+
+``` cpp
+
+template<bool b, typename T = void> strut enable_if
+{
+
+}
+
+template<typename T> struct enable_if<true, T>
+{
+	typedef T type;
+}
+
+int main()
+{
+	enable_if<true, int>::type t0; // int
+	enable_if<true>::type t1; // void
+	enable_if<false, int>::type t3; // error. type이 없다.
+	enable_if<false>::type t4; // error. type이 없다.
+}
+
+```
+
+---
+
+enable_if 를 활용하는 코드
+
+``` cpp
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 정수일 때만 함수 코드를 생성하고 싶다.
+template<typename T> void foo(T a)
+{
+	static_assert(is_integral<T>::value, "error");
+}
+
+void foo(...)
+{
+	cout << "not integer" << endl;
+}
+
+int main()
+{
+	foo(3.4);
+}
+
+
+```
+
+정수가 아닐 때 다른 함수에게 기회를 주고 싶다.
+
+``` cpp
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T>
+typename enable_if<is_integral<T>::value>::type
+foo(T a)
+{
+	cout << "T" << endl;
+}
+
+void foo(...)
+{
+	cout << "not integer" << endl;
+}
+
+int main()
+{
+	foo(3);
+	foo(3.4);
+}
+
+```
+
+정수가 아닐 때 치환에 실패하고 후보군에서 제거되어 가변인자인 foo를 부름("not integer")
+
+> 조건을 만족할 때 만 함수를생성하는 방법
+
+1. static_assert: 조건을 만족하지 않으면 컴파일 에러
+2. enable_if: 조건을 만족하지 않으면 함수를 생성하지 않음.
+- 동일 이름의 다른 함수가 있다면 사용.
+
+---
+
+#### enable_if 위치
+
+1. 함수 리턴 타입
+2. 함수 인자 타입 -> 생성자에서 주로 사용
+3. 템플릿 인자 -> 함수 자체의 모양이 단순해 보이는 장점이 있다.
+
+``` cpp
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 1
+template<typename T>
+typename enable_if<is_integral<T>::value>::type
+foo(T a)
+{
+	cout << "T" << endl;
+}
+
+// 2
+template<typename T>
+void foo(T a, typename enable_if<is_integral<T>::value>::type* = nullptr)
+{
+	cout << "T" << endl;
+}
+
+// 3
+template<typename T, typename enable_if<is_integral<T>::value>::type* = nullptr>
+void foo(T a)
+{
+	cout << "T" << endl;
+}
+
+void foo(...)
+{
+	cout << "not integer" << endl;
+}
+
+int main()
+{
+	foo(3);
+	foo(3.4);
+}
+
+```
+
+---
+
+#### enable_if vs integral_constant
+
+> 타입의 종류에 따라 다르게 동작하는 함수 만드는 방법
+
+1. type_traits(is_pointer) + if constexpr
+2. type_traits + 함수 오버로딩(false_type, true_type)
+3. type_traits + enable_if(요즘 많이 쓰임)
+
+```cpp
+
+#include<iostream>
+#include<type_traits>
+using namespace std;
+
+template<typename T>
+void printv_imp(const T& v, true_type)
+{
+	cout << v << " : " << *v << endl;
+}
+
+template<typename T>
+void printv_imp(const T& v, false_type)
+{
+	cout << v << endl;
+}
+
+template<typename T> void prev_printv(const T& v)
+{
+	/*
+	// 1.
+	// C++17
+	if constexpr (is_pointer<T>::value)
+	{
+		cout << v << " : " << *v << endl;
+	} else {
+		cout << v << endl;
+	}
+	*/
+	// 2.
+	// print_imp(v, is_pointer<T>());
+
+
+}
+
+// 3.
+template<typename T>
+typename enable_if<is_pointer<T>::value>::type printv(const T& v)
+{
+	cout << v << " : " << *v << endl;
+}
+
+template<typename T>
+typename enable_if<!is_pointer<T>::value>::type printv(const T& v)
+{
+	cout << v << endl;
+}
+
+int main()
+{
+	int n = 0;
+	printv(n);
+	printv(&n);
+}
+
+```
+
