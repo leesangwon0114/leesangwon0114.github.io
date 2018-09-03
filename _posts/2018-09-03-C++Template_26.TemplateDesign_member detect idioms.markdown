@@ -1,0 +1,227 @@
+---
+layout: post
+title:  "C++Template&nbsp;25.&nbsp;TemplateDesign_member detect idioms"
+date:   2018-09-03 03:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+---
+
+#### Member Detect Idioms
+
+배열에는 resize 가 없어서 error 발생
+
+-> resize 라는 멤버가 있는지 없는지 조사
+
+클래스에 특정 멤버가 있는지 없는지 알아내는 것 -> Member Detect Idioms
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+// Member detect Idioms
+template<typename T>
+void reset_container(T& c)
+{
+	c.resize(10);
+
+	bool b = has_resize<T>::value;
+}
+
+int main()
+{
+	vector<int> v(20, 3);
+	array<int, 20> a;
+
+	reset_container(v);
+	reset_container(a);
+}
+
+```
+
+---
+
+> size of 알아보기
+
+``` cpp
+char foo(int a) {return 0;}
+short foo(double d) {return 0;}
+
+int main()
+{
+	int n = 10;
+
+	cout << sizeof(n) << endl; // 4
+	// cout << sizeof(foo) << endl; // error
+	cout << sizeof(foo(3)) << endl;  // 1 (return 된 값의 size)
+	cout << sizeof(foo(3.3)) << endl;  // 2
+}
+
+```
+
+size of 는 컴파일 시간 메커니즘 -> 컴파일 시 함수의 선언만 가지고 판단
+
+따라서 함수의 선언만 있어도 가능
+
+---
+
+``` cpp
+
+template<typename T> void foo(T a) {}
+template<typename T> void goo(typename T::value_type a) {}
+
+int main()
+{
+	vector<int> v(10, 3);
+
+	foo(v);
+	// goo(0); // error
+	goo<vector<int>>(0); // ok (명시적으로 타입을 명시해주어야함)
+}
+
+```
+
+---
+
+#### typedef detect
+
+``` cpp
+// 1. nested type 조사하기
+struct NoValueType
+{
+
+}
+struct HasValueType
+{
+	typedef int value_type;
+}
+
+int main()
+{
+	bool b1 = has_value_type<NoValueType>::value; // false
+	bool b2 = has_value_type<HasValueType>::value; // true
+}
+
+```
+
+
+``` cpp
+// 1. 가변인자 함수 vs 함수템플릿.
+template<typename T> typename T::value_type check(T a)
+{
+	cout << "T" << endl;
+	return 0;
+}
+
+void check(...)
+{
+	cout << "..." << endl;
+}
+
+int main()
+{
+	HasValueType t1; check(t1); // T
+	NoValueType  t2; check(t2); // ...
+}
+
+```
+
+``` cpp
+template<typename T> char check(typename T::value_type* a);
+
+short check(...);
+
+int main()
+{
+	HasValueType t1;
+	cout << sizeof(check<HasValueType>(0)) << endl;	// 1
+	// NoValueType  t2;
+	// cout << sizeof(check<NoValueType>(0)) << endl;	// 2
+}
+
+```
+
+위의 코드 컴파일 하면 에러(t2)
+
+가변인자 부분은 템플릿이 아님
+
+템플릿 치환에 실패 했는데 다른 것 못찾음
+
+따라서 가변인자 부분도 템플릿으로 가야함
+
+``` cpp
+template<typename T> char check(typename T::value_type* a);
+
+template<typename T> short check(...);
+
+int main()
+{
+	HasValueType t1;
+	cout << sizeof(check<HasValueType>(0)) << endl;	// 1
+	NoValueType  t2;
+	cout << sizeof(check<NoValueType>(0)) << endl;	// 2
+}
+
+```
+
+has_value_type 구조체 추가
+
+``` cpp
+template<typename T> char check(typename T::value_type* a);
+
+template<typename T> short check(...);
+
+template<typename T> struct has_value_type
+{
+	static constexpr bool value = (sizeof(check<T>(0)) == 1);
+}
+
+int main()
+{
+	cout << has_value_type<HasValueType>::value << endl; // 1
+	cout << has_value_type<NoValueType>::value << endl; // 0
+}
+
+```
+
+---
+
+#### member function detect
+
+클래스안에 특정한 멤버함수가 있는지 조사해보기
+
+resize 가 void 일때 인자가 될 수 없으므로 * 를 붙여 준다.
+
+``` cpp
+
+struct Test
+{
+public:
+	void resize(int n) {}
+	Test(int a) {}
+}
+
+template<typename T> char check(decltype(T().resize(0))* a);
+
+template<typename T> short check(...);
+
+template<typename T> struct has_resize
+{
+	static constexpr bool value = (sizeof(check<T>(0)) == 1);
+}
+
+int main()
+{
+	cout << has_resize<vector<int>>::value << endl; // 1
+	cout << has_resize<array<int. 10>>::value << endl; // 0
+}
+
+```
+
+Test 클래스와 같이 default 생성자가 없을 때
+
+cout << has_resize<Test>::value << endl; 해도 실패가 나옴
+
+해결책이 c++11 에 공식적으로 채택됨
