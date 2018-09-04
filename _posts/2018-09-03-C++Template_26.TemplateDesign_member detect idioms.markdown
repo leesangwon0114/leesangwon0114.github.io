@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Template&nbsp;25.&nbsp;TemplateDesign_member detect idioms"
+title:  "C++Template&nbsp;26.&nbsp;TemplateDesign_member detect idioms"
 date:   2018-09-03 03:18:15 +0700
 categories: [c++]
 ---
