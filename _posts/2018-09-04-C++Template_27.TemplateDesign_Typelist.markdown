@@ -164,3 +164,136 @@ int main()
 
 > TypeAt
 
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T, typename U> struct Typelist
+{
+	typedef T Head;
+	typedef U Tail;
+}
+
+struct NullType{};
+
+#define TYPELIST_1(T1) Typlelist<T1, NullType>;
+#define TYPELIST_2(T1, T2) Typlelist<T1, Typelist<T2, NullType>>;
+#define TYPELIST_3(T1, T2, T3) Typlelist<T1, Typelist<T2, Typelist<T3, NullType>>>;
+#define TYPELIST_4(T1, T2, T3, T4) Typlelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>;
+
+//---------------------------------------------------------------------
+// Typelist의 N 번째 요소의 타입 구하기.
+
+// 1. 사용하는 코드를 보고 primary template 작성
+// T: Typelist
+template<typename T, int N> struct TypeAt;
+
+// 2. 원하는 타입을 구할 수 있도록 부분 특수화
+// T: Typelist 의 요소 타입
+/*
+template<typename T, typename U, int N> struct TypeAt<Typelist<T, U>, N>
+{
+	typedef ? type; // 여기서 현재 타입을 채울 수 없음
+}
+*/
+
+// N==0 일때.
+template<typename T, typename U, int N> struct TypeAt<Typelist<T, U>, 0>
+{
+	typedef T type;
+}
+
+// N!=0 일때.
+template<typename T, typename U, int N> struct TypeAt<Typelist<T, U>, N>
+{
+	typedef typename TypeAt<U, N-1>::type type;
+}
+
+template<typename T> void test() 
+{
+	// typename TypeAt<T, 0>::type n;
+	typename TypeAt<T, 1>::type n;
+	cout << typeid(n).name() << endl;
+};
+
+int main()
+{
+	test<TYPELIST_4(int, char, double, long)>();
+}
+
+```
+
+---
+
+> Append
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T, typename U> struct Typelist
+{
+	typedef T Head;
+	typedef U Tail;
+}
+
+struct NullType{};
+
+#define TYPELIST_1(T1) Typlelist<T1, NullType>;
+#define TYPELIST_2(T1, T2) Typlelist<T1, Typelist<T2, NullType>>;
+#define TYPELIST_3(T1, T2, T3) Typlelist<T1, Typelist<T2, Typelist<T3, NullType>>>;
+#define TYPELIST_4(T1, T2, T3, T4) Typlelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>;
+
+//---------------------------------------------------------------------
+// Typelist의 끝에 타입 추가하기
+
+template<typeanme TL, typename T> struct Append;
+
+// TL, T
+// 1. NullType, NullType => NullType
+template<> struct Append<NullType, NullType>
+{
+	typedef NullType type;
+}
+
+// 2. NullType, 임의의 타입 => TypeList<임의의타입, NullType>
+template<typename T> struct Append<NullType, T>
+{
+	typedef TypeList<T, NullType> type;
+}
+
+// 3. NullType, TypeList<Head, Tail> => TypeList<Head, Tail>
+template<typename Head, typename Tail> struct Append<NullType, TypeList<Head, Tail>>
+{
+	typedef TypeList<Head, Tail> type;
+}
+
+// 4. TypeList<Head, Tail>, NullType => TypeList<Head, Tail>
+template<typename Head, typename Tail> struct Append<TypeList<Head, Tail>, NullType>
+{
+	typedef TypeList<Head, Tail> type;
+}
+
+// 5. TypeList<Head, Tail>, 임의의 타입 => Typelist<Head, Append<Tail, T>::type>
+template<typename Head, typename Tail, typename T> struct Append<TypeList<Head, Tail>, T>
+{
+	typedef Typelist<Head, Append<Tail, T>::type> type;
+}
+
+template<typename T> void test() 
+{
+	typename Append<T, int>::type t1;
+	cout << typeid(t1).name() << endl; // int, char, double, int, NULL
+};
+
+int main()
+{
+	test<TYPELIST_4(int, char, double)>();
+}
+
+```
+
+---
+
+> using Typelist
+
