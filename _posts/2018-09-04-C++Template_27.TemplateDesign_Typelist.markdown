@@ -297,3 +297,104 @@ int main()
 
 > using Typelist
 
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T, typename U> struct Typelist
+{
+	typedef T Head;
+	typedef U Tail;
+}
+
+struct NullType{};
+
+#define TYPELIST_1(T1) Typlelist<T1, NullType>;
+#define TYPELIST_2(T1, T2) Typlelist<T1, Typelist<T2, NullType>>;
+#define TYPELIST_3(T1, T2, T3) Typlelist<T1, Typelist<T2, Typelist<T3, NullType>>>;
+#define TYPELIST_4(T1, T2, T3, T4) Typlelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>;
+
+// Holder : 임의의 타입의 data 하나 보관..
+template<typename T> struct Holder
+{
+	T value;
+}
+
+// GenScatterHierachy => MakeCode
+
+template<typename T, template<typename> class Unit> class MakeCode : public Unit<T>
+{
+}
+
+template<typename T, template<typename> class Unit> class MakeCode<NuullType, Unit>
+{
+}
+
+int main()
+{
+	Holder<int> h1;
+
+	MaekCode<int, Holder> mc1; // 기반 클래스 Holder<int> 이므로 Holder<int> 와 메모리 모양이 동일
+
+	MakeCode<double, Holder> mc2; // Holder<double>
+	MakeCode<NullType, Holder> mc3; // empty
+}
+
+```
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+template<typename T, typename U> struct Typelist
+{
+	typedef T Head;
+	typedef U Tail;
+}
+
+struct NullType{};
+
+#define TYPELIST_1(T1) Typlelist<T1, NullType>;
+#define TYPELIST_2(T1, T2) Typlelist<T1, Typelist<T2, NullType>>;
+#define TYPELIST_3(T1, T2, T3) Typlelist<T1, Typelist<T2, Typelist<T3, NullType>>>;
+#define TYPELIST_4(T1, T2, T3, T4) Typlelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>;
+
+// Holder : 임의의 타입의 data 하나 보관..
+template<typename T> struct Holder
+{
+	T value;
+}
+
+// GenScatterHierachy => MakeCode
+
+template<typename T, template<typename> class Unit> class MakeCode : public Unit<T>
+{
+}
+
+template<typename T, template<typename> class Unit> class MakeCode<NuullType, Unit>
+{
+}
+
+// MakeCode의 1번째 인자가 Typelist 일 때..
+template<typename T, template<typename> class Unit>
+ //= MakeCode<int, Unit>, MakeCode<Typelist<double, NullType>
+ //=  Holder<int>, MakeCode<double, Unit>, MakeCode<NullType, Unit> 
+ //= Holder<int>, Holder<double>, empty
+class MakeCode<Typelist<Head, Tail>, Unit> : public MakeCode<Head, Unit>, public MakeCode<Tail, Unit>
+{
+	// int value;
+	// double value;
+}
+
+int main()
+{
+	// MakeCode 의 1번째 인자가 Typelist 일 때..
+	//			Typelist<int, Typelist<double, NullType>>
+	MakeCode<TYPELIST_2(int, double), Holder> m;
+
+	MaekCode<int, Holder> mc1; // Holder<int>
+	MakeCode<double, Holder> mc2; // Holder<double>
+	MakeCode<NullType, Holder> mc3; // empty
+}
+
+```

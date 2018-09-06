@@ -1,0 +1,90 @@
+---
+layout: post
+title:  "C++Template&nbsp;28.&nbsp;C++20_Concept"
+date:   2018-09-06 03:18:15 +0700
+categories: [c++]
+---
+
+codenuri 강석민 강사 강의 내용기반으로 정리한 내용입니다.
+
+---
+
+Point 를 두 개 만들어 Min 으로 보내면 내부적으로 연산자가 없어서 error 발생
+
+``` cpp
+struct Point
+{
+	int x, y;
+}
+
+template<typename T> T Min(T x, T y)
+{
+	return y < x ? y : x;
+}
+
+int main()
+{
+	Point p1, p2;
+	Min(p1, p2);
+}
+
+```
+
+error 메시지가 operator < 를 할 수 없다고 나올 것임
+
+> Concept 의 개념
+
+1. 일반적으로 함수템플릿은 모든 타입이 아니라 특정 조건을 만족하는 타입에 대해서 동작하게 된다.
+
+2. 타입이 가져야 하는 조건을 코드로 표현한 것
+
+3. 2000년 중반 부터 이야기 되었으나 아직 표준화 되지 않음.
+
+4. C++20 표준에 추가될 예정
+
+5. Concept 문법이 도입될 경우 템플릿 코드에 많은 변화가 있게 된다.
+
+---
+
+이전 코드에 Concept 적용해보기
+
+``` cpp
+struct Point
+{
+	int x, y;
+};
+
+// 1. concept 만들기 (a, b 같은 타입일 때 반드시 비교연산 가능해야한다.)
+template<typename T>
+concept bool LessThanComparable = requires(T a, T b)
+{
+	{ a < b } -> bool;
+};
+
+// 2. template 만들 때 concept 표기 (3가지 방법 존재)
+// - 1.
+template<typename T> requires LessThanComparable<T>
+T Min(T x, T y)
+{
+	return y < x ? y : x;
+}
+
+// - 2.
+template<typename T> T Min(T x, T y) requires LessThanComparable<T>
+{
+	return y < x ? y : x;
+}
+
+// - 3. template 코드를 아래와 같이 바뀔 확률이 높음
+LessThanComparable Min(LessThanComparable x, LessThanComparable y)
+{
+	return y < x ? y : x;
+}
+
+int main()
+{
+	Point p1, p2;
+	Min(p1, p2);
+}
+
+```
