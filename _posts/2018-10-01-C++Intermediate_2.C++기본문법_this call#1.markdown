@@ -287,3 +287,183 @@ int main()
 
 ```
 
+---
+
+> this map 예제
+
+``` cpp
+#include<iostream>
+#include "ecourse.hpp"
+using namespace std;
+using namespace ecourse;
+
+void foo(int id)
+{
+    cout << "foo : " << id << endl;
+}
+
+int main()
+{
+    int n1 = ec_set_timer(500, foo);    // 500ms 마다 foo 호출
+    int n2 = ec_set_timer(1000, foo);    // 1000ms 마다 foo 호출
+    ec_process_message();
+}
+
+```
+
+위의 코드 객체지향으로~
+
+```cpp
+#include<iostream>
+#include "ecourse.hpp"
+using namespace std;
+using namespace ecourse;
+
+// 타이머 개념을 사용해서 Clock 클래스 만들기.
+class Clock
+{
+    string name;
+public:
+    Clock(string n) : name(n) {}
+
+    void start(int ms)
+    {
+        int id = ec_set_timer(ms, timerHandler);
+    }
+
+    void timerHandler(int id)
+    {
+        cout << name << endl;
+    }
+};
+
+int main()
+{
+    Clock c1("A");
+    Clock c2("\tB");
+
+    c1.start(1000);
+    c2.start(1000);
+
+    ec_process_message();
+}
+
+```
+
+위의 코드 컴파일 시 에러!
+
+timerHandler 가 멤버함수 이므로 this가 있어야함(인자 하나를 요구하는데 인자 2개 짜리임)
+
+
+```cpp
+#include<iostream>
+#include "ecourse.hpp"
+using namespace std;
+using namespace ecourse;
+
+// 타이머 개념을 사용해서 Clock 클래스 만들기.
+class Clock
+{
+    string name;
+public:
+    Clock(string n) : name(n) {}
+
+    void start(int ms)
+    {
+        int id = ec_set_timer(ms, timerHandler);
+    }
+
+    // 핵심 1. 아래 함수는 반드시 static 멤버 이어야 합니다.
+    static void timerHandler(int id)
+    {
+        cout << name << endl; // this->name
+    }
+};
+
+int main()
+{
+    Clock c1("A");
+    Clock c2("\tB");
+
+    c1.start(1000);
+    c2.start(1000);
+
+    ec_process_message();
+}
+
+```
+
+static 으로 했지만 name 은 여전히 불가
+
+this가 있는 함수와 없는 함수의 공통요소를 뽑으면 id
+
+id를 키로 가지는 data구조를 만들어 해결
+
+
+```cpp
+#include<iostream>
+#include "ecourse.hpp"
+using namespace std;
+using namespace ecourse;
+
+// 타이머 개념을 사용해서 Clock 클래스 만들기.
+#include<map>
+
+class Clock
+{
+    string name;
+    static map<int, Clock*> this_map;
+public:
+    Clock(string n) : name(n) {}
+
+    void start(int ms)
+    {
+        int id = ec_set_timer(ms, timerHandler);
+
+        this_map[id] = this;
+    }
+
+    // 핵심 1. 아래 함수는 반드시 static 멤버 이어야 합니다.
+    static void timerHandler(int id)
+    {
+        Clock* const self = this_map[id];
+        // cout << name << endl; // this->name
+        cout << self->name << endl;
+    }
+};
+
+map<int, Clock*> Clock::this_map;
+
+int main()
+{
+    Clock c1("A");
+    Clock c2("\tB");
+
+    c1.start(1000);
+    c2.start(1000);
+
+    ec_process_message();
+}
+
+```
+
+this를 자료구조에 넣었다가 static 에서 다시 꺼내는 기법이 많이쓰이는 기법 중 
+
+---
+
+> Callback 함수와 this
+
+OS가 windows, linux, ios, android 던 1차 API는 C 언어가 있고 이 위에 2차 API로 C++언어, 객체지향 언어들이 있음
+
+C언어 에서 어떤 함수가 다른함수를 인자로 가질 수 있음(CreateThread, SetTime)
+
+-> 이런 것을 callback 함수라 함
+
+이런 함수들은 2차 API에서 반드시 static 멤버함수여야함(일반 멤버함수는 this가 추가되어 문제가됨)
+
+static 으로 가면 this를 사용할 수 없음
+
+##### Callback 함수를 static member function로 만들 때 this를 사용하는 방법
+
+1. callback 함수의 인자로 this를 전달
+2. this를 자료구조(map)에 보관해서 사용
