@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Intermediate&nbsp;1.&nbsp;C++기본문법_this call#1"
+title:  "C++Intermediate&nbsp;2.&nbsp;C++기본문법_this call#1"
 date:   2018-10-01 04:18:15 +0700
 categories: [c++]
 ---
@@ -467,3 +467,4 @@ static 으로 가면 this를 사용할 수 없음
 
 1. callback 함수의 인자로 this를 전달
 2. this를 자료구조(map)에 보관해서 사용
+
