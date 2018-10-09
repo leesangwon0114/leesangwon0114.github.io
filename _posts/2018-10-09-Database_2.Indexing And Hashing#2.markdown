@@ -1,0 +1,9 @@
+---
+layout: post
+title:  "Database&nbsp;2.&nbsp;Indexing And Hashing#2"
+date:   2018-10-09 02:18:15 +0700
+categories: [Database]
+---
+
+> Static Hashing
+
