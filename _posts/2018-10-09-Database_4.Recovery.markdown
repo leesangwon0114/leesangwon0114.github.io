@@ -103,7 +103,7 @@ main memory에 있는 모든 내용을 disk에 write 함
 
 recovery 시간 단축을 위해 존재
 
-<checkpoint L> -> L: active한 transactions list
+checkpoint L -> L: active한 transactions list
 
 ![Alt text](/static/img/Database/4.2.PNG)
 
