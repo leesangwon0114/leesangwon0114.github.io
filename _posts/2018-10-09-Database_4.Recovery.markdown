@@ -1,0 +1,11 @@
+---
+layout: post
+title:  "Database&nbsp;4.&nbsp;Recovery"
+date:   2018-10-09 04:18:15 +0700
+categories: [Database]
+---
+
+ACID 의 Atomicity, Consistency, Durability
+
+---
+
