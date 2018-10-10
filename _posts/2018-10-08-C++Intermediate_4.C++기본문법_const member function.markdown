@@ -218,4 +218,30 @@ int main()
 }
 ```
 
+---
 
+> 상수 멤버 함수 참고 사항
+
+``` cpp
+struct Test
+{
+    void foo() { cout << "foo()" << endl; } // 1
+    void foo() const { cout << "foo() const" << endl; } // 2
+
+    void goo() const;
+};
+
+void Test::goo() const // 구현에도 반드시 const 붙여야 함
+{
+
+}
+
+int main()
+{
+    Test t1;
+    t1.foo(); // 1번, 없으면 2번
+
+    const Test t2;
+    t2.foo(); // 2번, 없으면 error
+}
+```
