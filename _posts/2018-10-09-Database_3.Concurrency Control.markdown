@@ -1,0 +1,184 @@
+---
+layout: post
+title:  "Database&nbsp;3.&nbsp;Concurrency Control"
+date:   2018-10-09 03:18:15 +0700
+categories: [Database]
+---
+
+ACID 의 Isolation - Concurrence manager(locking)
+
+---
+
+> Lock-Based Protocols
+
+다른 방식의 concurrency control보다 locking이 데이터베이스 성능관점에서 가장 좋은 성능을 보임
+
+lock - concurrent access를 제어하기 위핸 mechanism
+
+#### Data items can be locked in two modes
+
+- exclusive(X) mode: can be both read as well as written(다른 애들 건들지 못하게)
+- Shared(S) mode: can only be read (read만 한다면)
+
+#### Lock compatibility matrix
+
+![Alt text](/static/img/Database/3.1.PNG)
+
+write lock 은 다른 것과 compatibilithy 하지 않음
+
+#### Operation
+
+Transaction이 lock 요청이 보장되어야 진행될 수 있음
+
+어떤 Transaction이 요구하는 lock이 compatible 한 경우에만 granted 됨
+
+- read는 compatible하니까 다른 transaction이 일을 할 수 있음(shared lock)
+- 어떤 transaction이 exclusive를 가지고 있으면 다른 transaction은 진행될 수 없음
+
+lock이 granted 되지 않으면 lock을 달라고 요청한 transaction은 incompatible한 lock이 release 될 때 까지 기달려야함
+
+#### Consider the sequence of operations
+
+![Alt text](/static/img/Database/3.2.PNG)
+
+read(A)와 read(B) 중간에 A 값이 update 된다면 display(A+B)는 잘못된 것임!
+
+serizalizability 스캐쥴이 나오지 않음
+
+너무 빨리 Lock을 풀어 Consistency가 깨짐
+
+이것만으로 부족함
+
+-> locking protocol : lock을 언제요청하고 언제풀지 규약을 정함
+
+---
+
+> Two-Phase Locking Protocal
+
+Transaction 관점에서 lock의 강도나 개수가 growing 하거나 shrinking 하는 개념
+
+- Phase 1: growing phase(obtains locks, not release locks)
+- Phase 2: shrinking phase(release locks, not obtain locks)
+
+shrinking phase가 오면 더 이상 lock을 잡을 수 없음
+
+-> unlock이 나온 이후에 lock을 할 수 가 없음
+
+이 protocoal 만 보장되면 serializable한 schedules를 보장함
+
+#### 2PL 문제
+
+deadlocks 발생할 수 있음
+
+Cascading rollback이 가능함
+
+- strict two-phase locking: exclusive locks를 잡으면 절대 풀지 않음
+- rigorous two-phase locking: transactions이 끝날 때 까지 모든 lock을 풀지 않음
+
+2PL이 생성하지 못하는 serializable schedules 존재
+
+2PL이 serializable schedules 일부분을 생성하는 것임
+
+---
+
+> Cascading Rollbacks
+
+하나의 transaction이 fail됬을 때 그것만 rollback되면 되는데 다른 것 까지 rollback이 필요한 경우 Cascading rollback이라함
+
+![Alt text](/static/img/Database/3.5.PNG)
+
+T10이 fails면 Write(A)한 게 잘못되었으니까 T11, T12도 다시 undo 해야함
+
+---
+
+> Deadlock
+
+transaction이 lock을 요청하면서 무한정 기달리는 현상
+
+lock을 가지고 data 리소스를 가지는 모든 시스템에서 발생함
+
+![Alt text](/static/img/Database/3.3.PNG)
+
+---
+
+> Starvation
+
+시스템을 잘못만드는 경우 나오는 현상
+
+같은 transaction이 불평등하게 대우를 받는 경우
+
+어떤 transaction이 X-lock을 달라고 기다리는 동안 전에 쓴 다른 transactions이 S-lock을 쓰고 있는데, 뒤에 들어오는 transaction이 계속 S-lock을 요청할 때 시스템을 잘못만들면 뒤에 들어오는 transaction에 대해 S-lock을 허용하는 현상으로 X-lock을 쓰려는 transaction이 불평등하게 기달림
+
+deadlocks에 의해 rolled back이 반복적으로 같은 transcation에 대해 일어날 때도 Starvation이라함
+
+---
+
+> Deadlock Handling
+
+#### Deadlock prevention protocols
+
+- graph-based protocol는 순서에 대해 lock을 잡아 deadlock 현상 안나옴(cycle이 존재하면 no cycle 그래프로 만들어서 없앰)
+
+- predeclaration - 미리 declare하여 lock을 잡으면 가능
+
+---
+
+> Wait-die / Wound-wait Schemes(Prevention)
+
+timestamps 를 사용하여 deadlock을 prevention 함
+
+transaction이 최근에 시작한 것이 young 한 것임
+
+#### Wait(Old action)-die(Young action) Scheme
+
+lock을 요구하는 trancation이 lock을 가진 transaction 보다 old 하면 기다리고, young 하면 die 함
+
+#### Wound(Old) action)-wait(Young action) Scheme
+
+lock을 요구하는 transaction이 lock을 가지고 있는 transaction 보다 old 하면 lock을 가지고 있는 transaction을 rollback 시킴
+
+young 하면 wait 함
+
+deadlock이 발생하면 한쪽이 죽어 deadlock이 발생하지 않음
+
+old transaction이 좀 더 유리한 조건임(old가 일을 많이 한것이므로 rollback 하면 할 일이 많기 때문에 타장한 것임)
+
+rolled back 하게 되면 다시 시작하고, 다시 시작할 때 옛날 timestamp를 가지고 수행해야 old 해지기 때문에 우선순위 가져 잘 수행될 확률이 높음
+
+---
+
+> Deadlock Detection
+
+Deadlock을 발생하게 놔두고 Detection 될 시 rollback 함
+
+Wait-for graph 이용
+
+Ti -> Tj 에 directed edge가 있으면 Ti는 Tj가 release 할 때까지 기달림
+
+cycle이 있으면 deadlock이 detection 된 것임
+
+![Alt text](/static/img/Database/3.4.PNG)
+
+detection 되면 어떻게 될 것인가?
+
+transaction 하나 골라서 rollback해야함
+
+> Deadlock Resolution
+
+##### 어떤 transactino을 rollback 할 것인지?
+
+victim(희생되는 transaction)
+
+##### 어떤 transaction을 victim으로 선택할 것인가?
+
+-> 이론적으로 rollback할 때 cost가 제일 적은 것을 골라서 선정하면됨 (cost를 어떻게 계산하는지는 어려운 문제임)
+
+Total rollback은 transaction 전체 rollback
+
+Partial rollback은 transactino의 일부분만 rollback(deadlock을 break하는데 까지 필요한 부분만 rollback)
+
+계속 같은 transactino이 victim으로 선정되어 계속 rollback 당하는 것이 Starvation
+
+-> 몇번 rollback됬는지 count 해서 많이 됬으면 rollback 안하면됨
+
+Lock waits는 rare하고 deadlocks은 (rare)^2으로 잘 일어나지 않음(단, 발생하기는 함)
