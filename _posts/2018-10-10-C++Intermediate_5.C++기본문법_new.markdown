@@ -202,3 +202,89 @@ p4는 기존 메모리에 객체를 생성해 달라 -> placement new
 ---
 
 > 왜 생성자의 명시적 호출이 필요한가?
+
+#### 메모리 할당과 생성을 분리하면 유연성이 높아짐
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Point
+{
+    int x;
+    int y;
+public:
+    Point(int a, int b) : x(a), y(b)
+    {
+        cout << "Point(int int)" << endl;
+    }
+};
+
+int main()
+{
+    // Point 객체를 힙에 한개 만들고 싶다.
+    Point* p1 = new Point(0, 0); // ok.
+
+    // Point 객체를 힙에 10개 만들고 싶다.
+    // Point* p2 = new Point[10]; // error.(default 생성자 없으므로)
+
+    // 1. 메모리만 먼저 힙에 할당
+    Point* p3 = static_cast<Point*>(operator new(sizeof(Point)*10));
+
+    // 2. 할당한 메모리에 객체를 생성(생성자 호출)
+    for (int i = 0; i < 10; i++)
+    {
+        new(&p3[i]) Point(0, 0);
+    }
+
+    // 3. 소멸자 호출
+    for (int i = 9; i >= 0; i--)
+    {
+        operator delete(p3);
+    }
+
+    // 4. 메모리 해지.
+    operator delete(p2);
+
+    vector<Point> v(10, Point(0, 0)); // 10개의 메모리를 먼저 잡고, Point(0,0)을 받아서 복사 생성자 10번 부름
+}
+```
+
+#### vector 메모리 관리
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    vector<int> v(10, 0);
+
+    v.resize(7); // 사실 메모리 사용량은 여전히 10임, size 값만 7로 변경
+
+    cout << v.size() << endl; // 7
+    cout << v.capacity() << endl; // 10
+
+    // DBConnect : 생성자에서 DB 접속
+    vector<DBConnect> v2(10);
+
+    v2.resize(7); // 메모리는 제거하지 않지만 줄어든 객체의 소멸자는 호출해야 한다.(줄어든 3개에 대해 DB Connection을 끊어야함)
+
+    v2.resize(8); // 새로운 객체에 대한 메모리는 있다, 하지만 생성자를 호출해서 다시 DB 접속을 해야 한다.
+}
+```
+
+생성자하고 소멸자만 명시적으로 호출하여 효율화
+
+#### 또다른 생성자 명시적 호출이 필요한 경우
+
+IPC 공유 메모리를 사용한 프로세스간 통신
+
+HANDLE hMap = CreateFileMappingA(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, 0, sizeof(Point), 0);
+
+Point* p = (Point*)MapViewOfFile(hMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+
+new(p) Point(0, 0)
+
+시스템 콜은 메모리만 할당되어 있고, 생성을 위해 new 를 사용
