@@ -1,0 +1,83 @@
+---
+layout: post
+title:  "VisualAI&nbsp;04.&nbsp;Multiple Layer Perceptron"
+date:   2018-10-13 06:18:15 +0700
+categories: [VisualAI]
+---
+
+> Multilayer Perceptron
+
+많은 perceptrons들이 층계로(layerwise manner) 연결되어 있음
+
+classifier 나 regression(function approximator)에 사용될 수 있음
+
+#### MLP Architectures
+
+![Alt text](/static/img/VisualAI/4.1.PNG)
+
+hidden nodes 에 전통적으로 시그모이드 함수 사용(Sigmoid function)
+
+![Alt text](/static/img/VisualAI/4.2.PNG)
+
+#### Other Commonly use Activation Functions
+
+![Alt text](/static/img/VisualAI/4.3.PNG)
+
+---
+
+#### Softmax function - Multi-class clssification
+
+Sigmoidal function은 0, 1 을 output 으로 내므로 binary classification에 사용
+
+![Alt text](/static/img/VisualAI/4.4.PNG)
+
+#### linear function : y = x, f = 1 identity function
+
+a^3 = wp+b 로 하나의 분류만 가능해짐(히든레이어에 linear를 사용하면…)
+
+#### Classification, Regression 
+
+Output 을  Regression으로 사용할 때  output 에 linear function 사용!
+
+둘다 y=f(x)
+
+Classification은 y가 integer고 discrete 값임
+Regression의 y는 real value임
+
+**왜 MLP를 Regression에 사용하는가?**
+
+테일러가 sin, cos 함수의 조합으로 모든 수의 함수를 만들수 있다는 것과 비슷하게 sigmoid 값 결함으로 거의 모든 함수를 만들 수 있음
+
+---
+
+> Common Error/Loss Functions used in MLP
+
+MLP에 MSE를 구대로 사용하면 Error function ugly 하다고 표현
+
+![Alt text](/static/img/VisualAI/4.6.PNG)
+
+- Very high dimension
+- Highly non-linear
+- Global minima(just one point)에 도달할 수 없거나 도달 불가능
+- Local minima(Good or Bad): global minima에 가까우면 좋고 안가까우면 나쁨(sometimes 임)
+
+![Alt text](/static/img/VisualAI/4.5.PNG)
+
+#### Cross Entropy for Classification
+
+loss 함수로 cross-entropy 사용
+
+![Alt text](/static/img/VisualAI/4.7.PNG)
+
+z(k)가 d(k) 에 가까울수록 error 가 작아지고 아니면 커짐
+
+#### Example
+
+![Alt text](/static/img/VisualAI/4.8.PNG)
+
+---
+
+#### Error functions
+
+Error function은 정확히 측정을 원하는 것이아니라 traing process 에서 optimal wegiths를 가기 위한 guide 개념임
+
