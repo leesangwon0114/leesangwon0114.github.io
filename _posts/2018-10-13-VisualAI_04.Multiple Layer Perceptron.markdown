@@ -79,5 +79,5 @@ z(k)가 d(k) 에 가까울수록 error 가 작아지고 아니면 커짐
 
 #### Error functions
 
-Error function은 정확히 측정을 원하는 것이아니라 traing process 에서 optimal wegiths를 가기 위한 guide 개념임
+Error function은 정확한 측정을 원하는 것이아니라 traing process 에서 optimal weights를 가기 위한 guide 개념임
 
