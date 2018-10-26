@@ -237,3 +237,247 @@ Derived()
 ---
 
 > 생성자 호출순서 주의사항
+
+``` cpp
+struct stream_buf
+{
+    stream_buf(size_t sz)
+    {
+        cout << "stream_buf" << endl;
+    }
+};
+
+struct stream
+{
+    stream(stream_buf& buf)
+    {
+        cout << "stream : using stream_buf" << endl;
+    }
+};
+
+// 버퍼를 가지고 있는 stream
+struct mystream : public stream
+{
+    stream_buf buf;
+public:
+    mystream(int sz) : buf(sz), stream(buf) {}
+};
+
+int main()
+{
+    // stream_buf buf(1024);
+    // stream st(buf);
+
+    mystream mst(1024);
+}
+```
+
+코드상으로 멤버데이터의 생성자를 먼저 호출하고 기반클래스를 부르는 것 같지만 생성자 호출은 기반 클래스 stream이 먼저 불려 buf를 초기화 안된 상태로 기반클래스로 전달함
+
+---
+
+``` cpp
+struct stream_buf
+{
+    stream_buf(size_t sz)
+    {
+        cout << "stream_buf" << endl;
+    }
+};
+
+struct stream
+{
+    stream(stream_buf& buf)
+    {
+        cout << "stream : using stream_buf" << endl;
+    }
+};
+
+// 버퍼만 관리하는 클래스
+struct buf_manager
+{
+protected:
+    stream_buf buf;
+public:
+    buf_manager(size_t sz) : buf(sz) {}
+};
+
+struct mystream : public buf_manager, public stream
+{
+public:
+    mystream(int sz) : buf_manager(sz), stream(buf) {}
+};
+
+int main()
+{
+    mystream mst(1024);
+}
+```
+
+mystream이 buf_manager 로 부터 buf를 물려받음
+
+기반 클래스가 2개이므로 buf_manager 를 먼저 불리고, buf 를 초기화 시킨 후 stream 초기화 시 buf 부름
+
+---
+
+``` cpp
+struct Base
+{
+    Base() {}
+    // void foo() { goo(); }
+    virtual void goo() { cout << "Base::goo" << endl; }
+};
+
+struct Derived : public Base
+{
+    int x;
+
+    Derived() : x(10) {}
+    virtual void goo() { cout << "Derived::goo" << x << endl; }
+};
+
+int main()
+{
+    Derived d;
+    // d.foo();
+}
+```
+
+Base::goo 가 출력됨
+
+-> 생성자에서는 가상함수가 동작하지 않는다. 기반클래스 호출 시점에 파생클래스 멤버들은 정의되지 않았기 때문에
+
+---
+
+> 생성자와 예외
+
+``` cpp
+struct Resource
+{
+    Resource() { cout << "acquare Resource" << endl; }
+    ~Resource() { cout << "release Resource" << endl; }
+};
+
+class Test
+{
+    Resource* p;
+publuc:
+    Test() : p(new Resource)
+    {
+        cout << "Test()" << endl;
+        // 생성자에서 어떠한 이유로 예외가 발생했다고 가정
+        throw 1;
+    }
+    ~Test()
+    {
+        delete p;
+        cout << "~Test()" << endl;
+    }
+};
+
+int main()
+{
+    try
+    {
+        Test t;
+    }
+    catch (...)
+    {
+        cout << "예외 발생" << endl;
+    }
+}
+
+```
+
+생성자에서 예외가 나면 소멸자를 부르지 못한다.
+
+-> 자원 누수 문제
+
+---
+
+#### 해결책 1. Raw Pointer 대신 스마트 포인터 사용
+
+```
+struct Resource
+{
+    Resource() { cout << "acquare Resource" << endl; }
+    ~Resource() { cout << "release Resource" << endl; }
+};
+
+class Test
+{
+    unique_ptr<Resource> p;
+publuc:
+    Test() : p(new Resource)
+    {
+        cout << "Test()" << endl;
+        throw 1;
+    }
+    ~Test()
+    {
+        // delete p;
+        cout << "~Test()" << endl;
+    }
+};
+
+int main()
+{
+    try
+    {
+        Test t;
+    }
+    catch (...)
+    {
+        cout << "예외 발생" << endl;
+    }
+}
+
+```
+
+#### 해결책 2. two-phase constructor
+
+``` cpp
+struct Resource
+{
+    Resource() { cout << "acquare Resource" << endl; }
+    ~Resource() { cout << "release Resource" << endl; }
+};
+
+class Test
+{
+    Resource* p;
+publuc:
+    Test() : p(0)
+    {
+        // 예외 가능성이 있는 어떠한 작업도 하지 않는다.
+    }
+    // 자원 할당 전용함수
+    void Construct()
+    {
+        p = new Resource;
+        // cout << "Test()" << endl;
+        throw 1;
+    }
+    ~Test()
+    {
+        delete p;
+        cout << "~Test()" << endl;
+    }
+};
+
+int main()
+{
+    try
+    {
+        Test t;        // 생성자 100% 생성 보장
+        t.Construct(); // 필요한 자원할당
+    }
+    catch (...)
+    {
+        cout << "예외 발생" << endl;
+    }
+}
+
+```
+
+생성자에서 가상함수를 호출이 안되는 것두 호출가능한 구조
