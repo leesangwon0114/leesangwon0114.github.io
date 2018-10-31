@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Intermediate&nbsp;9.&nbsp;C++기본문법_conversion"
+title:  "C++Intermediate&nbsp;9.&nbsp;C++기본문법_conversion#1"
 date:   2018-10-30 04:18:15 +0700
 categories: [c++]
 ---
@@ -378,3 +378,98 @@ int main()
 ---
 
 > make nullptr
+
+``` cpp
+int main()
+{
+    int n1 = 10;    // ok
+    void* p1 = 10;  // error.
+
+    int n2 = 0;     // ok
+    void* p2 = 0;   // ok. 0은 정수지만 포인터로 암시적 형변환된다.
+}
+```
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void foo(int n) {cout << "int" << endl;}
+void foo(void* p) {cout << "void*" << endl;}
+
+void goo(char* p) {cout << "goo" << endl;}
+
+int main()
+{
+    foo(0);
+    foo((void*)0);
+
+#define NULL (void*)0
+    foo(NULL);
+
+    goo(NULL); // void* -> char* 로의 암시적 변환 필요.
+    // C: ok
+    // C++: 암시적 변환 안됨
+
+#ifdef __cpluscplus
+    #define NULL 0
+#else
+    #define NULL (void*)0
+#endif
+}
+```
+
+C++에서 정수 0은 있는데 완벽한 pointer 0이 없어서 위와같은 혼란 발생
+
+---
+
+변환을 사용해서 pointer 0을 만들어보자
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+void foo(int n) {cout << "int" << endl;} // 1
+void foo(void* p) {cout << "void*" << endl;} // 2
+
+void goo(char* p) {cout << "goo" << endl;} // 3
+
+struct xnullptr_t
+{
+    // operator void*() { return 0; }
+    template<typename T>
+    operator T*() { return 0; } // 모든포인터의 타입을 암시적 형변환되어 goo 출력됨
+};
+xnullptr_t xnullptr; // 포인터 0
+
+int main()
+{
+    foo(0); // 1
+    foo(xnullptr); // 2. xnullptr_t -> void*로의 암시적 변환 필요
+    // xnullptr.operator void*()
+
+    goo(xnullptr); // 3 goo
+
+    int n = 0;
+    double* p = xnullptr; // double의 포인터로 변환됨
+}
+```
+
+---
+
+``` cpp
+// C++ 11 : nullptr
+
+int main()
+{
+    int n = 0;
+    double* p1 = nullptr; // C++11 의 포인터 0
+
+    nullptr_t a = nullptr;
+
+    int* p = a;
+}
+```
+
+nullptr 은 정확히 nullptr_t라는 데이터 타입의 변수임
+
