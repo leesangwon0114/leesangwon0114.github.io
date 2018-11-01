@@ -262,3 +262,58 @@ if 문에는 넣을 수 있는데 잘못된 기법을 막는 방법으로 결국
 C++ 11에서 해결책 제시
 
 > Explicit Conversion Operator
+
+- C++11 부터는 변환 연산자에도 explicit 를 붙일수 있다.
+
+- 명시적 변환은 허용되지만 암시적 변환은 될 수 없다.
+
+- if 문을 사용해서 객체를 조사할 수 있다.
+
+``` cpp
+class istream
+{
+public:
+    bool fail() { return false; }
+    explicit operator bool() {return fail() ? false: true;}
+};
+
+istream cin;
+
+int main()
+{
+    bool b1 = cin; // error
+    bool b2 = static_cast<bool>(cin); // ok.
+
+    if (cin) {} // ok.
+
+    if (cin == false) {} // error
+}
+```
+
+---
+
+> brace-init & conversion
+
+``` cpp
+class Point
+{
+    int x, y;
+public:
+    explicit Point(int a, int b) : x(a), y(b) {}
+};
+
+void foo(Point p) {}
+
+int main()
+{
+    foo({1,1}); // error
+
+    Point p1(1,1);
+
+    Point p2{1,1}; // direct initialize
+
+    Point p3 = {1,1}; // copy initialize -> error
+}
+```
+
+brace-init 때매 인자가 2개여도 변환이될수 있으므로 explicit를 붙이면 p3는 error 발생하도록 할 수 있음
