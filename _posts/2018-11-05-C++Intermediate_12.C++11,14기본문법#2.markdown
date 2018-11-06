@@ -284,3 +284,185 @@ int main()
 - type traits 사용: is_nothrow_xxx<T>::value
 - move_if_noexcept
 - 실행시간이 아닌 컴파일 시간에 조사
+
+---
+
+> scoped enum
+
+enum 상수의 단점을 개선한 새로운 enum 상수 문법
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+enum Color { red = 1, green = 2 };
+int main()
+{
+    int n1 = Color::red;
+    int n2 = red;
+
+    int red = 0;
+    int n3 = red; // red 가 어느 것인지 혼란일으킬 수 있음
+
+    cout << typeid(underlying_type_t<Color>).name() << endl;
+}
+```
+
+#### 기존 enum 상수의 단점
+- 타입의 이름 없이 사용 가능: Unscoped enum
+- 요소의 타입을 지정할 수 없다.
+
+#### 요소의 타입을 알아내는 방법 - C++11
+- type_traits 헤더
+- underlying_type<Color>::type
+- underlying_type_t<Color>
+
+---
+
+#### C++11에서 도입된 새로운 enum 상수
+- enum class Color:char {red = 1, green = 2};
+- 요소의 타입을 지정할 수 있다.
+- 다른 타입으로 암시적 형변환 되지 않는다. 명시적 변환 필요
+- 반드시 타입의 이름과 함께 사용 해야 한다: Scoped enum
+
+``` cpp
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// C++98/03
+// enum Color { red = 1, green = 2 };
+
+// C++11
+enum class Color : char { red = 1, green = 2 };
+
+int main()
+{
+    int n1 = Color::red; // error
+    Color n2 = Color::red; // ok
+    int n3 = static_cast<int>(Color::red); // ok
+    int n4 = red; // error
+
+    cout << typeid(underlying_type_t<Color>).name() << endl; // char
+}
+```
+
+---
+
+> user define literal
+
+#### literals 의 종류
+- integer: 11, 013, oxa
+- floating: 14.56
+- character: 'A', 'a'
+- string: "hello"
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+// int operator""k(int v) // error
+// _ : 사용자 사용가능.
+// _ 로 시작하지 않은 것 : reserved 미래 C++에서 사용하기 위해 -> _ 없으려면 unsigned long long 사용
+int operator""k(unsigned long long v)
+{
+    return v * 1000;
+}
+
+int main()
+{
+    int n1 = 10k; // operator""k(10)
+    cout << n1 << endl; // 10000
+}
+
+```
+
+#### user define literal
+- literal 뒤에 사용자 정의 접미사를 붙이는 문법
+- literal이 값 뿐 아니라 단위를 가질 수 있게 된다.
+- operator""suffix
+- 사용자가 제공하는 접미사는 반드시 "_"로 시작해야 한다.
+- _가 붙지 않은 것은 C++ 표준 라이브러리를 위해서 예약 되어 있음
+
+---
+
+#### user define literals 과 함수인자
+- integer: operator""suffix(unsigned long long), operator""suffix(const char*)
+- floating: operator""suffix(long double), operator""suffix(const char*)
+- character: operator""suffix(char)
+- string: operator""suffix(const char*, size_t)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class second
+{
+    int value;
+public:
+    second(long long s) : value(s) {}
+};
+
+class minute
+{
+    int value;
+public:
+    minute(long long s) : value(s) {}
+};
+
+second operator""_s(unsigned long long v)
+{
+    return v;
+}
+
+minute operator""_m(unsigned long long v)
+{
+    return v;
+}
+
+int operator""k(unsigned long long v)
+{
+    return v * 1000;
+}
+
+int main()
+{
+    int n1 = 10k; // operator""k(10)
+    cout << n1 << endl; // 10000
+
+    second n1 = 10_s;
+    minute n2 = 10_m;
+}
+```
+
+#### user define literal 과 user define type
+- 사용자 정의 접미사를 사용해서 literal로 부터 객체를 생성할 수 있다.
+
+
+위의 예제가 이미 C++ 표준에 있음
+
+``` cpp
+#include <iostream>
+#include <string>
+using namespace std;
+using namespace std::literals::string_literals; // error 나면 이거 열면됨
+using namespace std::chrono; // s, m을 나타내는 것 존재
+
+using namespace std::literals; // 모든 literals 열기
+
+void foo(string s) { cout << "string" << endl; }
+void foo(const char* s) { cout << "char*" << endl; }
+
+int main()
+{
+    foo("hello"); // char*
+    foo("hello"s); // string operator""s("hello");
+
+    seconds s1 = 10s;
+    minutes m1 = 10min;
+
+    seconds s2 = 10min;
+    cout << s2.count() << endl; // 600
+}
+```
