@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Intermediate&nbsp;11.&nbsp;C++11,14기본문법#2"
+title:  "C++Intermediate&nbsp;12.&nbsp;C++11,14기본문법#2"
 date:   2018-11-05 04:18:15 +0700
 categories: [c++]
 ---
