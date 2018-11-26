@@ -180,3 +180,141 @@ int main()
 
 > chronometry
 
+``` cpp
+int x = 10;
+void foo(int a) {}
+
+// error
+// 선언관계(f가 선언 전에 쓰려고 함, decltype에서)
+template<typename F, typename T>
+decltype(f(std::forward<T>(arg))) chronometry(F f, T&& arg)
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int ret = chronometry(&foo, 10);
+}
+```
+
+decltype 을 후휘형 리턴으로 하기(C++11)
+
+``` cpp
+int x = 10;
+int foo(int a) { return x; }
+
+template<typename F, typename T>
+auto chronometry(F f, T&& arg) -> decltype(f(std::forward<T>(arg)))
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int ret = chronometry(&foo, 10);
+}
+```
+
+C++14부터 auto 를 넣어주면 컴파일 가능 (단, 위에 것과 차이가 있음)
+
+``` cpp
+int x = 10;
+int foo(int a) { return x; }
+
+template<typename F, typename T>
+auto chronometry(F f, T&& arg)
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int ret = chronometry(&foo, 10);
+}
+```
+
+#### void 함수 리턴 값이 참조일 경우
+
+``` cpp
+int x = 10;
+int& foo(int a) { return x; }
+
+template<typename F, typename T>
+auto chronometry(F f, T&& arg) -> decltype(f(std::forward<T>(arg)))
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int& ret = chronometry(&foo, 10);
+    ret = 20;
+    cout << x << endl;
+}
+```
+
+원본 함수가 참조를 리턴하면 아래 코드는 버그임(error)
+
+``` cpp
+int x = 10;
+int& foo(int a) { return x; }
+
+template<typename F, typename T>
+auto chronometry(F f, T&& arg)
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int& ret = chronometry(&foo, 10);
+    ret = 20;
+    cout << x << endl;
+}
+```
+
+해결책 -> decltype(auto)
+
+``` cpp
+int x = 10;
+int& foo(int a) { return x; }
+
+template<typename F, typename T>
+decltype(auto) chronometry(F f, T&& arg)
+{
+    return f(std::forward<T>(arg));
+}
+
+int main()
+{
+    int& ret = chronometry(&foo, 10);
+    ret = 20;
+    cout << x << endl;
+}
+```
+
+원본 함수가 참조를 리턴해도 ok
+
+---
+
+#### 함수 인자가 여러 개인 경우
+
+``` cpp
+void foo(int a, int& b, double d) { b = 30; }
+void goo() {}
+
+template<typename F, typename Types>
+decltype(auto) chronometry(F f, Types&& ... arg)
+{
+    return f(std::forward<Types>(arg)...);
+}
+
+int main()
+{
+    int x = 10;
+    chronometry(&foo, 1, x, 3.4);
+    chronometry(&goo);
+    cout << x << endl; // 30
+}
+```
