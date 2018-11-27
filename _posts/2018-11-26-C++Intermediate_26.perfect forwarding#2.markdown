@@ -145,10 +145,15 @@ lvalue를 인자로 받아서 T의 타입에 따라 lvalue 또는 rvalue로 캐�
 void goo(int& a) { cout << "goo" << endl;}
 void hoo(int&& a) { cout << "hoo" << endl; }
 
+template<typename T> T&& xforward(T& arg)
+{
+    return static_cast<T&&>(arg);
+}
+
 template<typename F, typename T>
 void chronometry(F f, T&& arg)
 {
-    f(std::forward<T>(arg));
+    f(std::xforward<T>(arg));
 }
 
 int main()
@@ -157,5 +162,282 @@ int main()
     chronometry(&goo, n);
     chronometry(&hoo, 1);
     cout << n << endl;
+}
+```
+
+---
+
+#### move 하고 forward 의 차이점
+
+``` cpp
+
+// static_cast<T&&>(arg); T의 타입에 따라 rvalue 또는 lvalue 캐스팅.
+
+// 함수 인자 : lvalue 와 rvalue를 모두 받아서
+// 리턴 타입 : rvalue 로 캐스팅.
+template<typename T>
+typename remove_reference<T>::type&&
+xmove(T&& obj)
+{
+    return static_cast<typename remove_reference<T>::type &&>(obj);
+}
+
+// 함수 인자 : lvalue를 받아서
+// 리턴 타입 : T에 따라서 lvalue or rvalue 로 캐스팅
+template<typename T> T&& xforward(T& arg)
+{
+    return static_cast<T&&>(arg);
+}
+```
+
+---
+
+> std::forward #2
+
+``` cpp
+void foo(int& a) { cout << "int&" << endl; }
+void foo(int&& a) { cout << "int&&" << endl; }
+
+class Test
+{
+    int data;
+public:
+    int& get() & { return data; }
+    int get() && { return data; }
+};
+
+//template<typename T> T&& xforward(T& arg) // -> xforward(arg); 에러 나오게 remove_reference 붙임
+template<typename T> T&& xforward(typename remove_reference<T>::type& arg)
+{
+    return static_cast<T&&>(arg);
+}
+
+// rvalue 를 인자로 가지는 forward
+// rvalue 를 인자로 받아서 rvalue 로 캐스팅하는 xforward
+template<typename T> T&& xforward(typename remove_reference<T>::type&& arg)
+{
+    return static_cast<T&&>(arg);
+}
+
+template<typename T> void wrapper(T&& obj)
+{
+    // foo(std::forward<T>(obj).get()); //ok.
+    using Type = decltype(xforward<T>(obj).get()); 
+    foo(xforward<Type>(xforward<T>(obj).get())); // error
+}
+
+int main()
+{
+    Test t;
+
+    wrapper(t); // lvalue => foo(int&)
+    wrapper(Test()); // rvalue => foo(int&&)
+
+    foo(t.get());   // foo(int&) => foo(int&)
+    foo(Test().get()); // foo(int) => foo(int&&)
+}
+```
+
+---
+
+> setter using move & copy
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Data
+{
+public:
+    Data() {}
+    ~Data() {}
+
+    Data(const Data& t) { cout << "Copy" << endl;}
+    Data(Data&& t) noexcept { cout << "Move" << endl;}
+    Data& operator=(const Data& t) { cout << "Copy=" << endl; return *this; }
+    Data& operator(Data&& t) noexcpet { cout << "Move=" << endl; return *this; }
+};
+
+class Test
+{
+    Data data;
+public:
+    //void setData(Data d) { data = d; }
+
+    // 아래 코드는 무조건 copy= 사용
+    void setData(const Data& d) { data = d; }
+};
+
+int main()
+{
+    Test test;
+    Data d;
+    test.setData(d);    // 실행후에도 d를 사용가능
+    test.setData(move(d)); // 실행후에는 d를 사용불가
+}
+```
+
+Copy= Copy= 출력됨
+
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Data
+{
+public:
+    Data() {}
+    ~Data() {}
+
+    Data(const Data& t) { cout << "Copy" << endl;}
+    Data(Data&& t) noexcept { cout << "Move" << endl;}
+    Data& operator=(const Data& t) { cout << "Copy=" << endl; return *this; }
+    Data& operator(Data&& t) noexcpet { cout << "Move=" << endl; return *this; }
+};
+
+class Test
+{
+    Data data;
+public:
+    // 아래 코드는 무조건 move=이 아니고 copy= 임(상수 객체는 move 될 수 없음)
+    void setData(const Data& d) { data = move(d); }
+};
+
+int main()
+{
+    Test test;
+    Data d;
+    test.setData(d);    // 실행후에도 d를 사용가능
+    test.setData(move(d)); // 실행후에는 d를 사용불가
+}
+```
+
+Copy= Copy= 출력됨
+
+---
+
+#### 해결책 #1 move setter 와 copy setter 를 별도의 함수로 제공
+
+장점 : 오버헤드가 없다.
+
+단점 : setter 함수를 2개를 제공해야 한다.
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Data
+{
+public:
+    Data() {}
+    ~Data() {}
+
+    Data(const Data& t) { cout << "Copy" << endl;}
+    Data(Data&& t) noexcept { cout << "Move" << endl;}
+    Data& operator=(const Data& t) { cout << "Copy=" << endl; return *this; }
+    Data& operator(Data&& t) noexcpet { cout << "Move=" << endl; return *this; }
+};
+
+class Test
+{
+    Data data;
+public:
+    void setData(const Data& d) { data = d; }
+    void setData(Data&& d) { data = move(d); }
+};
+
+int main()
+{
+    Test test;
+    Data d;
+    test.setData(d);    // copy=
+    test.setData(move(d)); // move=
+}
+```
+
+---
+
+#### 해결책 #2 call by value를 사용하는 방법
+
+장점 : setter 함수는 한 개만 제공하면 된다.
+
+단점 : 약간의 오버헤드가 있다.(move 1회)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Data
+{
+public:
+    Data() {}
+    ~Data() {}
+
+    Data(const Data& t) { cout << "Copy" << endl;}
+    Data(Data&& t) noexcept { cout << "Move" << endl;}
+    Data& operator=(const Data& t) { cout << "Copy=" << endl; return *this; }
+    Data& operator(Data&& t) noexcpet { cout << "Move=" << endl; return *this; }
+};
+
+class Test
+{
+    Data data;
+public:
+    // call by value
+    void setData(Data d) { data = move(d); }
+};
+
+int main()
+{
+    Test test;
+    Data d;
+    test.setData(d);    // copy=
+                        // copy 생성, move=
+    test.setData(move(d)); // move=
+                           // move 생성, move=
+}
+```
+
+---
+
+#### 해결책 #3 forwarding reference
+
+장점 : 오버헤드가 없고, 하나의 함수 템플릿만 제공하면 된다.
+
+단점 : side effect 를 고려해야한다.(템플릿이니까 꼭 데이터 타입이 아니여도 함수가 생성될 수 있음... 뒤에 막는 기법 설명)
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+class Data
+{
+public:
+    Data() {}
+    ~Data() {}
+
+    Data(const Data& t) { cout << "Copy" << endl;}
+    Data(Data&& t) noexcept { cout << "Move" << endl;}
+    Data& operator=(const Data& t) { cout << "Copy=" << endl; return *this; }
+    Data& operator(Data&& t) noexcpet { cout << "Move=" << endl; return *this; }
+};
+
+class Test
+{
+    Data data;
+public:
+    template<typename T> void setData(T&& a)
+    {
+        data = std::forward<T>(a);
+    }
+};
+
+int main()
+{
+    Test test;
+    Data d;
+    test.setData(d);    // copy=
+    test.setData(move(d)); // move=
 }
 ```
