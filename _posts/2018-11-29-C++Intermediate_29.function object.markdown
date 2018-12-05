@@ -359,3 +359,22 @@ int main()
 
 > 함수 객체 요점정리
 
+#### 함수 객체
+
+A FunctionObject type is the type of an object that can be used on the left of the function call operator
+
+- () 연산자를 정의한 클래스
+- 함수 포인터, 멤버함수 포인터 등
+
+#### 일반함수와 함수 객체의 차이점
+
+- 일반함수는 자신만의 타입이 없다.
+- Signature가 동일하면 모두 같은 타입이다.
+- 함수 객체는 자신만의 타입이 있다.
+- Signature가 동일해도 모든 함수 객체는 다른 타입이다.
+
+#### 함수 객체의 장점
+
+- 다른 함수의 인자로 사용될 때 인라인 치환 가능
+- 상태를 가지는 함수
+
