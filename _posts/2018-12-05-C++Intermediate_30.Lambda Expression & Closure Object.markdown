@@ -209,3 +209,26 @@ int main()
 
 > lambda & suffix return type
 
+``` cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+     auto f1 = [](int a, int b) { return a + b; };
+     auto f2 = [](int a, int b) -> int { return a + b; };
+     auto f3 = [](int a, int b) { 
+        if (a == 1)
+            return a;
+        else
+            return b; 
+     };
+
+     auto f4 = [](int a, double b) -> double { // 컴파일러가 어떤 타입으로 return 해야하는지 모름 error -> double로 지정
+        if (a == 1)
+            return a;
+        else
+            return b; 
+     };
+}
+```
