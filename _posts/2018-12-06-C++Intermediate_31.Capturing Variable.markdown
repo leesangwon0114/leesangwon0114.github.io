@@ -184,3 +184,134 @@ int main()
 
 > Conversion
 
+람다표현식과 함수포인터로의 변환
+
+``` cpp
+class ClosureType
+{
+public:
+    int operator()(int a, int b) const
+    {
+        return a + b;
+    }
+
+    static int method(int a, int b)
+    {
+        return a + b;
+    }
+    
+    
+    typedef int(*F)(int, int);
+
+    operator F()
+    {
+        // return &ClosureType::operator(); // 멤버함수는 불가 -> 일반함수 필요(static 하나 더 만듬)
+        return &ClosureType::method;
+    }
+}
+
+int main()
+{
+    int(*f)(int, int) = [](int a, int b)
+    {
+        return a + b;
+    }
+}
+```
+
+괄호연산자는 static 이 될 수 없으므로 별도의 static method 가 생성되어 리턴시킴
+
+Capture 할 때 문제가 됨
+
+``` cpp
+class ClosureType
+{
+public:
+    ClosureType(int a) : v(a) {}
+    int operator()(int a, int b) const
+    {
+        return a + b + v;
+    }
+
+    static int method(int a, int b)
+    {
+        return a + b + v; ? error
+    }
+    
+    
+    typedef int(*F)(int, int);
+
+    operator F()
+    {
+        // return &ClosureType::operator(); // 멤버함수는 불가 -> 일반함수 필요(static 하나 더 만듬)
+        return &ClosureType::method;
+    }
+}
+
+int main()
+{
+    int(*f)(int, int) = [](int a, int b)
+    {
+        return a + b;
+    }
+
+    int v = 0;
+
+    // capture 구문을 사용하면 함수포인터로 암시적 변환 될 수 없다.
+    int(*f)(int, int) = [v](int a, int b)
+    {
+        return a + b + v;
+    }
+}
+```
+
+따라서 Capture 하지 않은 함수포인터만 암시적 변환이 됨
+
+---
+
+> Lambda MISC
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+// g++ 만 지원되고 있음(Concept Ts 내용)
+// void foo(auto n) {}
+
+int main()
+{
+    // generic lambda : C++14
+    auto f1 = [](auto a, auto b) { return a + b; };
+    cout << f1(1, 2.1) << endl;
+
+    auto f2 = [](int a) { return 10; };
+    // nullary lambda
+    auto f4 = [] { return 10; }; // 인자가 없을 때 () 빼도됨
+
+    // C++17 : () 함수를 constexpr 함수로...(인자로 liternal이 오면 컴파일 시간에 대입시킴)
+    auto f3 = [](int a, int b) constexpr
+    {
+        return a + b;
+    };
+
+    int y[f3(1,2)]; // 컴파일 시간에 계산되면 가능
+}
+```
+
+---
+
+``` cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    auto f1 = [](int a, int b) { return a + b; };
+
+    decltype(f1) f2; // error. default 생성자가 삭제되어 있어서 error
+
+    decltype(f1) f3 = f1; // ok. 복사생성자는 기본버전이 제공되 문제 없음
+
+    decltype(f1) f4 = move(f1); // ok. Move 생성자도 기본버전이 제공됨
+}
+```
