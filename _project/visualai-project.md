@@ -11,4 +11,4 @@ slug: "visualai-project"
 
 [프로젝트 보고서](https://drive.google.com/file/d/1w3LGIZ8lOnmjpT3T-du7QoxeglvZGVr7/view?usp=sharing)
 
-[github code] (https://github.com/leesangwon0114/visualAI)
+[github code](https://github.com/leesangwon0114/visualAI)
