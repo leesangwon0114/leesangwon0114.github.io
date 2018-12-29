@@ -2,7 +2,7 @@
 	{
 		"slug": "visualai-project",
 		"name": "MLP & MNIST CNN Model",
-		"image": "visualai.png",
+		"image": "visualai.PNG",
 		"date": "DEC 2018",
 		"tags": ["Tensorflow", "python"]
 	},
