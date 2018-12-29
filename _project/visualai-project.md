@@ -1,6 +1,6 @@
 ---
 layout: project_single
-title:  "Visual AI Project"
+title:  "Visual AI Project(MLP, CNN)"
 slug: "visualai-project"
 ---
 연세대학교 공학대학원 4학기 VisualAI 수업에서 MLP, CNN 모델을 이용한 프로젝트 수행
