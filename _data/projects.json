@@ -1,5 +1,12 @@
 [
 	{
+		"slug": "visualai-project",
+		"name": "MLP & MNIST CNN Model",
+		"image": "visualai.png",
+		"date": "DEC 2018",
+		"tags": ["Tensorflow", "python"]
+	},
+	{
 		"slug": "graph-project",
 		"name": "Recommand System Using Graph",
 		"image": "graph.png",
