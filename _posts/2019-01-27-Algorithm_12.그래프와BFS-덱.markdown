@@ -1,4 +1,4 @@
-ㅠ---
+---
 layout: post
 title:  "Algorithm;12.&nbsp;그래프와BFS - 덱"
 date:   2019-01-27 02:18:15 +0700
