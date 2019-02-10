@@ -1,0 +1,70 @@
+---
+layout: post
+title:  "Algorithm;14.&nbsp;다이나믹 프로그래밍 문제풀이 4"
+date:   2019-02-10 02:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+#### 제곱수의 합 문제
+
+[제곱수의 합 문제](https://www.acmicpc.net/problem/1699)
+
+``` cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+  int N = 0;
+  cin >> N;
+  vector<int> dp(N + 1, 0);
+  for (int i = 1; i <= N; ++i) {
+    dp[i] = i;
+    for (int j = 1; j*j <= i; ++j) {
+      if (dp[i] > dp[i - j * j] + 1) {
+        dp[i] = dp[i - j * j] + 1;
+      }
+    }
+  }
+  cout << dp[N] << '\n';
+
+  return 0;
+}
+```
+
+#### 합 분해 문제
+
+[합 분해 문제](https://www.acmicpc.net/problem/2225)
+
+``` cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+  int N = 0;
+  int K = 0;
+  const long long mod = 1000000000;
+  cin >> N >> K;
+
+  vector<vector<long long>> dp(K + 1, vector<long long>(N + 1, 0));
+  dp[0][0] = 1;
+  for (long long k = 1; k <= K; ++k) {
+    for (long long i = 0; i <= N; ++i) {
+      for (long long j = 0; j <= i; ++j) {
+        dp[k][i] += dp[k - 1][i - j];
+        dp[k][i] %= mod;
+      }
+    }
+  }
+  cout << dp[K][N] << '\n';
+  return 0;
+}
+```

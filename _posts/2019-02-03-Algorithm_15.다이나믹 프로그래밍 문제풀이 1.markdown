@@ -1,0 +1,108 @@
+---
+layout: post
+title:  "Algorithm;14.&nbsp;다이나믹 프로그래밍 문제풀이 1"
+date:   2019-02-03 04:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+#### 1로 만들기 문제
+
+[1로 만들기 문제](https://www.acmicpc.net/problem/1463)
+
+``` cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+  int N = 0;
+  cin >> N;
+
+  vector<int> dp(N + 1, 0);
+  dp[0] = 0;
+  dp[1] = 0;
+
+  for (int i = 2; i <= N; ++i) {
+    if (dp[i] > 0) return dp[i];
+    dp[i] = dp[i - 1] + 1;
+    if (i % 3 == 0 && dp[i] > dp[i/3]) {
+      dp[i] = dp[i / 3] + 1;
+    }
+    if (i % 2 == 0 && dp[i] > dp[i / 2]) {
+      dp[i] = dp[i / 2] + 1;
+    }
+  }
+  cout << dp[N] << '\n';
+  return 0;
+}
+```
+
+#### 카드 구매하기 문제
+
+[카드 구매하기 문제](https://www.acmicpc.net/problem/11052)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <limits>
+#include <algorithm>
+using namespace std;
+
+int main() {
+  int N = 0;
+  cin >> N;
+
+  vector<int> P(N + 1, 0);
+  vector<int> dp(N + 1, 0);
+  for (int i = 1; i <= N; ++i) {
+    cin >> P[i];
+  }
+
+  dp[0] = 0;
+  for (int i = 1; i <= N; ++i) {
+    for (int j = 1; j <= i; ++j) {
+      dp[i] = max(dp[i], P[j] + dp[i - j]);
+    }
+  }
+  cout << dp[N] << '\n';
+  return 0;
+}
+```
+
+#### 카드 구매하기2 문제
+
+[카드 구매하기2 문제](https://www.acmicpc.net/problem/16194)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <limits>
+#include <algorithm>
+using namespace std;
+
+int main() {
+  int N = 0;
+  cin >> N;
+
+  vector<int> P(N + 1, 0);
+  vector<int> dp(N + 1, numeric_limits<int>::max());
+  for (int i = 1; i <= N; ++i) {
+    cin >> P[i];
+  }
+
+  dp[0] = 0;
+  for (int i = 1; i <= N; ++i) {
+    for (int j = 1; j <= i; ++j) {
+      dp[i] = min(dp[i], P[j] + dp[i - j]);
+    }
+  }
+  cout << dp[N] << '\n';
+  return 0;
+}
+```

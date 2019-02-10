@@ -1,0 +1,186 @@
+---
+layout: post
+title:  "Algorithm;13.&nbsp;그래프와BFS - BFS2"
+date:   2019-01-27 03:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+> BFS2
+
+#### 벽부수고 이동하기 문제
+
+[벽부수고 이동하기 문제](https://www.acmicpc.net/problem/2206)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  int d;
+  Point(int a, int b, int c) : x(a), y(b), d(c) {}
+};
+
+int dst[1000][1000][2];
+
+int main() {
+  int N = 0;
+  int M = 0;
+  const int dx[] = {-1,1,0,0};
+  const int dy[] = {0,0,-1,1};
+  cin >> N >> M;
+  vector<vector<int>> arr(N + 1, vector<int>(M, 0));
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < M; ++j) {
+      scanf_s("%1d", &arr[i][j]);
+    }
+  }
+
+  queue<Point> q;
+  q.push(Point(0, 0, false));
+  dst[0][0][0] = 1;
+  while (!q.empty()) {
+    Point cur = q.front(); q.pop();
+    for (int k = 0; k < 4; ++k) {
+      int nx = cur.x + dx[k];
+      int ny = cur.y + dy[k];
+
+      if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
+        if (arr[nx][ny] == 0 && dst[nx][ny][cur.d] == 0) {
+          dst[nx][ny][cur.d] = dst[cur.x][cur.y][cur.d] + 1;
+          q.push(Point(nx, ny, cur.d));
+        }
+        if (cur.d == false && arr[nx][ny] == 1 && dst[nx][ny][cur.d+1] == 0) {
+          dst[nx][ny][cur.d+1] = dst[cur.x][cur.y][cur.d] + 1;
+          q.push(Point(nx, ny, cur.d+1));
+        }
+      }
+    }
+  }
+  int result = 0;
+  if (dst[N - 1][M - 1][0] != 0 && dst[N - 1][M - 1][1] != 0) {
+    result = min(dst[N - 1][M - 1][0], dst[N - 1][M - 1][1]);
+  }
+  else if (dst[N - 1][M - 1][0] != 0) {
+    result = dst[N - 1][M - 1][0];
+  }
+  else if (dst[N - 1][M - 1][1] != 0) {
+    result = dst[N - 1][M - 1][1];
+  }
+  else {
+    result = -1;
+  }
+  cout << result << '\n';
+  return 0;
+}
+```
+
+#### 탈출 문제
+
+[탈출 문제](https://www.acmicpc.net/problem/3055)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits>
+#include <string>
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  Point(int a, int b) : x(a), y(b) {}
+};
+
+int main()
+{
+  int R = 0;
+  int C = 0;
+
+  const int dx[] = {-1,1,0,0};
+  const int dy[] = {0,0,-1,1};
+
+  scanf_s("%d %d\n", &R, &C);
+
+  Point start(0,0);
+  Point finish(0, 0);
+
+  queue<Point> waterqueue;
+
+  vector<string> map(R);
+  vector<vector<int>> water(R, vector<int>(C, numeric_limits<int>::max()));
+  vector<vector<int>> dst(R, vector<int>(C, -1));
+  for(int i=0; i < R; i++) {
+    cin >> map[i];
+    for (int j = 0; j < C; j++) {;
+      if (map[i][j] == 'S') {
+        start.x = i;
+        start.y = j;
+      }
+      if (map[i][j] == 'D') {
+        finish.x = i;
+        finish.y = j;
+      }
+      if (map[i][j] == '*') {
+        water[i][j] = 0;
+        waterqueue.push(Point(i, j));
+      }
+    }
+  }
+
+  while (!waterqueue.empty()) {
+    Point cur = waterqueue.front(); waterqueue.pop();
+    for (int k = 0; k < 4; ++k) {
+      int nx = cur.x + dx[k];
+      int ny = cur.y + dy[k];
+
+      if (nx >= 0 && nx < R && ny >= 0 && ny < C) {
+        if (map[nx][ny] != 'X' && map[nx][ny] != 'D' && water[nx][ny] == numeric_limits<int>::max()) {
+          water[nx][ny] = water[cur.x][cur.y] + 1;
+          waterqueue.push(Point(nx, ny));
+        }
+      }
+    }
+  }
+
+  queue<Point> q;
+  q.push(start);
+  dst[start.x][start.y] = 0;
+
+  while (!q.empty()) {
+    Point cur = q.front(); q.pop();
+
+    for (int k = 0; k < 4; ++k) {
+      int nx = cur.x + dx[k];
+      int ny = cur.y + dy[k];
+
+      if (nx >= 0 && nx < R && ny >= 0 && ny < C) {
+        if ((map[nx][ny] != 'X')) {
+          if ((water[nx][ny] > dst[cur.x][cur.y] + 1) && dst[nx][ny] == -1) {
+            dst[nx][ny] = dst[cur.x][cur.y] + 1;
+            q.push(Point(nx, ny));
+          }
+        }
+      }
+    }
+  }
+
+  if (dst[finish.x][finish.y] !=-1) {
+    cout << dst[finish.x][finish.y] << '\n';
+  }
+  else {
+    cout << "KAKTUS\n";
+  }
+  return 0;
+}
+```

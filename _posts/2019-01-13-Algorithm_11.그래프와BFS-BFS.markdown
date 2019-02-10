@@ -1,0 +1,316 @@
+ㅠ---
+layout: post
+title:  "Algorithm;11.&nbsp;그래프와BFS - BFS"
+date:   2019-01-13 02:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+> BFS
+
+bFS는 최단거리를 구하는 알고리즘
+
+-> 모든 가중치가 1일때! BFS는 최단거리를 구하는 알고리즘으로 변하게된다.
+
+1. 최소비용 문제이어야 한다.
+2. 간선의 가중치가 1이어야 한다.
+3. 정점과 간선의 개수가 적어야 한다.(문제의 시간과 메모리 제한 지켜야함)
+
+-> 간선의 가중치와 최소비용이 같아야함
+
+#### 미로탐색 문제
+
+[미로탐색 문제](https://www.acmicpc.net/problem/2178)
+
+``` cpp
+#include<iostream>
+#include<vector>
+#include<cstdio>
+#include<queue>
+
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  int cnt;
+  Point(int a, int b, int c = 0) : x(a), y(b), cnt(c) { }
+};
+
+class Miro {
+  int dx[4] = { 0, 0, -1, 1 };
+  int dy[4] = { -1, 1, 0, 0 };
+  int N;
+  int M;
+  vector<vector<bool>> check;
+  int result = 0;
+public:
+  void bfs(int x, int y, int c, vector<vector<int>>& m) {
+    queue<Point> q;
+    q.push(Point(x, y, c));
+    check[x][y] = true;
+
+    while (!q.empty()) {
+      Point p = q.front(); q.pop();
+      if (p.x == N - 1 && p.y == M - 1) {
+        result = p.cnt + 1;
+        break;
+      }
+      for (int k = 0; k < 4; ++k) {
+        if (p.x + dx[k] >= 0 && p.x + dx[k] < N && p.y + dy[k] >= 0 && p.y + dy[k] < M) {
+          if (m[p.x + dx[k]][p.y + dy[k]] == 1 && check[p.x + dx[k]][p.y + dy[k]] == false) {
+            check[p.x + dx[k]][p.y + dy[k]] = true;
+            q.push(Point(p.x + dx[k], p.y + dy[k], p.cnt+1));
+          }
+        }
+      }
+    }
+    cout << result << endl;
+  }
+  void operator()(int n, int m, vector<vector<int>>& map) {
+    check.assign(n, vector<bool>(m, false));
+    N = n;
+    M = m;
+    bfs(0, 0, 0, map);
+  }
+};
+
+int main()
+{
+  int N = 0;
+  int M = 0;
+
+  scanf_s("%d %d", &N, &M);
+  vector<vector<int>> map(N, vector<int>(M, 0));
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < M; ++j) {
+      scanf_s("%1d", &map[i][j]);
+    }
+  }
+
+  Miro m;
+  m(N, M, map);
+  return 0;
+}
+```
+
+#### 토마토 문제
+
+[토마토 문제](https://www.acmicpc.net/problem/7576)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  int day;
+  Point(int a, int b, int c) : x(a), y(b), day(c) {}
+};
+
+class Ripe {
+  int dx[4] = { 0, 0, -1, 1 };
+  int dy[4] = { -1, 1, 0, 0 };
+  int N;
+  int M;
+  vector<vector<int>> day;
+public:
+  void operator()(int n, int m, vector<vector<int>>& t) {
+    N = n;
+    M = m;
+    day.assign(N, vector<int>(M, -1));
+
+    queue<Point> q;
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < M; ++j) {
+        if (t[i][j] == 1) {
+          day[i][j] = 0;
+          q.push(Point(i, j, 0));
+        }
+      }
+    }
+
+    while (!q.empty()) {
+      Point p = q.front(); q.pop();
+      for (int k = 0; k < 4; ++k) {
+        if (p.x + dx[k] >= 0 && p.x + dx[k] < N && p.y + dy[k] >= 0 && p.y + dy[k] < M) {
+          if (t[p.x + dx[k]][p.y + dy[k]] == 0 && day[p.x + dx[k]][p.y + dy[k]] == -1) {
+            day[p.x + dx[k]][p.y + dy[k]] = p.day + 1;
+            q.push(Point(p.x + dx[k], p.y + dy[k], p.day + 1));
+          }
+        }
+      }
+    }
+  }
+
+  void print(vector<vector<int>>& t) {
+    int result = 0;
+    bool all = true;
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < M; ++j) {
+        result = max(day[i][j], result);
+      }
+    }
+
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < M; ++j) {
+        if (t[i][j] == 0 && day[i][j] == -1)
+          result = -1;
+      }
+    }
+    cout << result << endl;
+  }
+};
+
+int main()
+{
+  int M = 0;
+  int N = 0;
+
+  cin >> M >> N;
+  vector<vector<int>> tomato(N, vector<int>(M, 0));
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < M; ++j) {
+      cin >> tomato[i][j];
+    }
+  }
+  Ripe r;
+  r(N, M, tomato);
+  r.print(tomato);
+  return 0;
+}
+```
+
+---
+
+그래프 문제가 아닌 것을 그래프로 변경시켜 최단 거리 문제로 변경함
+
+#### 숨박꼭질 문제
+
+[숨박꼭질 문제](https://www.acmicpc.net/problem/1697)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+class hidegame {
+  bool check[200001] = { false, };
+  int dist[200001] = { 0, };
+  const int MAX = 200000;
+public:
+  void operator()(int n, int k) {
+    queue<int> q;
+    check[n] = true;
+    dist[n] = 0;
+    q.push(n);
+    while (!q.empty()) {
+      int cur = q.front(); q.pop();
+      if (cur - 1 >= 0) {
+        if (check[cur - 1] == false) {
+          q.push(cur - 1);
+          check[cur - 1] = true;
+          dist[cur - 1] = dist[cur] + 1;
+        }
+      }
+      if (cur + 1 < MAX) {
+        if (check[cur + 1] == false) {
+          q.push(cur + 1);
+          check[cur + 1] = true;
+          dist[cur + 1] = dist[cur] + 1;
+        }
+      }
+      if (cur * 2 < MAX) {
+        if (check[cur * 2] == false) {
+          q.push(cur * 2);
+          check[cur * 2] = true;
+          dist[cur * 2] = dist[cur] + 1;
+        }
+      }
+    }
+    cout << dist[k] << '\n';
+  }
+};
+
+int main()
+{
+  int N = 0;
+  int K = 0;
+  cin >> N >> K;
+
+  hidegame hg;
+  hg(N, K);
+  return 0;
+}
+```
+
+#### 이모티콘 문제
+
+[이모티콘 문제](https://www.acmicpc.net/problem/14226)
+
+``` cpp
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+struct state {
+  int s;
+  int c;
+  state(int screen, int clip) : s(screen), c(clip) {}
+};
+
+int dst[1001][1001];
+
+int main()
+{
+  int S = 0;
+  cin >> S;
+
+  memset(dst, -1, sizeof(dst));
+
+  queue<state> q;
+  q.push(state(1, 0));
+  dst[1][0] = 0;
+  while (!q.empty()) {
+    state cur = q.front(); q.pop();
+
+    if (dst[cur.s][cur.s] == -1) {
+      dst[cur.s][cur.s] = dst[cur.s][cur.c] + 1;
+      q.push(state(cur.s, cur.s));
+    }
+    
+    if (cur.s + cur.c <= S && dst[cur.s + cur.c][cur.c] == -1) {
+      dst[cur.s + cur.c][cur.c] = dst[cur.s][cur.c] + 1;
+      q.push(state(cur.s + cur.c, cur.c));
+    }
+
+    if (cur.s - 1 >= 0 && dst[cur.s - 1][cur.c] == -1) {
+      dst[cur.s - 1][cur.c] = dst[cur.s][cur.c] + 1;
+      q.push(state(cur.s - 1, cur.c));
+    }
+  }
+
+  int result = -1;
+  for (int i = 0; i <= S; ++i) {
+    if (dst[S][i] != -1) {
+      if (result == -1 || dst[S][i] < result)
+        result = dst[S][i];
+    }
+  }
+
+  cout << result << '\n';
+  return 0;
+}
+```
+
+-> memset 쓰기위해 cstring 해더 포함하기

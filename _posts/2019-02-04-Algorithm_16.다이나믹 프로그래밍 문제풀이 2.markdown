@@ -1,0 +1,251 @@
+---
+layout: post
+title:  "Algorithm;14.&nbsp;다이나믹 프로그래밍 문제풀이 2"
+date:   2019-02-04 02:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+#### 1,2,3 더하기 5 문제
+
+[1,2,3 더하기 5 문제](https://www.acmicpc.net/problem/15990)
+
+이전에 점화식을 D[N] = D[N-1] + D[N-2] + D[N-3] 이렇게 세웠음
+
+단, 같은 수를 두번 이상 연속해서 사용하면 안되는 조건이 추가됨
+
+-> D[N] 점화식을 3개로 나눔(마지막에 오는 수가 무엇인지에 따라서)
+
+D[i][j] = 마지막에 사용한 수는 j(1,2,3)
+
+``` cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+  const long long m = 1000000009;
+  vector<vector<long long>> dp(100001, vector<long long>(4, 0));
+
+  for (int i = 1; i < 100001; ++i) {
+    if (i >= 1) {
+      dp[i][1] = dp[i - 1][2] + dp[i - 1][3];
+      if (i==1)
+        dp[1][1] = 1;
+    }
+    if (i >= 2) {
+      dp[i][2] = dp[i - 2][1] + dp[i - 2][3];
+      if (i==2)
+        dp[2][2] = 1;
+    }
+    if (i >= 3) {
+      dp[i][3] = dp[i - 3][1] + dp[i - 3][2];
+      if (i==3)
+        dp[3][3] = 1;
+    }
+
+    dp[i][1] %= m;
+    dp[i][2] %= m;
+    dp[i][3] %= m;
+  }
+  int T = 0;
+  cin >> T;
+  while (T--) {
+    int n = 0;
+    cin >> n;
+    cout << (dp[n][1] + dp[n][2] + dp[n][3]) % m << '\n';
+  }
+  return 0;
+}
+```
+
+#### 쉬운 계단 수 문제
+
+[쉬운 계단 수 문제](https://www.acmicpc.net/problem/10844)
+
+``` cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+  long long mod = 1000000000;
+
+  int N = 0;
+  cin >> N;
+
+  vector<vector<int>> dp(N + 1, vector<int>(10, 0));
+
+  for (int i = 1; i <= 9; ++i) dp[1][i] = 1;
+
+  for(int i=2; i<=N; ++i) {
+    for (int j = 0; j <= 9; ++j) {
+      if (j - 1 >= 0) dp[i][j] += dp[i - 1][j - 1];
+      if (j + 1 <= 9) dp[i][j] += dp[i - 1][j + 1];
+      dp[i][j] %= mod;
+    }
+  }
+
+  long long result = 0;
+  for (int j = 0; j <= 9; ++j) {
+    result += dp[N][j];
+  }
+  cout << result % mod << '\n';
+  return 0;
+}
+```
+
+#### 오르막 수 문제
+
+[오르막 수 문제](https://www.acmicpc.net/problem/11057)
+
+``` cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+  const int mod = 10007;
+
+  int N = 0;
+  cin >> N;
+
+  vector<vector<int>> dp(N + 1, vector<int>(10, 0));
+
+  for (int i = 0; i <= 9; ++i) dp[1][i] = 1;
+
+  for (int i = 2; i <= N; ++i) {
+    for (int j = 0; j <= 9; ++j) {
+      for (int k = 0; k <= j; ++k) {
+        dp[i][j] += dp[i-1][k];
+      }
+      dp[i][j] %= mod;
+    }
+  }
+
+  long long result = 0;
+  for (int i = 0; i <= 9; ++i) {
+    result += dp[N][i];
+  }
+  cout << result % mod << '\n';
+  return 0;
+}
+```
+
+#### 이친수 문제
+
+-> 1차원으로도 풀수있음(0,1 이므로) i-2에 0, 1 이 다음으로 무조건 와야함
+
+-> D[N] = D[N-1] + D[N-2] (참고)
+
+[이친수 문제](https://www.acmicpc.net/problem/2193)
+
+``` cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+  int N = 0;
+  cin >> N;
+
+  vector<vector<long long>> dp(N + 1, vector<long long>(2, 0));
+
+  dp[1][0] = 0;
+  dp[1][1] = 1;
+
+  for (int i = 2; i <= N; ++i) {
+    dp[i][0] = dp[i - 1][0] + dp[i - 1][1];
+    dp[i][1] = dp[i - 1][0];
+  }
+
+  cout << dp[N][0] + dp[N][1] << '\n';
+  return 0;
+}
+```
+
+#### 스티커 문제
+
+DP는 최대빼고는 의미가 없는 경우가 많음
+
+[스티커 문제](https://www.acmicpc.net/problem/9465)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+  int T = 0;
+  cin >> T;
+  while (T--) {
+    int n = 0;
+    cin >> n;
+
+    vector <vector<long long>> sticker(3, vector<long long>(n+1, 0));
+    vector <vector<long long>> dp(n + 1, vector<long long>(3, 0));
+    for (int i = 0; i <= 1; ++i) {
+      for (int j = 1; j <= n; ++j) {
+        cin >> sticker[i][j];
+      }
+    }
+    dp[1][0] = 0;
+    dp[1][1] = sticker[0][1];
+    dp[1][2] = sticker[1][1];
+
+    for (int i = 2; i <= n; ++i) {
+      dp[i][0] = max(dp[i - 1][0], max(dp[i - 1][1], dp[i - 1][2]));
+      dp[i][1] = max(dp[i - 1][0], dp[i - 1][2]) + sticker[0][i];
+      dp[i][2] = max(dp[i - 1][0], dp[i - 1][1]) + sticker[1][i];
+    }
+
+    long long ans = 0;
+    for (int i = 1; i <= n; i++) {
+      ans = max(max(ans, dp[i][0]), max(dp[i][1], dp[i][2]));
+    }
+    cout << ans << '\n';
+  }
+  return 0;
+}
+```
+
+#### 포도주 시식 문제
+
+[포도주 시식 문제](https://www.acmicpc.net/problem/2156)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main() {
+  int n = 0;
+  cin >> n;
+
+  vector<long long> graph(n + 1, 0);
+  vector<long long> dp(n + 1, 0);
+  for(int i=1; i<=n; ++i) {
+    cin >> graph[i];
+  }
+
+  dp[1] = graph[1];
+  dp[2] = graph[1] + graph[2];
+
+  for (int i = 3; i <= n; ++i) {
+    dp[i] = max(dp[i - 1], max(dp[i - 2] + graph[i], dp[i - 3] + graph[i - 1] + graph[i]));
+  }
+
+  cout << dp[n] << '\n';
+  return 0;
+}
+```

@@ -1,0 +1,182 @@
+---
+layout: post
+title:  "Algorithm;10.&nbsp;그래프와BFS - 플러드 필"
+date:   2019-01-13 01:18:15 +0700
+categories: [Algorithm]
+published : false
+---
+
+codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
+
+---
+
+> 플러드 필
+
+어떤 위치와 연결된 모든 위치를 찾는 알고리즘
+
+#### 단지번호 붙이기 문제
+
+[단지번호 붙이기 문제](https://www.acmicpc.net/problem/2667)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  Point(int a, int b) : x(a), y(b) {}
+};
+
+class APTComplex {
+  int dx[4] = { 0, 0, -1, 1 };
+  int dy[4] = { -1, 1, 0, 0 };
+  vector<vector<bool>> check;
+  int result = 0;
+  vector<int> c;
+  int N;
+public:
+
+  void bfs(int x, int y, vector<vector<int>>& m) {
+    queue<Point> q;
+    q.push(Point(x, y));
+    check[x][y] = true;
+    result += 1;
+    int count = 1;
+    while (!q.empty()) {
+      Point p = q.front(); q.pop();
+      for (int k = 0; k < 4; ++k) {
+        if (p.x + dx[k] >= 0 && p.x + dx[k] < N && p.y + dy[k] >= 0 && p.y + dy[k] < N) {
+          if (m[p.x + dx[k]][p.y + dy[k]] == 1 && check[p.x + dx[k]][p.y + dy[k]] == false) {
+            check[p.x + dx[k]][p.y + dy[k]] = true;
+            q.push(Point(p.x + dx[k], p.y + dy[k]));
+            count++;
+          }
+        }
+      }
+    }
+    c.push_back(count);
+  }
+  void operator()(int n, vector<vector<int>>& m) {
+    N = n;
+    check.assign(n, vector<bool>(n, false));
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        if (m[i][j] == 1 && check[i][j] == false) {
+          bfs(i, j, m);
+        }
+      }
+    }
+  }
+
+  void print() {
+    cout << result << endl;
+    sort(c.begin(), c.end());
+    for (auto i = c.begin(); i < c.end(); ++i) {
+      cout << *i << endl;
+    }
+  }
+};
+
+int main()
+{
+  int N = 0;
+  scanf_s("%d", &N);
+  vector<vector<int>> map(N, vector<int>(N, 0));
+
+  for (int i = 0; i<N; i++) {
+    for (int j = 0; j<N; j++) {
+      scanf_s("%1d", &map[i][j]);
+    }
+  }
+
+  APTComplex ac;
+  ac(N, map);
+  ac.print();
+  return 0;
+}
+```
+
+#### 섬의 개수 문제
+
+[섬의 개수 문제](https://www.acmicpc.net/problem/4963)
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+struct Point {
+  int x;
+  int y;
+  Point(int a, int b) : x(a), y(b) {}
+};
+
+class land {
+  vector<vector<bool>> check;
+  int dx[8] = { 0,0,-1,1,-1,-1,1,1 };
+  int dy[8] = { -1,1,0,0,-1,1,-1,1 };
+  int w = 0;
+  int h = 0;
+  int count = 0;
+public:
+  void bfs(int x, int y, vector<vector<int>>& m) {
+    queue<Point> q;
+    q.push(Point(x, y));
+    check[x][y] == true;
+
+    while (!q.empty()) {
+      Point p = q.front(); q.pop();
+      for (int k = 0; k < 8; ++k) {
+        if (p.x + dx[k] >= 0 && p.x + dx[k] < h && p.y + dy[k] >= 0 && p.y + dy[k] < w) {
+          if (m[p.x + dx[k]][p.y + dy[k]] == 1 && check[p.x + dx[k]][p.y + dy[k]] == false) {
+            check[p.x + dx[k]][p.y + dy[k]] = true;
+            q.push(Point(p.x + dx[k], p.y + dy[k]));
+          }
+        }
+      }
+    }
+  }
+  void operator()(int iw, int ih, vector<vector<int>>& m) {
+    check.assign(ih, vector<bool>(iw, false));
+    w = iw;
+    h = ih;
+    for (int i = 0; i<ih; i++) {
+      for (int j = 0; j<iw; j++) {
+        if (m[i][j] == 1 && check[i][j] == false) {
+          count++;
+          bfs(i, j, m);
+        }
+      }
+    }
+    cout << count << endl;
+  }
+};
+
+int main() {
+  while (1) {
+    int w = 0;
+    int h = 0;
+    cin >> w >> h;
+
+    if (w == 0 && h == 0)
+      break;
+
+    vector<vector<int>> map(h, vector<int>(w, 0));
+    for (int i = 0; i<h; i++) {
+      for (int j = 0; j<w; j++) {
+        cin >> map[i][j];
+      }
+    }
+
+    land l;
+    l(w, h, map);
+
+  }
+  return 0;
+}
+```
