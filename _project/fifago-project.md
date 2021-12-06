@@ -11,6 +11,8 @@ AI 모델
 
 ![fifago1]( https://leesangwon0114.github.io/static/projects/fifago1.png )
 
+논문 링크
+
 [Paper Link](http://www.dcollection.net/handler/yonsei/000000520907)
 
 시연영상
