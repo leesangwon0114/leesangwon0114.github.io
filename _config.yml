@@ -4,7 +4,7 @@ author: leesangwon0114
 github: http://leesangwon0114.github.io
 about: I am software developer. Currently working in Nexon, focused in Python and C++.
 disqus_shortname: stackproblems
-google_analytics: UA-XXXXXXXX-Y
+google_analytics: G-WLF3GLY2TV
 avatar_url: /static/img/avatar.jpg
 
 enableTags: true
@@ -49,3 +49,10 @@ compress_html:
   clippings: all
   comments: ["<!-- ", " -->"]
   endings: all
+
+# Analytics
+analytics:
+  provider               : "google-gtag" 
+  google:
+    tracking_id          : "G-WLF3GLY2TV"
+    anonymize_ip         : # true, false (default)
