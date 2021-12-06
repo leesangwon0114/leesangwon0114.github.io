@@ -4,21 +4,24 @@ title: About Me
 permalink: /about/
 ---
 
-I am software developer. Currently working in Nexon, focused in Python and C++.
+I am Research Engineer. Currently working in KT.
 
 Education
 =============
-2017-Present Yonsei University 석사(졸업) Computer Engineering
+2017-2019 Yonsei University 석사(졸업) Computer Engineering
+* FIFAGO: Supervised Learning based AI to play FIFA Game 졸업논문
+* 공학대학원 최우수 졸업
 
 2010-2016 Hongik University 학사(졸업) Computer Engineering
+* 졸업작품전시회 최우수상
 
 
 Career
 =============
-KT, Research Enigineer, 2019.04-Present
+KT, Research Engineer, 2019.04-Present
 * 융합기술원 AI 연구소
 
-Nexon Korea, Software Enigineer, 2016.01-2019.03
+Nexon Korea, Software Engineer, 2016.01-2019.03
 * 플랫폼 본부 플랫폼 개발실 글로벌런처팀
 
 Samsung Software Membership, Developer, 2014-2015
