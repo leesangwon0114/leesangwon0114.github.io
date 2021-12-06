@@ -1,5 +1,13 @@
 [
 	{
+		"slug": "edgeai-project",
+		"name": "Edge AI(Object Detection/Segmentation)",
+		"image": "edgeai.png",
+		"date": "MAR 2020",
+		"url" : "https://www.youtube.com/watch?v=lJLmaaCg7Bc&t=117s",
+		"tags": ["Tensorflow", "python"]
+	},
+	{
 		"slug": "fifago-project",
 		"name": "FIFAGO(Graduation Paper)",
 		"image": "fifago.png",
