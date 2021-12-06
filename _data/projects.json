@@ -2,7 +2,7 @@
 	{
 		"slug": "fifago-project",
 		"name": "FIFAGO(Graduation Paper)",
-		"image": "fifago.PNG",
+		"image": "fifago.png",
 		"date": "AUG 2019",
 		"url" : "https://www.youtube.com/watch?v=kf1xkM03pE8",
 		"tags": ["Tensorflow", "python"]
