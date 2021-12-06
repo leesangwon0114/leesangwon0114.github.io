@@ -6,13 +6,16 @@ slug: "edgeai-project"
 Edge AI 기술 연구 개발
 
 1. 8ch FPN Network Object Segmentation with Xilinx ZCU102(FPGA Board)
-    <img src="https://leesangwon0114.github.io/static/projects/edgeai1.png  width="400" height="200"/>
+
+    ![edgeai1]( https://leesangwon0114.github.io/static/projects/edgeai1.png)
 
 2. YoloV3 Object Detection with Xilinx ZCU102(FPGA Board)
 
     ![edgeai2]( https://leesangwon0114.github.io/static/projects/edgeai2.jpeg )
 
 3. YoloV3 Custom Object(Person) Detection(GPU vs FPGA ZCU102 vs JetsonNano
+
+    ![edgeai]( https://leesangwon0114.github.io/static/projects/edgeai.png )
 
     시연영상
 
