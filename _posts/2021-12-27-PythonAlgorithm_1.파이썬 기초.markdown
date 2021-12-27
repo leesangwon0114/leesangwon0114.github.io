@@ -121,3 +121,32 @@ if not i % 10: # No
 ```
 
 ---
+
+#### 가변/불변 객체
+
+- 파이썬은 모든 것이 객체이다
+- immutable 객체 :  bool, int, float, tuple, str
+- mutable 객체 : list, set, dict
+
+``` python
+# 참조 변수에서 값을 조작하는 경우 참조 대상의 변수도 변경할 수 있게 됨
+a = [1,2,3]
+b = a
+b[2] = 5
+print(a) # [1,2,5]
+
+# is 는 id() 값을 비교하는 함수
+# None은 값 자체가 정의되어 있지 않아 ==로 비교 불가 -> is로만 가능
+if a is None:
+    pass
+
+a = [1,2,3]
+a == a # True
+a == list(a) # True
+a is a # True
+a is list(a) # False
+# 값은 동일하지만 list로 한 번 더 묶어주면 별도의 객체로 복사가 되고 다른 ID를 갖게 된다.
+a == copy.deepcopy(a) # True, 값은 같기 때문에
+a is copy.deepcopy(a) # False, ID는 다르기 때문에
+```
+---
