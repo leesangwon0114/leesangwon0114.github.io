@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Algorithm;8.&nbsp;그래프와BFS - 그래프"
+title:  "C++Algorithm;8.&nbsp;그래프와BFS - 그래프"
 date:   2019-01-12 01:18:15 +0700
-categories: [Algorithm]
-published : false
+categories: [Algorithm, c++]
+published : true
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)

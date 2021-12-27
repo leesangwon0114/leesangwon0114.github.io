@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Algorithm;6.&nbsp;브루트포스 - 비트마스크"
+title:  "C++Algorithm;6.&nbsp;브루트포스 - 비트마스크"
 date:   2019-01-06 02:18:15 +0700
-categories: [Algorithm]
-published : false
+categories: [Algorithm, c++]
+published : true
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)

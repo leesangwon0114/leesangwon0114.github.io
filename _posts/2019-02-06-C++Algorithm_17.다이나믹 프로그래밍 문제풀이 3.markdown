@@ -3,7 +3,7 @@ layout: post
 title:  "Algorithm;14.&nbsp;다이나믹 프로그래밍 문제풀이 3"
 date:   2019-02-06 02:18:15 +0700
 categories: [Algorithm]
-published : false
+published : true
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)

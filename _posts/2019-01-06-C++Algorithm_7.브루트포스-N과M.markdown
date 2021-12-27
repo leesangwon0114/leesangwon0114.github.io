@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Algorithm;7.&nbsp;브루트포스 - N과 M"
+title:  "C++Algorithm;7.&nbsp;브루트포스 - N과 M"
 date:   2019-01-06 03:18:15 +0700
-categories: [Algorithm]
-published : false
+categories: [Algorithm, c++]
+published : true
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)

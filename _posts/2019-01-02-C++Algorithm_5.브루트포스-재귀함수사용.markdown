@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Algorithm;5.&nbsp;브루트포스 - 재귀함수사용"
+title:  "C++Algorithm;5.&nbsp;브루트포스 - 재귀함수사용"
 date:   2019-01-02 02:18:15 +0700
-categories: [Algorithm]
-published : false
+categories: [Algorithm, c++]
+published : true
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
