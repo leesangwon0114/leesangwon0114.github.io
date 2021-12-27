@@ -121,8 +121,12 @@ a['C'] +=1
 a = [1,5,5,5,6,6]
 b = collections.Counter(a)
 # {5:3, 6:2, 1:1}
-b.most_common(2)
-# 가장 빈도가 높은 2개의 요소 추출
+b.most_common(2) # 가장 빈도가 높은 2개의 요소 추출
 # [(5,3), (6,2)]
 
+# OrderedDict
+# 파이썬 3.6 이하의 인터프리터 사용 시 입력 순서가 유지되지 않음
+# OrderedDict 사용하여 입력 순서 유지 시킬 수 있음
+collections.OrderedDict({'banana':3, 'apple':4})
+# OrderedDict([('banana', 3), ('apple', 4)])
 ```
