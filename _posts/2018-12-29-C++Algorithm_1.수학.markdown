@@ -1,9 +1,8 @@
 ---
 layout: post
-title:  "Algorithm;1.&nbsp;수학"
+title:  "C++Algorithm;1.&nbsp;수학"
 date:   2018-12-29 02:18:15 +0700
-categories: [Algorithm]
-published : true
+categories: [Algorithm, c++]
 ---
 
 codeplus 백준 강사 강의 내용기반으로 정리한 내용입니다.(비공개 포스트)
