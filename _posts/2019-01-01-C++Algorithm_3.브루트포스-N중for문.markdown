@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;3.&nbsp;브루트포스 - N중 for문"
+title:  "C++Algorithm 3.&nbsp;브루트포스 - N중 for문"
 date:   2019-01-01 03:18:15 +0700
 categories: [Algorithm, c++]
 ---

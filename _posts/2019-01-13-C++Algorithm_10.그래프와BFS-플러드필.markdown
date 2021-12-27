@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;10.&nbsp;그래프와BFS - 플러드 필"
+title:  "C++Algorithm 10.&nbsp;그래프와BFS - 플러드 필"
 date:   2019-01-13 01:18:15 +0700
 categories: [Algorithm, c++]
 ---

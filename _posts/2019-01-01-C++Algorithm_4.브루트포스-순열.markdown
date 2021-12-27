@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;4.&nbsp;브루트포스 - 순열"
+title:  "C++Algorithm 4.&nbsp;브루트포스 - 순열"
 date:   2019-01-01 04:18:15 +0700
 categories: [Algorithm, c++]
 ---

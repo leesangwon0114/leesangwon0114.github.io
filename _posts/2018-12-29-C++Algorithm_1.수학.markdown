@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;1.&nbsp;수학"
+title:  "C++Algorithm 1.&nbsp;수학"
 date:   2018-12-29 02:18:15 +0700
 categories: [Algorithm, c++]
 ---

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;5.&nbsp;브루트포스 - 재귀함수사용"
+title:  "C++Algorithm 5.&nbsp;브루트포스 - 재귀함수사용"
 date:   2019-01-02 02:18:15 +0700
 categories: [Algorithm, c++]
 ---

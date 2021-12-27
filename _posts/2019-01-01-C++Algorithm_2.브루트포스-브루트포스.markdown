@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;2.&nbsp;브루트포스 - 브루트포스"
+title:  "C++Algorithm 2.&nbsp;브루트포스 - 브루트포스"
 date:   2019-01-01 02:18:15 +0700
 categories: [Algorithm, c++]
 ---

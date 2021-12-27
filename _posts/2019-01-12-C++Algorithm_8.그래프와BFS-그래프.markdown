@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;8.&nbsp;그래프와BFS - 그래프"
+title:  "C++Algorithm 8.&nbsp;그래프와BFS - 그래프"
 date:   2019-01-12 01:18:15 +0700
 categories: [Algorithm, c++]
 ---

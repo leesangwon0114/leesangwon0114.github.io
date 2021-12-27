@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++Algorithm;17.&nbsp;다이나믹 프로그래밍 문제풀이 3"
+title:  "C++Algorithm 17.&nbsp;다이나믹 프로그래밍 문제풀이 3"
 date:   2019-02-06 02:18:15 +0700
 categories: [Algorithm, c++]
 ---
