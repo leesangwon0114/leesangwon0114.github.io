@@ -32,33 +32,33 @@ bash ./install_ros2_dashing.sh
 
 #### ROS2 의존 패키지 설치
 
-1. Colcon 설치
+- Colcon 설치
 
 ``` bash
 sudo apt install python3-colcon-common-extensions
 ```
 
-2. Gazebo9 설치 (ROS2 Foxy는 Gazebo11 이지만 Dashing은 Gazebo9)
+- Gazebo9 설치 (ROS2 Foxy는 Gazebo11 이지만 Dashing은 Gazebo9)
 
 ``` bash
 curl -sSL http://get.gazebosim.org | sh
 ```
 
-3. Cartographer 설치 (2D,3D 멀티플랫폼 SLAM 지원 패키지)
+- Cartographer 설치 (2D,3D 멀티플랫폼 SLAM 지원 패키지)
 
 ``` bash
 sudo apt install ros-dashing-cartographer
 sudo apt install ros-dashing-cartographer-ros
 ```
 
-4. Navigation2 설치
+- Navigation2 설치
 
 ``` bash
 sudo apt install ros-dashing-navigation2
 sudo apt install ros-dashing-nav2-bringup
 ```
 
-5. vsctool 설치 (프로젝트 워크스페이스 유지보수 - version-control system)
+- vsctool 설치 (프로젝트 워크스페이스 유지보수 - version-control system)
 
 ``` bash
 sudo apt install python3-vcstool
