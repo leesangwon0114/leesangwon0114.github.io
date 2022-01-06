@@ -64,4 +64,27 @@ sudo apt install ros-dashing-nav2-bringup
 sudo apt install python3-vcstool
 ```
 
+- TurtleBot3 패키지 설치
+
+``` bash
+source /opt/ros/dashing/setup.bash
+sudo apt install ros-dashing-dynamixel-sdk
+sudo apt install ros-dashing-turtlebot3-msgs
+sudo apt install ros-dashing-turtlebot3
+```
+
+- ROS 환경 설정
+
+``` bash
+echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
+echo 'export ROS_DOMAIN_ID=30 #TURTLEBOT3' >> ~/.bashrc
+source ~/.bashrc
+```
+
+마지막 source 명령어 실행 시 
+
+bash: /home/{$YOUR_ACCOUNT}/turtlebot3_ws/install/setup.bash: No such file or directory
+
+위의 에러는 무시해도 됨(apt install로 TurtleBot3 설치 시 warning 발생)
+
 ---
