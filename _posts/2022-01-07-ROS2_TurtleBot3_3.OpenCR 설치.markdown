@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "ROS2_TurtleBot3_3.&nbsp;OpenCR 설치"
-date:   2022-01-07 05:18:15 +0700
+title:  "ROS2_TurtleBot3_4.&nbsp;SLAM 기초"
+date:   2022-01-10 05:18:15 +0700
 categories: [ROS2]
 ---
 
@@ -9,72 +9,22 @@ Ubuntu 18,04 기반 ROS2 Dashing Diademeta 로 TurtleBot3 Waffle Pi 구동 과�
 
 ---
 
-> OpenCR Setup
+> SLAM
 
-#### OpenCR firmware 업로드
+TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차원 레이저 스캐너 HW와 ROS2 Dashing 에서는 Cartographer 를 default SLAM 알고리즘으로 사용
 
-- OpenCR을 라즈베리파이3에 micro USB케이블로 연결
-- dmesg | tail 명령어를 통해 ttyACM0에 정상 연결 확인
-- OpenCR firmware를 업로드 하기 위한 라즈베라피이 패키지 설치
+#### Lidar 센서란?
 
-``` bash
-sudo dpkg --add-architecture armhf
-sudo apt-get update
-sudo apt-get install libc6:armhf
-```
+- Radar는 전자기파를 내보내 물체를 감지하고, 물체에 반사된 전파를 분석해 거리나 속도 등을 측정하는 부품(저렴하지만 물체의 형태 인식 불가)
+- Lidar는 레이저를 내보내 물체를 감지하고, 반사된 빛을 분석해 지도로 구현하는 부품
+- Lidar는 레이저가 반사되어 돌아오는 시간 및 강도를 측정하고 이를 통해 방향, 속도, 온도, 물질의 농도 등의 특성을 파악 할 수 있음
+- Lidar 의 비싼 가격으로 개발 초기 360도 회전식 스캔 장비에서 고정형 라이더 센서 개발로 가격을 내리고 있음(고정형 라이다 센서를 여러군데 부착)
+- 카메라는 빛을 흡수하여 장면을 담기 때문에 빛의 영향을 받지만 라이다는 빛의 영향을 받지 않음(카메라와 비교해서 상당히 많은 환경에서 안정적으로 장애물을 인지하고 예측 가능)
+- 그러나 최근 카메라 기술이 좋아져 라이다를 대체하려고 하며, 테슬라 머스크는 레이더, 초음파센서(보통 차량 후방 주차감지에 쓰임), 카메라만으로 자율주행 구현함
 
-- OpenCR 환경 설정
+#### Lidar vs Radar 센서 비교
 
-``` bash
-export OPENCR_PORT=/dev/ttyACM0
-export OPENCR_MODEL=waffle
-rm -rf ./opencr_update.tar.bz2
-```
-
-- Firmware 와 Loader 다운로드 및 압축 해제
-
-``` bash
-wget https://github.com/ROBOTIS-GIT/OpenCR-Binaries/raw/master/turtlebot3/ROS2/latest/opencr_update.tar.bz2
-tar -xjf ./opencr_update.tar.bz2
-```
-
-- OpenCR로 Firmware 업로드
-
-``` bash
-cd ~/opencr_update
-./update.sh $OPENCR_PORT $OPENCR_MODEL.opencr
-```
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/3.1.png)
-
-위와 같은 화면이면 업로드 성공(노래 소리가 나옴)
-
-여기까지 설정 후 HW 조립
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/3.2.jpg)
-
----
-
-#### Bringup TurtleBot3 
-- TurtleBot3 APP 시작을 위한 Basic Packages 가져오기
-- ssh 를 통해 쉘 접속 후 아래 명령어 실행
-
-``` bash
-export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch turtlebot3_bringup robot.launch.py
-```
-
-- remote PC에서 키보드를 통한 제어 실행(Teleoperation)
-
-``` bash
-export TURTLEBOT3_MODEL=waffle_pi
-ros2 run turtlebot3_teleop teleop_keyboard
-```
-RemotePC의 키보드를 통한 원격 제어 해보기
-
-w/x 는 속도 증감
-
-a/d는 각도 증가 감소
-
-s 는 멈춤
-
+- 거리측면 :라이다는 근거리 물체를 감지ㅣ하기 어렵지만 레이더는 1m도 안 되는 거리의 물체부터 200m 이상 까지 감지되지만 시스템 유형(단거리, 중거리 등)에 따라 달라짐
+- 공간 분해능: 라이다는 백엔드 프로세싱 없이 물체들의 특징을 한 장면으로 3D 묘사 가능, 레이더의 파장은 거리가 늘어날수록 작은 특징들을 분석하는데 어려움
+- 날씨조건 :레이더는 비, 안개, 눈에 강하다, 라이더는 비, 안개, 눈 날씨 조건에서 성능 하락
+- 라이다와 카메라는 둘 다 주변 광 조건 영향을 받기 쉽지만 야간의 경우 라이다가 높은 성능을 보임, 레이더는 다른 센서들의 간섭에 강함
