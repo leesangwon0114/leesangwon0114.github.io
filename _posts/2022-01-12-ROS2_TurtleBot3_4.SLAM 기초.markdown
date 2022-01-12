@@ -90,7 +90,7 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 
 * 모션 모델 (motion model)
     - 로봇의 위치가 어떻게 변하는지를 표현
-    - 로봇이 $x_k-1$ 위치에서 컨트롤 입력 $u_k$ 를 받았을 때 새로운 로봇의 위치 $x_k$
+    - 로봇이 $x_{k-1}$ 위치에서 컨트롤 입력 $u_k$ 를 받았을 때 새로운 로봇의 위치 $x_k$
     - 로봇의 위치를 x라고 하면 x가 어떻게 변하는지 고려
     - $ x_k = f(x_{k-1}, u_k, w_k) $
         + $ u_k $: 모션 센서 입력 또는 컨트롤 입력
@@ -106,7 +106,7 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
         + $ u_{k,j} $: 센서모델에 대한 노이즈
     - 2차원 레이저 센서에서 2 지표를 관찰할 때 지표와 로봇의 거리 r 과 각도 Φ의 두 가지 양을 측정 가능
     - 랜드파크 $ y = [p_x, p_y]^T $ 로 기록하고 관측 자료는 $ z = [r, Φ]^T $ 이므로 관찰 방정식은 아래와 같음
-    - $\begin{bmatrix} \frac{r}{Φ} \end{bmatrix} = \begin{bmatrix}\sqrt {(p_x - x)^2 + (p_y - y)^2} \\ arctan \begin{pmatrix} p_y - y\\ p_x -x \\ \end{pmatrix}\\ \end{bmatrix} + u_{k,j}$
+    - $\begin{bmatrix} \frac{r}{Φ} \end{bmatrix} = \begin{bmatrix}  \frac{\sqrt {(p_x - x)^2 + (p_y - y)^2}}{arctan \begin{pmatrix} p_y - y\\ p_x -x \\ \end{pmatrix}} \end{bmatrix} + u_{k,j}$
     - ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/4.1.png)
 
 * SLAM의 상태 추정 문제로 모델링
