@@ -3,6 +3,7 @@ layout: post
 title:  "ROS2_TurtleBot3_4.&nbsp;SLAM 기초"
 date:   2022-01-12 05:18:15 +0700
 categories: [ROS2]
+use_math: true
 ---
 
 Ubuntu 18,04 기반 ROS2 Dashing Diademeta 로 TurtleBot3 Waffle Pi 구동 과정 정리
