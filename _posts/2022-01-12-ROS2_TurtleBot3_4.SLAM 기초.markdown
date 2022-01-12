@@ -20,7 +20,7 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 - https://adioshun.gitbooks.io/deep-slam/content/SLAM-kr-Tutorial/chapter-2.html
 - http://jinyongjeong.github.io/tag/SLAM/
 
-#### Lidar 센서란?
+>> #### Lidar 센서란?
 
 - Radar는 전자기파를 내보내 물체를 감지하고, 물체에 반사된 전파를 분석해 거리나 속도 등을 측정하는 부품(저렴하지만 물체의 형태 인식 불가)
 - Lidar는 레이저를 내보내 물체를 감지하고, 반사된 빛을 분석해 지도로 구현하는 부품
