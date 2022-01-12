@@ -20,7 +20,9 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 - https://adioshun.gitbooks.io/deep-slam/content/SLAM-kr-Tutorial/chapter-2.html
 - http://jinyongjeong.github.io/tag/SLAM/
 
->> #### Lidar 센서란?
+---
+
+#### Lidar 센서란?
 
 - Radar는 전자기파를 내보내 물체를 감지하고, 물체에 반사된 전파를 분석해 거리나 속도 등을 측정하는 부품(저렴하지만 물체의 형태 인식 불가)
 - Lidar는 레이저를 내보내 물체를 감지하고, 반사된 빛을 분석해 지도로 구현하는 부품
@@ -29,6 +31,8 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 - 카메라는 빛을 흡수하여 장면을 담기 때문에 빛의 영향을 받지만 라이다는 빛의 영향을 받지 않음(카메라와 비교해서 상당히 많은 환경에서 안정적으로 장애물을 인지하고 예측 가능)
 - 그러나 최근 카메라 기술이 좋아져 라이다를 대체하려고 하며, 테슬라 머스크는 레이더, 초음파센서(보통 차량 후방 주차감지에 쓰임), 카메라만으로 자율주행 구현함
 
+---
+
 #### Lidar vs Radar 센서 비교
 
 - 거리측면 : 라이다는 근거리 물체를 감지하기 어렵지만 레이더는 1m도 안 되는 거리의 물체부터 200m 이상 까지 감지되지만 시스템 유형(단거리, 중거리 등)에 따라 달라짐
@@ -36,17 +40,23 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 - 날씨조건 : 레이더는 비, 안개, 눈에 강하다, 라이더는 비, 안개, 눈 날씨 조건에서 성능 하락
 - 라이다와 카메라는 둘 다 주변 광 조건 영향을 받기 쉽지만 야간의 경우 라이다가 높은 성능을 보임, 레이더는 다른 센서들의 간섭에 강함
 
+---
+
 #### Lidar SLAM
 
 - Lidar sensor 입력을 기반으로 localization 과 Mapping 수행
 - LOAM 이 대표적인 SOTA알고리즘 중 하나임
 - https://www.ri.cmu.edu/pub_files/2014/7/Ji_LidarMapping_RSS2014_v8.pdf
 
+---
+
 #### Visual SLAM 카메라
 
 - 단안카메라 : 카메라 하나만 사용(거리정보를 상실하며, 진정한 스케일 확인 불가)
 - 양안카메라 : 두 카메라의 거리 정보를 기반으로 깊이를 추정(실내외 모두 사용 가능)
 - 깊이카메라 : Time of Flight(TOF) 또는 적외선 구조광 방식으로 측정해 깊이 값을 예측(좁은 범위, 높은 노이즈, 작은 시야, 햇빛에 쉽게 노출, 투과 물질 측정 불가)
+
+---
 
 #### 고전적인 시각적 SLAM 프레임 워크
 
@@ -85,6 +95,8 @@ TutleBot3 Waffle Pi 는 360 Laser Distance Sensor(LDS) - Lidar 즉, 360도 2차�
 
 - 맵핑
     - 맵을 빌드하는 과정
+
+---
 
 #### SLAM 문제의 수학적 표현
 
