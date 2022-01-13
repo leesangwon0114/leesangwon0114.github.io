@@ -44,11 +44,11 @@ https://research.google/pubs/pub45466/
 
 #### Cartographer 구조
 
-[Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.5.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.6.png)
 
 ---
 
-#### Input(raw data)
+#### Input Sensor Data
 
 2D or 3D Lidar 센서를 통해 다양한 방향에서의 depth 정보를 제공 받음
 
@@ -75,7 +75,7 @@ https://research.google/pubs/pub45466/
     - TRAJECTORY_BUILDER_nD.*adaptive_voxel_filter.max_length
     - TRAJECTORY_BUILDER_nD.*adaptive_voxel_filter.min_num_points
 - IMU(Inertial Measurement Unit, 관성측정장치) 는 중력의 정확한 방향과 노이즈를 제공하지만 전반적으로 로봇의 회전을 잘 표시해 SLAM에 유용한 정보를 제공함
-- IMU 노이즈를 걸르기 위하여 특정 시간을 관찰함
+- IMU 노이즈를 거르기 위하여 특정 시간을 관찰함
 - 2D SLAM에서는 range data 가 추가적인 정보 없이 다루루 수 있으며 Cartographer 에서 IMU를 사용할지 말지 결정할 수 있음
 - 3D SLAM에서는 scan matching 의 복잡도를 줄이기 위해 scan 방향의 초기 추측에 IMU가 사용되므로 필수로 필요함
     - TRAJECTORY_BUILDER_2D.use_imu_data
@@ -86,4 +86,10 @@ https://research.google/pubs/pub45466/
 
 #### Local SLAM
 
-- Lidar 센서
+다양한 range data로 부터 필터되고 모아진 scan이 준비되면 Local SLAM알고리즘의 준비가 됨
+
+여기서 pose extrapolator(추정) 부터 초기 추측을 사용하는 scan matching을 통해 현재 submap 구성에 새로운 scan을 삽입함
+
+pose extrapolator 의 아이디어는 다른 센서의 센서 데이터들 사용하여 submap에 다음 scan이 삽입되어야할 위치를 예측하는 것임
+
+Scan Matching을 위해 CeresScanMatcher과 RealTimeCorrelativeScanMatcher 두가지 전략이 가능하다.
