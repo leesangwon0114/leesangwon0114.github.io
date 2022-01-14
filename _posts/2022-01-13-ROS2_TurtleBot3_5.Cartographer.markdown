@@ -83,13 +83,3 @@ https://research.google/pubs/pub45466/
 - Cartographer configuration 파일에서 모든 시간은 초 단위임
 
 ---
-
-#### Local SLAM
-
-다양한 range data로 부터 필터되고 모아진 scan이 준비되면 Local SLAM알고리즘의 준비가 됨
-
-여기서 pose extrapolator(추정) 부터 초기 추측을 사용하는 scan matching을 통해 현재 submap 구성에 새로운 scan을 삽입함
-
-pose extrapolator 의 아이디어는 다른 센서의 센서 데이터들 사용하여 submap에 다음 scan이 삽입되어야할 위치를 예측하는 것임
-
-Scan Matching을 위해 CeresScanMatcher과 RealTimeCorrelativeScanMatcher 두가지 전략이 가능하다.
