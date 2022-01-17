@@ -10,7 +10,7 @@ Ubuntu 18,04 기반 ROS2 Dashing Diademeta 로 TurtleBot3 Waffle Pi 구동 과�
 
 ---
 
-> Cartographer
+> Cartographer Local SLAM
 
 #### Local SLAM
 
