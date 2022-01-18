@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "ROS2_TurtleBot3_1.&nbsp;RemotePC ROS2 Dashing Setup"
+title:  "ROS2_TurtleBot3_1.&nbsp;RemotePC ROS2 Foxy Setup"
 date:   2022-01-06 04:18:15 +0700
 categories: [ROS2]
 ---
