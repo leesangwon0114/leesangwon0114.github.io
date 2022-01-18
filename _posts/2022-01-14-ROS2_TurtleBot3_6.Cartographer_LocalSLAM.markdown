@@ -6,7 +6,7 @@ categories: [ROS2]
 use_math: true
 ---
 
-Ubuntu 18,04 기반 ROS2 Dashing Diademeta 로 TurtleBot3 Waffle Pi 구동 과정 정리
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
 
 ---
 
