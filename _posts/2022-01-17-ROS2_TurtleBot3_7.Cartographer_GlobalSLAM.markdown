@@ -28,7 +28,7 @@ local SLAM이 성공적인 submap들을 생성해 내는 동안 global 최적화
 
 global SLAM은 "GraphSLAM"의 한 종류이며 pose graph optimization을 수행함
 
-pose grapth optimization은 노드와 submapㄱ간의 제약을 만들고 제약된 그래프를 최적화 함
+pose graph optimization은 노드와 submapㄱ간의 제약을 만들고 제약된 그래프를 최적화 함
 
 여기서 제약은 직관적으로 모든 노드를 묶는 작은 로프라 생삭할 수 있음
 
