@@ -18,7 +18,7 @@ ssh 로 접속하여 SBC에서 turtlebot3_bringup robot.launch 실행
 
 ``` bash
 ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
-ssh ubuntu@192.168.1.177
+# ssh ubuntu@192.168.1.178
 export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_bringup robot.launch.py
 ```

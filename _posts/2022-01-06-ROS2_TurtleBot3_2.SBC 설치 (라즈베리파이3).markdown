@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "ROS2_TurtleBot3_2.&nbsp;SBC 설치 (라즈베리파이4)"
+title:  "ROS2_TurtleBot3_2.&nbsp;SBC 설치 (라즈베리파이3)"
 date:   2022-01-06 05:18:15 +0700
 categories: [ROS2]
 ---
@@ -8,15 +8,15 @@ categories: [ROS2]
 Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
 
 
-TurtleBot3 Waffle Pi 패키지에 라즈베리파이3가 들어있으나 라즈베리파이 4 4GB 기준으로 SBC 설치
+TurtleBot3 Waffle Pi 패키지에 라즈베리파이3가 들어있어 라즈베리파이3 기준으로 SBC 설치
 
 ---
 
 > SBC Setup
 
-#### Rasberry Pi 4 이미지 설치
+#### Rasberry Pi 3 이미지 설치
 
-[SBC_OS이미지다운로드](https://www.robotis.com/service/download.php?no=2064)
+[SBC_OS이미지다운로드](https://www.robotis.com/service/download.php?no=2058)
 
 - 압축 해제하여 img 파일 추출
 
@@ -24,7 +24,7 @@ Raspberry Pi Imager 를 통해 이미지 write 후 구동
 
 ---
 
-#### Raspberry Pi 4 설정
+#### Raspberry Pi 3 설정
 
 ``` bash
 sudo apt-get install gparted
@@ -46,12 +46,12 @@ sudo nano 50-cloud-init.yaml
 WIFI_SSID 와 WIFI_PASSWORD 를 지우고 각각의 값 입력
 
 
-[RaspberryPi4_설정]https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/#sbc-setup
+[RaspberryPi3_설정](https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/#sbc-setup
 
 
 --- 
-#### Raspberry Pi 4 ROS 2 Foxy 설정
+#### Raspberry Pi 3 ROS 2 Foxy 설정
 
-- 라즈베리파이 4 HDMI 케이블 연결 후 부팅
+- 라즈베리파이 3 HDMI 케이블 연결 후 부팅
 - 초기 비번은 ubuntu / turtlebot 임
 - default ROS_DOMAIN_ID도 30으로 되어 있음(Remote PC와 이 값이 같아야함)

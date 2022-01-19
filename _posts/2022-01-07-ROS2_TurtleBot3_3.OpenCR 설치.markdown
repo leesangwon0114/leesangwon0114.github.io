@@ -16,11 +16,11 @@ Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
 - OpenCR을 라즈베리파이3에 micro USB케이블로 연결
 - dmesg | tail 명령어를 통해 ttyACM0에 정상 연결 확인
 - OpenCR firmware를 업로드 하기 위한 라즈베라피이 패키지 설치
-- sudo apt-get update 시 Release file is not valid yet Error 가 발생하여 curl로 새로운 키 발급 추가함(이후 update 진행)
 
 ``` bash
+ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
+# ssh ubuntu@192.168.1.178
 sudo dpkg --add-architecture armhf
-curl http://repo.ros2.org/repos.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install libc6:armhf
 ```
