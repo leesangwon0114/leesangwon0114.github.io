@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "ROS2_TurtleBot3_9.&nbsp;SLAM구동"
-date:   2022-01-18 06:18:15 +0700
+title:  "ROS2_TurtleBot3_10.&nbsp;Navigation 구동"
+date:   2022-01-19 06:18:15 +0700
 categories: [ROS2]
 use_math: true
 ---
@@ -52,3 +52,5 @@ Navigation2 Goal 버튼을 클릭해 가고자하는 로봇 위치 지정
 해당 위치로 이동하는 것 볼 수 있음
 
 ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.20.png)
+
+---
