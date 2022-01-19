@@ -30,7 +30,34 @@ export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_cartographer cartographer.launch.py
 ```
 
+처음에 값이 안받아질 수 있는데 센서 값이 잘오는지 확인해봐야함
+
+``` bash
+ros2 topic list -t
+ros2 topic echo /scan
+```
+
+/scan 토픽에 대해 값이 잘 오는지 확인해보기
+
+원격조정으로 맵 그린 후
+
 ``` bash
 export TURTLEBOT3_MODEL=waffle_pi
 ros2 run turtlebot3_teleop teleop_keyboard
 ```
+
+맵 저장
+
+``` bash
+ros2 run nav2_map_server map_saver_cli -f ~/map
+```
+
+맵 파일(default로 /home/${username} 에 map.pgm, map.yaml 파일이 저장됨)
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.15.png)
+
+맵 지도 결과
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.16.png)
+
+---

@@ -1,0 +1,54 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_9.&nbsp;SLAM구동"
+date:   2022-01-18 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Navigation 구동
+
+#### Run Navigation Node
+
+ssh 로 접속하여 SBC에서 turtlebot3_bringup robot.launch 실행
+
+``` bash
+ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
+# ssh ubuntu@192.168.1.178
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_bringup robot.launch.py
+```
+
+Remote PC에서 Navigation 노드 실행
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_navigation2 navigation2.launch.py map:=$HOME/map.yaml
+```
+Rivz2에 SLAM에서 생성된 지도가 로드된 모습
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.17.png)
+
+Rviz2 메뉴의 2D Pose Estimate 클릭
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.18.png)
+
+map에 시작점 정확히 위치하기위해 원격조정 실행
+
+``` bash
+ros2 run turtlebot3_teleop teleop_keyboard
+```
+
+이후 로봇을 돌리면 green arrows 들이 점점 촘촘해지면 종료
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.19.png)
+
+Navigation2 Goal 버튼을 클릭해 가고자하는 로봇 위치 지정
+
+해당 위치로 이동하는 것 볼 수 있음
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.20.png)
