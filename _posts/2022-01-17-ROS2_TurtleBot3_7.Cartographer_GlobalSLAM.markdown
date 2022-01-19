@@ -71,7 +71,7 @@ FastCorrelativeScanMatcher는 다양한 그리드 해상도에서 작동하고 �
     - 저해상도의 Map에서 시작해서 pose를 추론해 점점 고해상도 내의 pose를 찾아냄
     - Node가 pose의 후보, Height는 Higher resolution을 나타냄
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.14.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/7.1.png)
 
     - POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth
     - POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher_3d.branch_and_bound_depth

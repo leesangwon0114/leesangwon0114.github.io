@@ -54,10 +54,10 @@ ros2 run nav2_map_server map_saver_cli -f ~/map
 
 맵 파일(default로 /home/${username} 에 map.pgm, map.yaml 파일이 저장됨)
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.15.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/9.1.png)
 
 맵 지도 결과
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.16.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/9.2.png)
 
 ---

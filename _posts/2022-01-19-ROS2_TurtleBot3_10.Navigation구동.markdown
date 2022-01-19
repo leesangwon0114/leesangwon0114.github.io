@@ -31,11 +31,11 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py map:=$HOME/map.yaml
 ```
 Rivz2에 SLAM에서 생성된 지도가 로드된 모습
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.17.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/10.1.png)
 
 Rviz2 메뉴의 2D Pose Estimate 클릭
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.18.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/10.2.png)
 
 map에 시작점 정확히 위치하기위해 원격조정 실행
 
@@ -45,12 +45,12 @@ ros2 run turtlebot3_teleop teleop_keyboard
 
 이후 로봇을 돌리면 green arrows 들이 점점 촘촘해지면 종료
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.19.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/10.3.png)
 
 Navigation2 Goal 버튼을 클릭해 가고자하는 로봇 위치 지정
 
 해당 위치로 이동하는 것 볼 수 있음
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.20.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/10.4.png)
 
 ---

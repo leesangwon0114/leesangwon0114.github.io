@@ -25,31 +25,31 @@ pose extrapolator 의 아이디어는 다른 센서의 센서 데이터들 사�
 
 >> RGBD Data Input 1 
  
- ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.7.png)
+ ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.1.png)
 
 >> RGBD Data Input 2
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.8.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.2.png)
 
 >> Input1, Input2 사이의 Data 의 scan matching
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.9.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.3.png)
 
 >> 두 Input1,2 를 합친 하나의 Submap이 나옴(Output1)
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.10.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.4.png)
 
 >> 다시 RGBD Data Input 3 이 들어옴
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.11.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.5.png)
 
 >> Output 1과 Input 3 과 scan matching 진행
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.12.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.6.png)
 
 >> Output1과 Input3 를 합친 하나의 Submap이 나옴(Output2)
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/5.13.png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/6.7.png)
 
 >> 위의 과정을 반복하여 submap을 구성해가고 에러를 줄임
 
