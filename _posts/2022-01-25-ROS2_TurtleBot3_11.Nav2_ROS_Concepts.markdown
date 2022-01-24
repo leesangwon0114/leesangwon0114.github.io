@@ -1,0 +1,126 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_11.&nbsp;Nav2_ROS_Concepts"
+date:   2022-01-25 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> ROS2
+
+ROS2는 Nav2에 사용되는 핵심 미들웨어임
+
+#### Action Server
+
+ROS서 Action 서버는 Navigation과 같이 장기간 실행되는 작업에서 제어하는 일반적인 방법
+
+[Action 서버에 대한 공식문서](https://docs.ros.org/en/rolling/Tutorials/Understanding-ROS2-Actions.html)
+
+특정 목적까지 실행되는 장시간 실행 상황에서 Action 서버와 클라이언트는 다른 프로세스나 스레드에서 장기간 실행되는 테스크를 호출하고 실행이 완료되면 미래에 return 됨
+
+작업이 완료될때까지 중간중간 확인하는 것이 안정적이여서 Action 서버는 클라이언트에게 feedback을 제공함
+
+이 feedback은 ROS.action에 정의된 무엇이든 될 수 있음
+
+불도저 로봇을 예로들면 Action 에 대한 요청은 각도이며, 피드백은 이동할 각도까지 남아있는 각도이며 결과는 최종 각도와 함께 성공 또는 실패의 boolean 값이 될 수 있음
+
+네비게이션을 예로들면 요청은 최종 위치이고, 피드백은 네비게이션 시간과 목표까지 거리가 될 수 있으며 결과는 성공을 위한 boolean 값임
+
+Action 클라이언트에 콜백을 등록하여 피드백과 결과를 얻을 수 있음
+
+이런 구조에서 Action 서버는 상위레벌의 BT navigator와 NavigateToPose Actio 메시지를 주고받는데 사용됨
+
+또한 BT Navigator가 차후 작은 action 서버들과 통신하여, plan을 계산하고, 동작제어 및 복구를 수행하는데도 사용됨
+
+각 Action 서버는 각각의 nav2_msgs의 .action 타입을 가지고 상호작용함
+
+---
+
+#### Lifecycle Nodes and Bond
+
+Lifecycle 노드는 ROS2에 만 있는 특별한 노드임
+
+[ROS2 Lifecycle에 대한 공식문서](https://design.ros2.org/articles/node_lifecycle.html)
+
+이 노드들은 ROS2 서버의 시작과  중지를 위한 state machine 전환이 포함된 노드임
+
+노드가 시작하면 unconfigured 상태이며, ROS 네트워크 설정이나 parameter를 읽는 것을 포함하지 않는 단순 node 생성자만 처리함
+
+launch 시스템에의해 노드들은 inactive 상태로 전환해야 함
+
+이 후, activing 단계로 전환하면서 node가 activate 될 수 있음
+
+이 상태에서 노드가 정보를 처리하고 전체 설정을 실행할 수 있음
+
+configuration 단계에서 on_configure() 함수가 트리거 되며, 모든 parameter들을 설정함(ROS 네트워크 인터페이스, 동적메모리, 안전관련 시스템 등)
+
+activation 단계에서 on_activate() 함수가 트리거 되며, ROS 네트워크 인터페이스가 활성화되고 프로세스 시작을 위한 정보들이 설정됨
+
+Node 종료를 위해서는 deactivating, cleaning up, shutting down and end 로 각각 전환됨
+
+네트워크 인터페이스가 deactivated 되고 프로세스 종료 및 메모리 해제, exit 등이 각각 실행됨
+
+ROS 시스템의 모든 서버들이 이 Lifecycle 노드 프레임워크를 사용하는 것이 권장됨
+
+Nav2에서 LifecycleNode들이 nav2_util LifecycleNode에 wrapper 되어 있음
+
+이 wrapper는 LifecycleNode들의 일반적인 어플리케이션의 복잡성의 대부분을 wrap 하고 있음
+
+또한 Lifecycle manager를 위한 server가 올라오는 것을 보장하기 위한 bond 연결도 포함하며 active 상태를 유지하게 됨
+
+만일 서버가 crash 가 나면, lifecycle manager 에게 할리고 critical failure를 방지하기위해 서버를 내림
+
+Nav2에는 map_server, Planner_server, controller_server가 있으며 이들 모드 lifecycle 관리가 가능함
+
+Nav2의 lifecycle manager 가 위의 노드들의 상태를 변경가능하며 startup, shutdown, reset, pause, or resume 을 컨트롤 가능함
+
+RVIZ 에서 lifecycle_manager/manage_nodes의 서비스를 사용하며 RVIZ panel 버튼에 따라 startup, reset, shutdown등의 상태를 변경함
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/11.1.png)
+
+자세한 사항은 아래 링크 참조
+
+[nav2_lifecycle_manager]](https://github.com/ros-planning/navigation2/tree/main/nav2_lifecycle_manager)
+
+---
+
+> Behavior Trees
+
+Behavior trees 는 로봇의 복잡한 수행들에 점점 일반화가 되어가고 있음
+
+이 트리구조는 많은 state의 어플리케이션에서 사람이 이해하기 쉽고 확장가능하게 만들 수 있으며, 수백 개의 transition을 가지는 Finite State Machine 과는 반대됨
+
+축구하는 로봇을 예로 들면, 축구 경기의 logic을 FSM(Finite State Machine)에 임베딩하는 것은 많은 가능한 상태와 규칙으로 인해 오류가 발생하기 쉬우며 도전적임
+
+또한 왼쪽, 오른쪽, 중앙에 목표를 향해 shoot을 하는 것과 같은 선택에 있어 특히 불분명함
+
+BT를 사용하면 "kick", "walk", "go to ball" 과 같은 기본 primitive들을 만들어 많은 행동에서 재사용 가능함
+
+FSM을 사용하면 규칙이 많아질수록 재사용이 어렵고 복잡해지는데 간단한 이유는 FSM은 goto문을 사용하여 프로그래밍하는 것이고 BT는 함수 형태의 call로 프로그래밍 한다고 비유할 수 있음
+
+Nav2 에서는 BehaviorTree CPP V3 라이브라리를 사용하며 BT Navigator 안에 트리로 구성할 수 있는 노드 플러그인을 생성함
+
+노드플러그인이 BT에 로드되고 트리의 XML 파일 형태의 파싱할 때, 등록된 이름이 연결됨
+
+이 시점에 행동트리를 통해 navigate 할 수 있음
+
+위의 CPP V3 라이브러리 사용되는 이유는 하위트리 로드 기능이 있음
+
+즉, Nav2 동작 트리를 다른 상위 수준의 BT에 로드하여 node 플로그인으로서 이 프로젝트를 사용 가능함
+
+일반적인 action 인터페이스를 통해 client가 call 할 수 있도록 BT용 NavToPoseAction 플러그인을 제공함
+
+---
+
+> Navigation Servers
+
+Planner와 Controller 서버는 navigation 업무에 핵심임
+
+Recovery 서버는 로봇을 bad situation이나 다양한 형태의 문제를 해결하여 시스템을 결함에 강하도록 만드는데 사용됨
+
+#### Planner, Controller, and Recovery Servers
+
