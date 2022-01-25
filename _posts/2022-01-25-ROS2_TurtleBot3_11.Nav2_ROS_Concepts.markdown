@@ -122,5 +122,166 @@ Planner와 Controller 서버는 navigation 업무에 핵심임
 
 Recovery 서버는 로봇을 bad situation이나 다양한 형태의 문제를 해결하여 시스템을 결함에 강하도록 만드는데 사용됨
 
+---
+
 #### Planner, Controller, and Recovery Servers
+
+Planner, Controller, Recovery 3가지 Action 서버들은 다양한 task를 수행하기 위한 맵 알고리즘 플러그의 host 로 사용되며, Output들의 계산을 위한 Environmental Representation의 호스트로도 사용됨
+
+Planner와 Controller 서버들은 사용할 알고리즘의 유형에 따라 런타임에 구성됨
+
+이러한 유형은 등록된 pluginlib 이름이고, 이 이름은 task의 별칭(aliases)임
+
+예를들어 FollowPath라는 이름으로 사용되는 DWB 컨트롤러가 있으며, reference 된 경로에 따르게 됨
+
+이 경우 DWB에 대한 모든 parameter가 해당 네임스페이스에 배치됨(ex, FollowPath.param)
+
+이후 두 서버는 태스크에 해당하는 작업 인터페이스를 노출시킴
+
+behavior tree가 일치하는 BT 노드를 체크하면 action 서버를 호출하여 태스크를 처리함
+
+action 서버 콜백은 특정 알고리즘에 매핑되는 이름(ex, FollowPath)으로 선택한 알고리즘을 호출함
+
+이를통해 behavior tree에 사용되는 알고리즘을 알고리즘 클래스로 추상화함
+
+예를들어 경로를 주행하거나, 충전기와 도킹, 동적 장애물 피하기, tool들과 인터페이스 역할을 하는 N개의 플러그인 controller를 가질 수 있다고 해보자
+
+이 모든 플러그인을 동일한 서버에 두는 것은 사용자가 하나의 Environmental Representation 객체를 사용하게 하며 이는 복제 비용이 많이듬
+
+Recovery 서버는 각각 복구에 자체 이름들을 포함하지만, 각 플러그들은 자신의 특별한 action 서버로 노출시킬 수 있는데 이는 생성될 수 있는 recovery action들이 많기 때문에 공유할 단일 인터페이스를 가질 수 없기 때문임
+
+또한 Recovery 서버는 로컬 costmap에 subscriber 에 대한 costmap을 포함하고 있으며, controller 서버로 부터 실시간으로 업데이트를 수신하여 작업을 계산함
+
+복제하는데 계산적으로 많은 비용이 드는 로컬 costmap이 여러 instance를 가지는 것을 피하기 위해 위의 작업을 수행함
+
+또는 BT 노드가 action이라 블리는 사소한 플러그인이므로 새로운 BT 노드를 작성하여 다른 작업 유형으로 다른 작업 서버를 호출할 수 있음
+
+가능하다면 제공되는 서버들을 항상 사용하는 것이 좋으며 만약 플러그인 또는 action에 대한 인터페이스로 인해 새 서버가 필요한 경우 Nav2 프레임워크와 함께 유지할 수 있음
+
+새로운 서버도 새로운 타입과 플로그인 인터페이스를 사용시 제공되는 서버와 비슷하게 사용해야함
+
+새로운 BT 노드 플러그가 새로운 action 서버를 호출하도록 만들 필요가 있을 수 있음
+
+그러나 nav2 자체의 fork나 수정이 필요하지는 않음
+
+---
+
+#### Planners
+
+Planner 의 역할은 objective 함수를 완성하기 위해 경로를 계산하는 역할을 함
+
+path는 선택된 알고리즘에 따라 하나의 노선으로 알수 있게 됨
+
+두 가지 표준적인 예는 현재 position에서 goal까지의 계획을 계산하거나 모든 free space를 커버하는 계획을 수행함
+
+Planner는 global environmental representation를 이용하며, 버퍼된 sensor data 에 이용함
+
+- Compute shortest path
+- Compute complete coverage path
+- Compute paths along sparse or predefined routes
+
+Planner를 위한 Nav2의 일반적인 역할은 current pose에서 goal pose 까지의 유효하고, 최선의 경로를 계산함
+
+그러나 지원되는 많은 종류의 계획과 경로가 존재함
+
+---
+
+#### Controllers
+
+Controller(ROS1에서 로컬 플래너로 알려진) 는 global하게 계산된 경로를 따르거나 로컬 작업을 완료하는 역할을 함
+
+Controller는 로컬 environment representation에 접근하여 base가 따라야할 실행가능한 제어 활동 계산을 시도함
+
+많은 controller 들이 robot을 공간에 투영하고 매번 update 시 마다 지역적으로 가능한 경로를 계산함
+
+- Follow a path
+- Dock with a charging station using detectors in the odometric frame
+- Board an elevator
+- interface with a tool
+
+Nav2에서 Controller의 일반적인 역할은 global plan에 따르도록 유효한 Control 활동을 계산하는 것임
+
+그러나 많은 종류의 controller들과 local planner 들이 존재함
+
+따라서 nav2 프로젝트의 목표는 모든 controller 알고리즘이 공통 연구 및 산업 task들을 위해 이 서버에 플로그인이 될 수 있도록 하는 것임
+
+---
+
+#### Recoveries
+
+Recovery 서버들은 내결함성 시스템의 주요 요소임
+
+목표는 알려지지 않은 또는 고장 조건을 처리하고 자율적으로 에러들을 다루고자 함
+
+예를 들어 로봇이 동적 장애물이나 제어 불량으로 stuck 상태에 빠지는 경우 백업을 하거나 제자리에서 회전하면서 로봇이 못가는 영역에서 벗어나 빈 공간으로 이동하여 경로를 성공적으로 탐색하고자 함
+
+완전한 장애인 경우 recovery 에서 운영자에게 이메일, SMS 등으로 도움을 요청하도록 구현할 수 도 있음
+
+---
+
+#### Waypoint Following
+
+Waypoint following 은 navigation 시스템의 기본특징이며, 많은 목적지에 어떻게 navigation을 사용해야할지 알려줌
+
+nav2_waypoint_follower 에 specific task 실행을 위한 플러그 인터페이스로서 waypoint following 프로그램을 포함하고 있음
+
+이는 지정된 위치로 이동하여 사진찍기, 상자들기, 사용자 입력 대기 등과 같은 특정 작업을 완료해야할 때 유용함
+
+nav2에 샘플 데모들도 있지만 더 나아가 fleet manager 기능, dispatch 도 생각할 수 있음
+
+우선 nav2_waypoint_follower 는 생선용 로봇 솔루션을 만들기에 충분함
+
+외냐하면 autonomy 시스템에서 로봇의 자세, 배터리 수준, 현재 task 등을 고려하므로, 어플리케이션은 당변한 task 에 대해서만 신경 쓰고 시스템의 다른 복잡성은 작업이 필요 없음
+
+이런 상황에서 waypointfollower 에 대한 요청을 1개의 작업단위(예로 들면 창고에서 1개 집기, 보안 패트롤 돌기, 통로 1개 등)로 생각하고 다음 작업을 위해 dispatcher 에게 return 시키거나 재충전을 요청해야함
+
+학문적으로 응용프로그램을 따르는 waypoint 는 navigation 보다는 한 단계 위이고 시스템 자율 응용 프로그램 보다는 아래에 있음
+
+두번째로 nav2_waypoint_follower 는 좋은 샘플 어플리케이션이지만 강력한 솔루션을 만들기 위해서는 waypoint following / autonomy system 이 필요함
+
+이 경우 nav2_behavior_tree 패키지를 사용해 사용자 지정 응용프로그램 수준 behavior tree를 생성하여 navigation 작업에 활용할 수 있음
+
+여기에는 도킹으로 돌아가거나 더 복잡한 작업에서 둘 이상의 작업 단위를 처리하기 위한 중간 작업 중 충전 상태 확인과 같은 하위 트리가 포함될 수 있음
+
+곧 이 어플리케이션을 더 쉽게 만들 수 있는 nav2_bt_waypoint_follower 가 출시될 예정임
+
+---
+
+> State Estimation
+
+navigation 프로젝트에서 커뮤니티 standards 에 따라 2가지 transformation 이 필요함
+
+map을 odom 으로 transform 하는 것은 positioning 시스템(SLAM)에서 제공되며 odometry 시스템에 의해 odom은 base_link로 변환됨
+
+navigation system에서 LIDAR 사용을 요구하지는 않으며, vision이나 depth에 기반한 positioning 시스템이나 다른 센서를 충돌 회피에 사용 가능하지만 아래 표준을 따라 구현해야함
+
+#### Standards & Global Positioning & Odometry
+
+REP-105 에서 최소한으로 full map -> odom -> base_link -> [sensor frames] 를 포함하는 TF 트리를 작성해야함
+
+TF2 는 time-variant transformation 라이브러리 이며 time sync된 transformation을 얻기위해 사용됨
+
+최소한으로 map->odom 변환을 제공하는 것은 global positioning system(GPS, SLAM, Motion Capture) 의 작업임
+
+그런다음 odometry 시스템은 odometry -> base_link 변환을 제공하는 것이 역할임
+(odometry는 LIDAR, RADAR, wheel encoders, VIO, and IMU들을 통해 얻을 수 있음)
+
+odometry는 smooth하고 continuous 하게 local frame을 제공하는 것을 목표로 함
+
+모바일 로봇에서는 휠 인코더, IMU 및 vision으로 부터 odometry를 얻음
+
+smmoth output은 정확한 모션을 위한 dead-reckoning 과 position 업데이트를 위해 사용하여 로봇의 위치를 정확히 업데이트할 수 있음
+
+base_link와 연관된 나머지 변환은 static해야하며 URDF 에 정의되어 있어야함
+
+---
+
+> Environmental Representation
+
+Environmental Representation은 로봇이 환경을 인지하는 방식임
+
+또한 다양한 알고리즘과 데이터 소스가 하나의 single space로 결합할수 있는 중앙 위치 지정 역할을 함
+
+그런 다음 controller, planner, recovery 서버들이 이 space 를 사용하여 안전하고 효율적으로 서버들의 역할을 수행함
+
 
