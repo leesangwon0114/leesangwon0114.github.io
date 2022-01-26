@@ -102,7 +102,7 @@ BT를 사용하면 "kick", "walk", "go to ball" 과 같은 기본 primitive들�
 
 FSM을 사용하면 규칙이 많아질수록 재사용이 어렵고 복잡해지는데 간단한 이유는 FSM은 goto문을 사용하여 프로그래밍하는 것이고 BT는 함수 형태의 call로 프로그래밍 한다고 비유할 수 있음
 
-Nav2 에서는 BehaviorTree CPP V3 라이브라리를 사용하며 BT Navigator 안에 트리로 구성할 수 있는 노드 플러그인을 생성함
+Nav2 에서는 BehaviorTree CPP V3 라이브러리를 사용하며 BT Navigator 안에 트리로 구성할 수 있는 노드 플러그인을 생성함
 
 노드플러그인이 BT에 로드되고 트리의 XML 파일 형태의 파싱할 때, 등록된 이름이 연결됨
 
