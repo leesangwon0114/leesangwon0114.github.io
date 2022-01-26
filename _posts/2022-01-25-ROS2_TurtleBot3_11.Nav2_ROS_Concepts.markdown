@@ -255,6 +255,8 @@ map을 odom 으로 transform 하는 것은 positioning 시스템(SLAM)에서 제
 
 navigation system에서 LIDAR 사용을 요구하지는 않으며, vision이나 depth에 기반한 positioning 시스템이나 다른 센서를 충돌 회피에 사용 가능하지만 아래 표준을 따라 구현해야함
 
+---
+
 #### Standards & Global Positioning & Odometry
 
 REP-105 에서 최소한으로 full map -> odom -> base_link -> [sensor frames] 를 포함하는 TF 트리를 작성해야함
@@ -284,4 +286,64 @@ Environmental Representation은 로봇이 환경을 인지하는 방식임
 
 그런 다음 controller, planner, recovery 서버들이 이 space 를 사용하여 안전하고 효율적으로 서버들의 역할을 수행함
 
+---
 
+#### Costmaps and Layers
+
+현재의 Environmental Representation 이 costmap임
+
+costmap은 unknown, free, ocupied or inflated 비용을 포함하는 일반적인 2D 그리드 셀 임
+
+이 costmap은 전역 plan을 계산하거나 local 제어 efforts를 계산하는데 샘플링됨
+
+다양한 costmap 레이어는 costmap에 정보를 버퍼링하기위해 플러그인 형식으로 구현됨
+
+이 정보에는 LIDAR, RADAR, 음파탐지, 깊이, 이미지 등의 정보가 포함됨
+
+costmap 레이어에 입력하기 전에 센서데이터를 처리하는 것이 현명할 수 도 있지만 개발자에 달려있음
+
+카메라 또는 깊이 센서를 사용하여 충돌 방지를 위해 장애물을 감지하고 추적하기 위한 costmap 레이어가 만들어 질 수 있음
+
+또한 레이어는 기반이 되는 rule에 따라 costmap이 알고리즘적으로 바뀌도록 만들 수 있음
+
+마지막으로 실시간 데이터를 2D 또는 3D 세계에서 이진 장애물 마킹(장애물 있는지 없는지 1,0)을 버퍼링 하는데 사용됨
+
+---
+
+#### Costmap Filters
+
+annotated 된 map의 위치에 기반하여 특정 action이 수행되도록 지도 파일을 annotating 했다고 가정해보자
+
+annotating의 예로 내부의 피해야할 구역을 비우거나, 특정영역에서 최대 속도를 지정할 수 있을 것임
+
+위와 같이 표시한 map을 filter mask라 부름
+
+이 filter mask의 주요 목표는 지도에 일부 추가 기능이나 행동 변화가 있는 영역을 표시하는 기능을 제공하는 것임
+
+Costmap filter는 filter masks에 annotated 된 공간 의존적인 행동변화를 Nav2 스택에서 적용하는 costmap 계칭 기반한 방식임
+
+Costmap filter들은 costmap 플로그인으로 구현됨
+
+이러한 플로그인은 filter mask에 표시된 공간의 annotation으로 costmap을 필터링하기 때문에 filter라 불림
+
+filter된 costmap을 만들고 해당 영역에서 로봇의 행동을 변화시키기 위해 filter 플러그인은 filter 마스크로 부터 가져온 데이터를 읽음
+
+이 데이터는 filter 공간에서 feature map으로 linearly transform 됨
+
+map/costmap과 함께 이 변형된 feature map을 사용하면, 센서 데이터와 현재 로봇 좌표 filter 가 costmap을 업데이트하고 위치에 따라 로봇의 동작을 변경할 수 있음
+
+
+- Keep-out/safety zones where robots will never enter.
+- Speed restriction areas. Maximum speed of robots going inside those areas will be limited.
+- Preferred lanes for robots moving in industrial environments and warehouses.
+
+---
+
+#### Other Forms
+
+Environmental Representation에 다른 다양한 형태들이 존재함
+
+- gradient maps, which are similar to costmaps but represent surface gradients to check traversibility over
+- 3D costmaps, which represent the space in 3D, but then also requires 3D planning and collision checking
+- Mesh maps, which are similar to gradient maps but with surface meshes at many angles
+- “Vector space”, taking in sensor information and using machine learning to detect individual items and locations to track rather than buffering discrete points.
