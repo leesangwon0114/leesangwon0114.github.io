@@ -1,0 +1,73 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_12.&nbsp;PathPlanning"
+date:   2022-02-03 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Path Planning
+
+두 x,y 점 을 각각 start pose, goal pose 라 할 때 직선으로 그린 경로가 가장 최적의 경로일 것임
+
+graph base 방식에 초점을 맞추어 설명
+
+각각의 pose가 노드이며 edge로 경로의 cost가 있음
+
+전체 그래프는 필요 없고 subset의 트리 형태로 구성됨
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.1.png)
+
+위에서 초록색 화살표는 더 cost 가 많으므로 지워짐
+
+이런식으로 계속 cost 가 적은 goal pose 까지의 shortest path를 찾음
+
+글로벌 최적화는 안되지만 로컬 최적화를 통해 최소 경로를 찾음
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.2.png)
+
+#### Search-based methods
+
+각각 그리드 셀에 node 들이 있고 goal까지 최적 경로를 찾음
+
+모든 셀을 다 검색(브루트포스)는 비용이 너무 큼 -> A* 알고리즘 사용
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.3.png)
+
+왼쪽경로는 42, 오른쪽은 48 따라서 14 노드를 선택하고 이후 각각 뻗어나가면서 최소 비용의 경로를 찾음
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.4.png)
+
+이렇게 줄여도 비용이 매우큼(grid가 클수록 매우 느림)
+
+#### Sampling-based methods
+
+맵이 복잡할 때 sampling-based methods를 이용
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.5.png)
+
+A*는 위와 같은 복잡한 맵에서 빨간색 선의 점선같이 인점한 노드들을 모두 보려고함
+
+
+인접한 노드들을 모두 보지않고 조금 떨어진 노란색 원 안에만 봐서 goal까지 도달하는 것이 목적
+
+이 sparse한 노드를 어떻게 선택해서 goal로 갈것인지?
+
+ramdom하게 sampling해서 가봄 -> RRT(Rapidly Exploring Ramdom Trees), 여기서 최적화 된 솔루션인 RRT*
+
+- Basic RRT Algorithm
+    - random한 노드를 선택하고 이전 pose 와 random한 포즈간에 가까운 node를 선택해 이어줌
+    - ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.6.png)
+    - 계속 랜덤한 노드를 선택하고 가까운 노드를 활성화 시켜 결국에는 goal로 가는 경로를 찾음
+    - ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.7.png)
+    - A*보다 fewer 한 노드들만 봄
+    - 완전 shortest 경로를 찾지를 못하지만 빠르게 goal까지의 경로를 찾을 수 있음
+
+- RRT* Algorithm
+    - random한 노드를 선택해 인접한 노드를 선택하는 것은 RRT와 동일하지만 Search radius를 통해 중간에 최소화된 경로를 찾음
+    - 이전에 RRT에서 발견한 경로 말고 도 적은 비용의 경로를 찾을 수 있음
+    - ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.8.png)
