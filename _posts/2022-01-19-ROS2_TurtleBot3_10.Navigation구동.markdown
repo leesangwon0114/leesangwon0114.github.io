@@ -39,6 +39,11 @@ Rviz2 메뉴의 2D Pose Estimate 클릭
 
 map에 시작점 정확히 위치하기위해 원격조정 실행
 
+- 검은색 셀은 실제 장애물
+- 하늘색 영역은 로봇 중심 위치가 이 영역으로 오면 충돌하게 되는 지점
+- 굵은 빨간색 픽셀은 경계선을 표시
+- 보라색(파란색)은 안전한 지역을 의미
+
 ``` bash
 ros2 run turtlebot3_teleop teleop_keyboard
 ```
