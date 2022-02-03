@@ -30,6 +30,8 @@ graph base 방식에 초점을 맞추어 설명
 
 ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.2.png)
 
+---
+
 #### Search-based methods
 
 각각 그리드 셀에 node 들이 있고 goal까지 최적 경로를 찾음
@@ -43,6 +45,8 @@ graph base 방식에 초점을 맞추어 설명
 ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.4.png)
 
 이렇게 줄여도 비용이 매우큼(grid가 클수록 매우 느림)
+
+---
 
 #### Sampling-based methods
 
@@ -71,3 +75,5 @@ ramdom하게 sampling해서 가봄 -> RRT(Rapidly Exploring Ramdom Trees), 여�
     - random한 노드를 선택해 인접한 노드를 선택하는 것은 RRT와 동일하지만 Search radius를 통해 중간에 최소화된 경로를 찾음
     - 이전에 RRT에서 발견한 경로 말고 도 적은 비용의 경로를 찾을 수 있음
     - ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/12.8.png)
+
+---
