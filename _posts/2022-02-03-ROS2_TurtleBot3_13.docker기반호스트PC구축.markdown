@@ -27,6 +27,8 @@ cd foxy && docker build -t tiryoh/ros2-desktop-vnc:foxy .
 docker run -p 6080:80 --shm-size=512m tiryoh/ros2-desktop-vnc:foxy
 ```
 
+---
+
 #### Turtlebot3 패키지 설치 이미지 생성
 
 http://127.0.0.1:6080/ 을 통해 VNC로 접속 후 터미널을 열어 ros2 foxy 재 설치
@@ -76,6 +78,8 @@ docker commit -m "메시지" 컨테이너명(Names) repository이름:태그(필�
 
 ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/13.1.png)
 
+---
+
 #### Docker 실행 및 VNC 접속
 
 반드시 --network=host 로 해주어야 ROS2 DDS 통신이 가능함
@@ -90,6 +94,8 @@ docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot
 http://127.0.0.1/ 주소로 접속
 
 ![Alt text](http://leesangwon0114.github.io/static/img/ROS2/13.2.png)
+
+---
 
 #### Teleops 를 통해 구동 테스트
 
@@ -115,3 +121,4 @@ a/d는 각도 증가 감소
 
 s 는 멈춤
 
+---
