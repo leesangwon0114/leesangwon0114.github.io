@@ -1,0 +1,117 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_13.&nbsp;docker기반호스트PC구축"
+date:   2022-03-22 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Docker 기반 host PC 구축
+
+#### Docker 이미지 생성
+
+gazebo나 rviz 같은 gui를 쉽게 하기위해 ros2 ubuntu vnc 도커 이미지 필요
+
+https://github.com/Tiryoh/docker-ros2-desktop-vnc
+
+위의 주소에서 foxy 버전의 docker 이미지를 빌드
+
+``` bash
+# build
+cd foxy && docker build -t tiryoh/ros2-desktop-vnc:foxy .
+# quick start
+docker run -p 6080:80 --shm-size=512m tiryoh/ros2-desktop-vnc:foxy
+```
+
+#### Turtlebot3 패키지 설치 이미지 생성
+
+http://127.0.0.1:6080/ 을 통해 VNC로 접속 후 터미널을 열어 ros2 foxy 재 설치
+
+``` bash
+wget https://raw.githubusercontent.com/ROBOTIS-GIT/robotis_tools/master/install_ros2_foxy.sh
+sudo chmod 755 ./install_ros2_foxy.sh
+bash ./install_ros2_foxy.sh
+```
+
+ROS2 Package Dependent 설치(gazebo는 기 docker 이미지에 설치되어 있음)
+
+``` bash
+sudo apt install ros-foxy-cartographer
+sudo apt install ros-foxy-cartographer-ros
+sudo apt install ros-foxy-navigation2
+sudo apt install ros-foxy-nav2-bringup
+```
+
+TurtleBot3 Packages 설치
+
+``` bash
+source ~/.bashrc
+sudo apt install ros-foxy-dynamixel-sdk
+sudo apt install ros-foxy-turtlebot3-msgs
+sudo apt install ros-foxy-turtlebot3
+```
+
+ROS 환경 셋팅
+
+``` bash
+echo 'export ROS_DOMAIN_ID=30 #TURTLEBOT3' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Docker Commit
+
+docker ps로 실행중인 도커컨테이너 Names를 알아내고
+docker image를 통해 repository 확인
+
+``` bash
+docker ps
+docker image
+
+docker commit -m "메시지" 컨테이너명(Names) repository이름:태그(필자는 foxy_turtlebot3)
+```
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/13.1.png)
+
+#### Docker 실행 및 VNC 접속
+
+반드시 --network=host 로 해주어야 ROS2 DDS 통신이 가능함
+(turtlebot3 와이파이와 host PC 와이파이가 같은 net 이여야 dds 가능)
+
+``` bash
+docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3
+```
+
+이후 --network host 이므로 80 port 그대로 바인딩 되어 gui 화면을 열기위해
+
+http://127.0.0.1/ 주소로 접속
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/13.2.png)
+
+#### Teleops 를 통해 구동 테스트
+
+Docker VNC안에서 터미널 실행 후 SSH 접속으로 Turtlebot3 SBC 구동
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_bringup robot.launch.py
+```
+
+다른 터미널 실행 후
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 run turtlebot3_teleop teleop_keyboard
+```
+
+RemotePC의 키보드를 통한 원격 제어 해보기
+
+w/x 는 속도 증감
+
+a/d는 각도 증가 감소
+
+s 는 멈춤
+
