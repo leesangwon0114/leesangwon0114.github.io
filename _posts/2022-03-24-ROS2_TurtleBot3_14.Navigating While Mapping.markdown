@@ -14,11 +14,15 @@ Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
 
 SLAM 시 Nav2를 활용해 모든 동작을 수동 조작하지 않고 어느정도 반자동적으로 맵 생성할 수 있는지 구동함
 
+---
+
 #### Docker 실행
 
 ``` bash
 docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3
 ```
+
+---
 
 #### 터틀봇 구동 및 bringup Node 실행
 
@@ -28,6 +32,8 @@ ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
 export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_bringup robot.launch.py
 ```
+
+---
 
 #### 호스트 PC docker 에서 Nav2, SLAM 실행
 
