@@ -1,0 +1,73 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_14.&nbsp;Navigating While Mapping"
+date:   2022-03-24 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Navigating While Mapping
+
+SLAM 시 Nav2를 활용해 모든 동작을 수동 조작하지 않고 어느정도 반자동적으로 맵 생성할 수 있는지 구동함
+
+#### Docker 실행
+
+``` bash
+docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3
+```
+
+#### 터틀봇 구동 및 bringup Node 실행
+
+``` bash
+ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
+# ssh ubuntu@192.168.1.177
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_bringup robot.launch.py
+```
+
+#### 호스트 PC docker 에서 Nav2, SLAM 실행
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_navigation2 navigation2.launch.py
+```
+---
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_cartographer cartographer.launch.py
+```
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/14.1.png)
+
+Nav2 기반으로 SLAM 실행 시 생각보다 자동 주행에 오차가 많이 발생
+-> Inflation 영역이 겹쳐서 실제 주행이 안되어 멈춰있는 경우가 많음
+
+---
+
+#### Telops 실행을 통해 주행이 안될 시 수동조작으로 mapping
+
+중간에 nav2 rviz가 꺼져버렸음...
+
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 run turtlebot3_teleop teleop_keyboard
+```
+
+---
+
+#### 수동주행으로 Mapping 완료 후 지도 저장
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/14.2.png)
+
+---
+
+#### 최종 완료된 지도 모습
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/14.3.png)
+
+---
