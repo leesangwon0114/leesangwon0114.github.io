@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "PythonAlgorithm 3.&nbsp;문자열조작"
-date:   202-03-25 04:18:15 +0700
+date:   2022-03-25 04:18:15 +0700
 categories: [Algorithm, python]
 ---
 
