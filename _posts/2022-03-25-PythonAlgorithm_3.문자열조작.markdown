@@ -67,6 +67,13 @@ class Solution:
 
 ---
 
-#### 문자열 뒤집기 문제
+#### Reorder Data in Log Files 문제
 
-[문자열 뒤집기 문제](https://leetcode.com/problems/reverse-string/)
+[Reorder Data in Log Files 문제](https://leetcode.com/problems/reorder-data-in-log-files/)
+
+
+``` python
+class Solution:
+    def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        
+```
