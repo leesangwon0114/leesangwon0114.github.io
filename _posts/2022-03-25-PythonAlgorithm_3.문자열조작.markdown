@@ -71,9 +71,54 @@ class Solution:
 
 [Reorder Data in Log Files 문제](https://leetcode.com/problems/reorder-data-in-log-files/)
 
+식별자를 제외한 문자열 [1:] 을 키로 정렬하며 동일한 경우 후순위로 식별자 [0]를 지정해 정렬
+
+배열 + 를 이용해 합침
 
 ``` python
 class Solution:
     def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        letters, digits = [], []
+        for log in logs:
+            if log.split()[1].isdigit():
+                digits.append(log)
+            else:
+                letters.append(log)
         
+        letters.sort(key=lambda x: (x.split()[1:], x.split()[0]))
+        return letters + digits
+```
+
+s = ['2 A', '1 B', '1 A'] 인 경우
+sorted(s)
+-> ['1 A', '1 B', '2 A'] 로 정렬됨
+
+s.sort(key=lambda x:(x.split()[1], x.split()[0]))
+-> ['1 A', '2 A', '1 B'] 로 정렬됨
+
+---
+
+#### Most Common Word 문제
+
+[Most Common Word 문제](https://leetcode.com/problems/most-common-word/)
+
+``` python
+import re
+import collections
+paragraph = "Bob hit a ball, the hit BALL flew far after it was hit."
+banned = ["hit"]
+
+class Solution(object):
+    def mostCommonWord(self, paragraph, banned):
+        """
+        :type paragraph: str
+        :type banned: List[str]
+        :rtype: str
+        """
+        words = [word for word in re.sub(r'[^a-zA-Z]', ' ', paragraph).lower().split() if word not in banned]
+        counts = collections.Counter(words)
+        return counts.most_common(1)[0][0]
+
+s = Solution()
+s.mostCommonWord(paragraph, banned)
 ```
