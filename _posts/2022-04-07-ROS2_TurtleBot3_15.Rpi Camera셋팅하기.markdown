@@ -1,0 +1,113 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_15.&nbsp;Rpi Camera셋팅하기"
+date:   2022-03-24 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Rpi Camera 셋팅하기
+
+TurtleBot3 Rpi 카메라 사용을 위한 opencv 설치 및 카메라 테스트
+
+
+---
+
+#### Docker 실행
+
+``` bash
+docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3
+```
+
+---
+
+#### 터틀봇 구동 및 ssh 접속
+
+``` bash
+ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
+# ssh ubuntu@192.168.1.177
+```
+
+---
+
+#### OpenCV 설치 및 Foxy 의존성 패키지 설치
+
+``` bash
+sudo apt install libopencv-dev python3-opencv
+python3 -c "import cv2; print(cv2.__version__)" 로 확인
+pkg-config --modversion opencv4
+sudo apt install apt-file
+sudo apt-file update
+apt-file search opencv4.pc
+
+sudo apt install ros-foxy-camera-calibration-parsers
+sudo apt install ros-foxy-camera-info-manager
+sudo apt install ros-foxy-launch-testing-ament-cmake 
+sudo apt install ros-foxy-image-pipeline
+```
+---
+
+#### Opencv cam 빌드 및 설치
+
+``` bash
+mkdir ~/opencv_cam_ws/src
+cd ~/opencv_cam_ws/src
+git clone https://github.com/clydemcqueen/opencv_cam.git
+git clone https://github.com/ptrmu/ros2_shared.git
+cd ~/opencv_cam_ws/
+source /opt/ros/$ROS_DISTRO/setup.bash
+colcon build --symlink-install
+```
+
+설치 완료 후
+
+``` bash
+cd ~/opencv_cam_ws/install
+source setup.bash
+ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0
+```
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/15.1.png)
+
+위와 같이 rpi camera 이미지가 publish 됨
+
+#### 이미지 publish 확인 및 테스트
+
+Host PC로 돌아와서 /image_raw 토픽으로 publish 되는 것 확인하기
+
+``` bash
+ros2 topic hz /image_raw
+ros2 run rqt_image_view rqt_image_view
+```
+
+창이 열린 후 topic을 /image_raw로 설정하면 TurtleBot3 라즈베리카메라 영상을 볼 수 있음
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/15.2.png)
+
+
+---
+
+#### 추후 해야할 일
+
+Rviz에서 실행하기 위해 아래 두 에러를 해결해야함(카메라 캘리브레이션 필요)
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/15.3.png)
+
+Rviz에서 라이더와 함께 카메라 정보를 보고자 하면 카메라 캘리브레이션을 해야함
+
+해당 과정을 하고 나면 이미지에 2d 라이더 정보를 뿌리는 증강 현실과 같은 효과도 줄 수 있음
+
+https://www.youtube.com/watch?v=XRmdUfkIu08
+
+
+---
+
+참조 List
+
+https://endland.medium.com/ros2-darknet-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0-337ad8cd3d28
+https://github.com/clydemcqueen/opencv_cam
+https://jeffzzq.medium.com/ros2-image-pipeline-tutorial-3b18903e7329
