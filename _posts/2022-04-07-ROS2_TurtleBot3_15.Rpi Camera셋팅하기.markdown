@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "ROS2_TurtleBot3_15.&nbsp;Rpi Camera셋팅하기"
-date:   2022-03-24 06:18:15 +0700
+date:   2022-04-07 06:18:15 +0700
 categories: [ROS2]
 use_math: true
 ---
