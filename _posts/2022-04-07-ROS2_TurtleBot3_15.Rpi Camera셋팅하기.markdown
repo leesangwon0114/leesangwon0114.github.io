@@ -75,6 +75,8 @@ ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0
 
 위와 같이 rpi camera 이미지가 publish 됨
 
+---
+
 #### 이미지 publish 확인 및 테스트
 
 Host PC로 돌아와서 /image_raw 토픽으로 publish 되는 것 확인하기
