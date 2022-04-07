@@ -20,7 +20,7 @@ TurtleBot3 Rpi 카메라 사용을 위한 opencv 설치 및 카메라 테스트
 #### Docker 실행
 
 ``` bash
-docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3
+docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3_map
 ```
 
 ---
@@ -111,5 +111,8 @@ https://www.youtube.com/watch?v=XRmdUfkIu08
 참조 List
 
 https://endland.medium.com/ros2-darknet-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0-337ad8cd3d28
+
 https://github.com/clydemcqueen/opencv_cam
+
 https://jeffzzq.medium.com/ros2-image-pipeline-tutorial-3b18903e7329
+
