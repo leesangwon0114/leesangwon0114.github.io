@@ -77,15 +77,15 @@ ros2 run camera_calibration cameracalibrator --size 8x6 --square 0.063 --approxi
 
 버튼 활성화 후 CALIBRATE 버튼 누른 뒤 SAVE 활성화 되면 SAVE 버튼으로 저장
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.2png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.2.png)
 
 저장된 파일 압축해제하면 ost.txt, ost.yaml 파일에 camera info 정보들이 들어있음
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.3png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.3.png)
 
 ost.txt 파일을 ROS workspace 로 camera-info.ini 파일의 이름으로 터틀봇 라즈베리파이로 scp 복사
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.4png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.4.png)
 
 scp 복사한 ini 파일을 ros workspace 로 이동 시킨 후 param 으로 넣어 다시 재 실행
 
@@ -93,11 +93,11 @@ scp 복사한 ini 파일을 ros workspace 로 이동 시킨 후 param 으로 넣
 ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0 --param camera_info_path:=camera-info.ini
 ```
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.5png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.5.png)
 
 현재까지 작업 docker commit
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.6png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.6.png)
 
 ---
 
@@ -127,7 +127,7 @@ export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_cartographer cartographer.launch.py
 ```
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.7png)
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.7.png)
 
 ---
 
