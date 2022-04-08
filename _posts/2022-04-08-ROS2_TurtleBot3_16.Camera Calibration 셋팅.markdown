@@ -1,0 +1,133 @@
+---
+layout: post
+title:  "ROS2_TurtleBot3_16.&nbsp;Camera Calibration 셋팅"
+date:   2022-04-08 06:18:15 +0700
+categories: [ROS2]
+use_math: true
+---
+
+Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+
+---
+
+> Camera Calibration 셋팅
+
+TurtleBot3 Rpi 카메라 사용을 위한 opencv 설치 및 카메라 테스트
+
+
+---
+
+#### Docker 실행
+
+``` bash
+docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3_map
+```
+
+---
+
+#### 터틀봇 구동 및 ssh 접속
+
+``` bash
+ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
+# ssh ubuntu@192.168.1.177
+```
+---
+
+#### Open cam 구동
+
+``` bash
+cd ~/opencv_cam_ws/install
+source setup.bash
+ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0
+```
+---
+
+#### Host PC Opencv 설치 및 의존성 설치
+
+``` bash
+sudo apt install libopencv-dev python3-opencv
+python3 -c "import cv2; print(cv2.__version__)" 로 확인
+pkg-config --modversion opencv4
+sudo apt install apt-file
+sudo apt-file update
+apt-file search opencv4.pc
+
+sudo apt install ros-foxy-camera-calibration-parsers
+sudo apt install ros-foxy-camera-info-manager
+sudo apt install ros-foxy-launch-testing-ament-cmake 
+sudo apt install ros-foxy-image-pipeline
+```
+
+https://github.com/opencv/opencv/blob/master/doc/pattern.png
+
+위의 이미지 출력 하기
+
+---
+
+#### Host PC에서 Calibration 실행
+
+``` bash
+ros2 run camera_calibration cameracalibrator --size 8x6 --square 0.063 --approximate 0.3 --no-service-check image:=/image_raw
+```
+
+위의 출력한 이미지를 돌려가면서 CALIBRATE 버튼 활성화 까지 맞춰줌
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.1.png)
+
+
+버튼 활성화 후 CALIBRATE 버튼 누른 뒤 SAVE 활성화 되면 SAVE 버튼으로 저장
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.2png)
+
+저장된 파일 압축해제하면 ost.txt, ost.yaml 파일에 camera info 정보들이 들어있음
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.3png)
+
+ost.txt 파일을 ROS workspace 로 camera-info.ini 파일의 이름으로 터틀봇 라즈베리파이로 scp 복사
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.4png)
+
+scp 복사한 ini 파일을 ros workspace 로 이동 시킨 후 param 으로 넣어 다시 재 실행
+
+``` bash
+ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0 --param camera_info_path:=camera-info.ini
+```
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.5png)
+
+현재까지 작업 docker commit
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.6png)
+
+---
+
+#### HostPC에서 Rviz에 Camera 정보 띄우기
+
+위에서 터틀봇 라즈베리파이에 opencv_cam을 실행 후 
+
+아래 명령어 실행해서 camera info 정보 제대로 오는지 확인
+
+``` bash
+ros2 topic list -t
+ros2 topic echo /camera_info
+```
+
+camera frame 에 time 정보가 drop 되어 아래 명령어 실행
+
+https://github.com/ros2/rviz/issues/511
+
+``` bash
+ros2 run tf2_ros static_trasform_publisher 0 0 0 0 0 0 map camera_frame
+```
+
+이후 Cartographer 실행 후 RViz에 Add 버튼을 클릭하여 Camera 추가 후 topic 을 /image_raw로 변경하면 카메라 보임
+
+``` bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_cartographer cartographer.launch.py
+```
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.7png)
+
+---
+
