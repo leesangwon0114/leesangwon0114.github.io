@@ -122,3 +122,78 @@ class Solution(object):
 s = Solution()
 s.mostCommonWord(paragraph, banned)
 ```
+
+---
+
+#### Group Anagrams 문제
+
+[Group Anagrams 문제](https://leetcode.com/problems/group-anagrams/)
+
+``` python
+class Solution(object):
+    def groupAnagrams(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: List[List[str]]
+        """
+        d = {}
+        for s in strs:
+            ordered_str = ''.join(sorted(s))    
+            if ordered_str not in d:
+                d[ordered_str] = []
+            d[ordered_str].append(s)
+        ' '.join(sorted(d, key=lambda k: len(d[k]), reverse=True))
+        r = []
+        for k, v in d.items():
+            r.append(v)
+        return r
+```
+
+더 깔끔하게 코딩하려면 defaultdict()를 선언하여 만들면 빈 dict 에 삽입 시 keyerror 가 발생하지 않음
+
+anagrams = collections.defaultdict(list)
+
+-> default 가 빈 리스트인 dictionary
+
+파이썬은 정렬 시 sorted()함수를 사용하면 팀소트 사용하여 고성능 정렬이 가능함
+
+sorted 함수는 정렬된 리스트를 리턴하므로 ''.join(sorted(str))을 통해 정렬된 문자열을 얻을 수 있음
+
+---
+
+#### 가장긴 패닌드롬 부분문자열 문제
+
+[가장긴 패닌드롬 부분문자열 문제](https://leetcode.com/problems/longest-palindromic-substring/)
+
+2칸, 3칸짜리 포인터가 왼쪽에서 부터 슬라이딩 윈도우 처럼 중앙까지 전진
+
+중앙을 중심으로 확장하여 홀수(3칸), 짝수(2칸) 중 가장 긴 값이 저장됨
+
+![Alt text](http://leesangwon0114.github.io/static/img/ROS2/3.1.PNG)
+
+
+``` python
+class Solution(object):
+    def longestPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        def expand(left, right):
+            # 중앙에서 부터 두 포인트 확장
+            while(left >=0 and right < len(s) and s[left] == s[right]):
+                left -= 1
+                right += 1
+            return s[left+1:right]
+        
+        # Palindrome 해당사항 없을 때 즉시 리턴
+        if len(s) < 2 or s == s[::-1]:
+            return s
+        
+        result = ''
+        for i in range(0, len(s)-1):
+            result = max(result, expand(i, i+1), expand(i, i+2), key=len)
+        return result
+```
+
+---
