@@ -169,7 +169,7 @@ sorted 함수는 정렬된 리스트를 리턴하므로 ''.join(sorted(str))을 
 
 중앙을 중심으로 확장하여 홀수(3칸), 짝수(2칸) 중 가장 긴 값이 저장됨
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/3.1.PNG)
+![Alt text](http://leesangwon0114.github.io/static/img/Algorithm/python/3.1.PNG)
 
 
 ``` python
