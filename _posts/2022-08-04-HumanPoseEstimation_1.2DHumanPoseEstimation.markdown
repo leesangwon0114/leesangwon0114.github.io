@@ -104,6 +104,7 @@ Multi Person 자세추정에는 Top-Down과 Bottom-up 접근법이 있음
 - Human Pose Estimation에 쓰이는 사람 입력 이미지가 고해상도(카메라에서 가까운사람은 크고 먼 사람은 작지만 먼 사람도 crop 후 큰사람과 똑같은 scale로 리사이즈함)
 - 단 하나의 네트워크가 아닌 두 개의 분리된 네트워크로 Bottom-up 보다는 Cost가 큼
 - Bottleneck은 Human Detection이 아니라 Pose Estimation에 있어 Detection 성능에 따라 전체 속도 성능 증가는 미미함
+
 ---
 
 ##### Bottom-up 접근: Joint Detection + Grouping
