@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "HumanPoseEstimation_1.&nbsp;2DHumanPoseEstimation"
-date:   2022-08-04 06:18:15 +0700
+date:   2022-08-03 06:18:15 +0700
 categories: [HumanPoseEstimation]
 use_math: true
 ---
