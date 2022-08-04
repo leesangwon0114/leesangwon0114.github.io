@@ -113,6 +113,7 @@ Multi Person 자세추정에는 Top-Down과 Bottom-up 접근법이 있음
 - Top-down 접근들 보다 낮은 정확성
 - Human Pose Estimation에 쓰이는 사람은 입력 이미지가 저해상도 일 수 있음(먼사람의 작은 정보의 이미지가 Input으로 들어감)
 - 여러 Scale을 고려해야하는 어려움이 존재(Top-down은 Detection후 하나의 Scale로 리사이즈함)
-- 하지만 한 네트워크가 다 하기 때문에 Cost는 효율적
+- 하지만 한 네트워크가 연산하기 때문에 Cost는 효율적
+
 ---
 
