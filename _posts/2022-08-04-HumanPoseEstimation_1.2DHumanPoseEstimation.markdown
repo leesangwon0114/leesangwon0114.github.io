@@ -1,133 +1,85 @@
 ---
 layout: post
-title:  "ROS2_TurtleBot3_16.&nbsp;Camera Calibration 셋팅"
-date:   2022-04-08 06:18:15 +0700
-categories: [ROS2]
+title:  "HumanPoseEstimation_1.&nbsp;2DHumanPoseEstimation"
+date:   2022-08-04 06:18:15 +0700
+categories: [HumanPoseEstimation]
 use_math: true
 ---
 
-Ubuntu 20,04 기반 ROS2 Foxy 로 TurtleBot3 Waffle Pi 구동 과정 정리
+Meta 연구원 문경식의 단일 이미지 인식을 통한 Human Pose Estimation 참고 정리
 
 ---
 
-> Camera Calibration 셋팅
+> 2D Human Pose Estimation
 
-TurtleBot3 Rpi 카메라 사용을 위한 opencv 설치 및 카메라 테스트
+입력 이미지로 부터, 사람의 관절을 2D 공간에 위치화 시키는 것
 
+MSCOCODataset 예시: ('Nose', 'L_Eye', 'R_Eye' ...)
+
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/1.1.png)
+
+``` bash
+Input Shape : H * W * 3
+Output Shape : N * J * 2
+```
+
+N: 사람 명 수를 의미
+
+J: 관절 개수를 의미. 고정된 상수이며 MSCOCO는 17
 
 ---
 
-#### Docker 실행
+#### 2D Human Pose Estimation의 도전적인 문제
 
-``` bash
-docker run --network=host --shm-size=512m tiryoh/ros2-desktop-vnc:foxy_turtlebot3_map
-```
-
----
-
-#### 터틀봇 구동 및 ssh 접속
-
-``` bash
-ssh ubuntu@{IP_ADDRESS_OF_RASPBERRY_PI}
-# ssh ubuntu@192.168.1.177
-```
----
-
-#### Open cam 구동
-
-``` bash
-cd ~/opencv_cam_ws/install
-source setup.bash
-ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0
-```
----
-
-#### Host PC Opencv 설치 및 의존성 설치
-
-``` bash
-sudo apt install libopencv-dev python3-opencv
-python3 -c "import cv2; print(cv2.__version__)" 로 확인
-pkg-config --modversion opencv4
-sudo apt install apt-file
-sudo apt-file update
-apt-file search opencv4.pc
-
-sudo apt install ros-foxy-camera-calibration-parsers
-sudo apt install ros-foxy-camera-info-manager
-sudo apt install ros-foxy-launch-testing-ament-cmake 
-sudo apt install ros-foxy-image-pipeline
-```
-
-https://github.com/opencv/opencv/blob/master/doc/pattern.png
-
-위의 이미지 출력 하기
+1. 사람끼리의 많은 가려짐
+2. 복잡한 자세
+3. 작은 해상도 -> 카메라에 가까운 사람들은 크고 정보가 많지만 먼 사람들은 작고 정보가 적음
+4. 모션블러(움직임에 따른 불안정한 해상도) -> 아이돌 춤과 같은 빠르게 움직이는 분야
+5. 잘림(상반신만 보여지는 이미지)
 
 ---
 
-#### Host PC에서 Calibration 실행
+#### 2D Human Pose Estimation 네트워크 학습
 
-``` bash
-ros2 run camera_calibration cameracalibrator --size 8x6 --square 0.063 --approximate 0.3 --no-service-check image:=/image_raw
-```
+간단하게 한명의 사람의 Crop된 이미지가 있다고 가정
 
-위의 출력한 이미지를 돌려가면서 CALIBRATE 버튼 활성화 까지 맞춰줌
+##### 네트워크 구조 : Input Image -> Feature Extractor -> 2D Heatmap
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.1.png)
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/1.2.png)
 
+2D heatmap: J * H * W
 
-버튼 활성화 후 CALIBRATE 버튼 누른 뒤 SAVE 활성화 되면 SAVE 버튼으로 저장
+j번째 2D heatmap 마다 하나의 Gaussian blob이 j번째 관절의 위치 중심에 만들어짐
 
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.2.png)
-
-저장된 파일 압축해제하면 ost.txt, ost.yaml 파일에 camera info 정보들이 들어있음
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.3.png)
-
-ost.txt 파일을 ROS workspace 로 camera-info.ini 파일의 이름으로 터틀봇 라즈베리파이로 scp 복사
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.4.png)
-
-scp 복사한 ini 파일을 ros workspace 로 이동 시킨 후 param 으로 넣어 다시 재 실행
-
-``` bash
-ros2 run opencv_cam opencv_cam_main --ros-args --param index:=0 --param camera_info_path:=camera-info.ini
-```
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.5.png)
-
-현재까지 작업 docker commit
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.6.png)
+예를들어 오른쪽 팔꿈치의 2D heatmap 은 나머지는 0이고 오른쪽 팔꿈치 근처에만 2D Gaussian blob이 있음(관절마다 각각 Gaussian blob이 있음, 즉 관절마다 2D heatmap이 있다고 이해하면됨)
 
 ---
 
-#### HostPC에서 Rviz에 Camera 정보 띄우기
+##### 네트워크 구조 : Input Image -> Feature Extractor -> 2D Joint coordinates('Nose':(127,200), 'L_Eye'(100,200) ... )
 
-위에서 터틀봇 라즈베리파이에 opencv_cam을 실행 후 
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/1.3.png)
 
-아래 명령어 실행해서 camera info 정보 제대로 오는지 확인
+2D 좌표를 직접적으로 추정하는 네트워크도 있지만 직접 추정 시 매우 비 선형적인 연산을 요구
 
-``` bash
-ros2 topic list -t
-ros2 topic echo /camera_info
-```
+-> Feature Extractor 좌표 이미지의 경위 높이, 너비 개념이 보존이 되지만 좌표를 추정하기 위해 Feature 를 Vector 화 해서 입력 이미지의 높이, 너비 개념이 없어서 매우 비선형적 연산을 요구해서 실험적으로 성능이 낮다는 것이 알려짐
 
-camera frame 에 time 정보가 drop 되어 아래 명령어 실행
+-> 반면 2D Heatmap 의 경우 연속적인 Convolution만으로 추정 가능해서 높이와 너비에 대한 특징이 유지되어 직접 추정하는 것 보다 Heatmap이 높은 성능을 달성한다
 
-https://github.com/ros2/rviz/issues/511
-
-``` bash
-ros2 run tf2_ros static_trasform_publisher 0 0 0 0 0 0 map camera_frame
-```
-
-이후 Cartographer 실행 후 RViz에 Add 버튼을 클릭하여 Camera 추가 후 topic 을 /image_raw로 변경하면 카메라 보임
-
-``` bash
-export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch turtlebot3_cartographer cartographer.launch.py
-```
-
-![Alt text](http://leesangwon0114.github.io/static/img/ROS2/16.7.png)
+-> 단 좌표를 직접 추정하는 것이 dimension이 낮지만 정확도 차이가 꽤 나서 Heatmap 방식이 일반적임
 
 ---
 
+##### 네트워크 학습 구조
+
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/1.4.png)
+
+가장 간단한 학습 파이프라인
+
+추정된 2D Heatmap 과 GT 2D Heatmap 사이의 L2 Loss 최소화
+
+- 관절이 입력 이미지에서 정의가 안되어 있을 경우?
+- 사람이 많아 자려지거나 상반신 이미지의 잘림 같은 경우 loss를 0으로 보통 설정
+
+j번째 2D Heatmap에 2D argmax를 적용해 (X, Y) 좌표를 얻을 수 있음(마지막에 confidence도 추가 가능)
+
+---
