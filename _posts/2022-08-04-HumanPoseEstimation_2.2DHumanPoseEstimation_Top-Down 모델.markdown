@@ -50,6 +50,39 @@ ROIAlign은 ROIPooling에 비해 AP가 5정도 증가함
 
 > SimpleBaseline(2018)
 
+[SimpleBaseline 논문](https://arxiv.org/abs/1703.06870v3)
+
+---
+
+#### SimpleBaseline 네트워크
+
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/2.3.png)
+
+- 단순한 네트워크로 높은 정확도
+- ResNet과 3개의 deconvolutional layer의 조합
+- 단순하기 때문에 많이 쓰는 모델 중 하나
+- OHKM(학습중간에 어려운 케이스의 LOSS를 크게주어 학습 시키는 테크닉)을 사용하지 않고도 높은 AP 달성
+
 ---
 
 > HRNet(2019)
+
+[HRNet 논문](https://arxiv.org/pdf/1902.09212.pdf)
+
+---
+
+#### HRNet 네트워크
+
+![Alt text](http://leesangwon0114.github.io/static/img/HumanPoseEstimation/2.4.png)
+
+- 기존 Human Pose Estimation을 위한 backbones(eg ResNet) 들은 입력 이미지를 32배 downsampling 시킴
+- 32배의 downsampling은 저해상도 feature map을 초래((보통 256*256 이미지가 8*8 feature map으로 됨)
+- 이런 저해상도는 손목과 같은 작은 파트는 없어져 Discretization 문제가 생김
+- 위의 문제를 해결하기 위해 고해상도의 feature map을 효율적으로 보존
+- Multi-scale feature fusing이 더 Robust한 feature 추출
+- 1x 32개 채널, 2x 8배 줄어든 대신 채널을 64개로 늘려 각각 정보를 보충해 여러 Scale 정보를 같이 써 높은 성능을 얻음
+- GFLOP 이 낮은데도 성능이 높아 효율적
+- 그러나 SimpleBaseline이 GFLOP이 높지만 시간 성능이 더 빠름
+
+---
+
