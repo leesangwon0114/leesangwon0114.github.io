@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "HumanPoseEstimation_7.&nbsp;3DHumanPoseEstimation의 기초_3DWholeBodyModel_SMPLX"
+title:  "HumanPoseEstimation_7.&nbsp;3DWholeBodyModel_SMPLX"
 date:   2022-09-03 09:18:15 +0700
 categories: [HumanPoseEstimation]
 use_math: true

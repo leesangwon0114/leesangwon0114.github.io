@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "HumanPoseEstimation_6.&nbsp;3DHumanPoseEstimation의 기초_3DHandModel_MANO"
+title:  "HumanPoseEstimation_6.&nbsp;3DHandModel_MANO"
 date:   2022-09-03 08:18:15 +0700
 categories: [HumanPoseEstimation]
 use_math: true
