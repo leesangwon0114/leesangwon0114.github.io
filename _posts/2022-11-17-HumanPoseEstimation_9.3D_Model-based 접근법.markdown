@@ -95,7 +95,7 @@ Adaptive HybrIK는 Naive HybrIK에서 추정된 3D 관절 좌표에서 bone leng
 
 ##### 한계점
 - 3D 관절 좌표 추정을 위해 3D Heatmap을 추정하고 soft-argmax 로 좌표를 추출
-- x, y가 pixel에 저으이 되어 있기 때문에 잘려진 사람 부분은 복원 불가
+- x, y가 pixel에 정의 되어 있기 때문에 잘려진 사람 부분은 복원 불가
 - 잘린부분의 mesh가 맨 밑에 발이 나오는 현상이 발생함
 
 ---
