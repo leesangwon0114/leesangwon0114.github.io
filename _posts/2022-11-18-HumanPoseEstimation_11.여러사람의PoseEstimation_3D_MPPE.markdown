@@ -55,7 +55,7 @@ Top-Down 방식으로 봄
 - Top-down: Human Detection + 3D SPPE([Lcr-net:Localization-classification-regression for human pose](https://openaccess.thecvf.com/content_cvpr_2017/papers/Rogez_LCR-Net_Localization-Classification-Regression_for_CVPR_2017_paper.pdf))
 - Bottom-up: 3D Keypoint Detection + Grouping([Single-shot multi-person 3d pose estimation from monocular rgb](https://arxiv.org/pdf/1712.03453.pdf))
 
-위듸 두 방식 모두 root joint-relative 3D Pose + root 위치를 얻으며 이 때 <span style='background-color: #fff5b1'>3D to 2D fitting</span> 을 통해 얻음
+위의 두 방식 모두 root joint-relative 3D Pose + root 위치를 얻으며 이 때 <span style='background-color: #fff5b1'>3D to 2D fitting</span> 을 통해 얻음
 
 ---
 
