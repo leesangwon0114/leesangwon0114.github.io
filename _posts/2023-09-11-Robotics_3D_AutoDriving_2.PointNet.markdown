@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Robotics_3D_AutoDriving_2.PointNet"
-date:   2023-09-11 4:18:15 +0700
+date:   2023-09-11 5:18:15 +0700
 categories: [Robotics]
 use_math: true
 ---

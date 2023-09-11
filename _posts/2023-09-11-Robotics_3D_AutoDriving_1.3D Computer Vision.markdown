@@ -26,13 +26,17 @@ Point Cloud (3차원 점의 집합을 점 구름으로 표현하는 방식)
 
 Point Cloud를 많이 쓰며 이를 센싱할 수 있는 센서는 RGB-D Camera, 3D LiDAR(Light Detection and Ranging) 센서가 있음
 
+
+---
+
+
 ##### 2D vs 3D
 
 ||Image|3D geometry|
 |:---:|:---:|:---:|
-|Boundary|Fixed|Varying|
-|Siganl|Dense|Very sparse in 3D domain|
-|Convolution|Well-defined|Questionable|
+|Boundary| Fixed| Varying|
+|Siganl| Dense| Very sparse in 3D domain|
+|Convolution| Well-defined| Questionable|
 
 
 - 3D는 Boundary 가 제한되어 있지 않고 다양함
