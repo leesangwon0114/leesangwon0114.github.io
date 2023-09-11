@@ -73,10 +73,15 @@ input 노드가 순서가 바뀌어도 g 라는 output은 똑같음을 의미(�
 ##### Approaches to achieve order invariance
 
 1) LSTM : accuracy 78.5
+
 2) MLP (unsorted input) : accuracy 24.2
+
 3) MLP (sorted input) : accuracy 45.0
+
 4) Attention sum : accuracy 83.0
+
 5) Average Pooling : accuracy 83.8
+
 6) Max Pooling : accuracy 87.1
 
 따라서 Max Pooling 사용하고 global feature을 뽑음

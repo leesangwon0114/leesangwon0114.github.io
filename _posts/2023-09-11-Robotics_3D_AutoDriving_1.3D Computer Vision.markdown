@@ -29,10 +29,11 @@ Point Cloud를 많이 쓰며 이를 센싱할 수 있는 센서는 RGB-D Camera,
 ##### 2D vs 3D
 
 ||Image|3D geometry|
-|---|---|---|
+|:---:|:---:|:---:|
 |Boundary|Fixed|Varying|
 |Siganl|Dense|Very sparse in 3D domain|
 |Convolution|Well-defined|Questionable|
+
 
 - 3D는 Boundary 가 제한되어 있지 않고 다양함
 - 3D는 정의되어 있는 3차원 공간에 모든 Signal이 있는게 아니고 표면 부분만 존재
