@@ -44,6 +44,8 @@ BERT 기본 구조에서 성능을 크게 향상
 
 인터넷의 수많은 저질 데이터를 필터링 시킨 데이터로 학습시켜도 충분히 좋다
 
+---
+
 #### CCPairs 로 InfoNCE Loss 학습
 
 ![Alt text](http://leesangwon0114.github.io/static/img/AI/2.2.png)
@@ -52,17 +54,25 @@ Positive 유사도 / (Positive 유사도 + Negative 유사도)
 
 positive는 키우고 Negative는 줄이도록 학습
 
+---
+
 #### Hard Negative를 이용한 Fine Tuning
 - Hard Negative : 정답은 아니지만 유사한 어려운 오답
 
 ![Alt text](http://leesangwon0114.github.io/static/img/AI/2.3.png)
 
+---
+
 #### E5의 문제점: − 학습 과정이 복잡함 (3단계 Fine Tuning)
 - Fine Tuning: 수작업으로 생성한 데이터에 의존
+
+---
 
 #### LLM Decoder의 성능을 Leverage하여 임베딩 생성 모듈로 활용하면 어떨까?
 - MLLM의 Llava와 유사한 아이디어
 - 너무 느리고 복잡해 디코더를 이용해 Leverage 하면 어떻까?
+
+---
 
 #### E5 -> E5-mistral : LLM을 임베딩 생성기로
 
@@ -78,8 +88,12 @@ gte embedding, llm2vec 모델들이 있음 -> LLM을 임베딩 생성기로 활�
 
 디코딩은 마스킹을 하지만 이부분을 뚫어 마스킹을 없애는 방법 -> LLM2Vec
 
+---
+
 ##### 논문의 강점
 - LLM의 풍부한 능력을 활용하는 SOTA 임베딩 대표 모델
+
+---
 
 ##### 개선점
 - LLM 추론 속도와 동일한 임베딩 생성 속도: 실용성이 있을까?
@@ -92,6 +106,8 @@ gte embedding, llm2vec 모델들이 있음 -> LLM을 임베딩 생성기로 활�
 
 모든 형태의 문서를 단일 벡터로 만드는게 적절할까? 질문의 답
 
+---
+
 #### XLM-RoBERTa 기반의 Encoder 모델
 - Dense Retrieval
 : 텍스트 전체를 벡터로 임베딩하는 기존 방식
@@ -102,6 +118,8 @@ gte embedding, llm2vec 모델들이 있음 -> LLM을 임베딩 생성기로 활�
 상호작용을 계산하여 검색
 
 XLM-RoBERTa를 Pretrain하는 것이 좀 어려움
+
+---
 
 #### Pretrain: RetroMAE (EMNLP 2022)
 - MLM 방식은 문맥을 충분히 반영하지 못함
@@ -127,9 +145,13 @@ XLM-RoBERTa를 Pretrain하는 것이 좀 어려움
 
 ![Alt text](http://leesangwon0114.github.io/static/img/AI/2.7.png)
 
+---
+
 #### 논문의 강점
 - Non-LLM 형태의 대표 공개 임베딩 모델 (2G 정도의 크기)
 - OpenAI Embedding-3-Large보다 뛰어난 성능
+
+---
 
 #### 개선점
 − 추후에 개발되고 있는 LLM 모델들 대비 성능 추월 가능
@@ -140,3 +162,18 @@ https://huggingface.co/spaces/mteb/leaderboard
 M3와 Reranking을 붙이는 것이 현재 가장 성능이 좋음
 
 ---
+
+### 최근 재밌는 논문들
+
+[Let Me Speak Freely](https://arxiv.org/abs/2408.02442)
+
+COT로 답변하는데 25자로 줄여와 같이 restricted chain of thought 식으로 하는 것에 이어진 논문
+
+현상 목격 결론을 순차대로 차례로 출력해~
+
+Open AI 에서 Struectured Output을 내줌
+
+이 논문은 Step by step으로 말하면서 json으로 출력하면 성능이 떨어질 수 있다를 제시함
+
+why? 형식이 들어왔을 때 형식에 매몰되어 지식을 까먹는다
+
