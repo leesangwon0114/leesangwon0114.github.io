@@ -135,4 +135,8 @@ XLM-RoBERTa를 Pretrain하는 것이 좀 어려움
 − 추후에 개발되고 있는 LLM 모델들 대비 성능 추월 가능
 https://huggingface.co/spaces/mteb/leaderboard
 
+---
 
+M3와 Reranking을 붙이는 것이 현재 가장 성능이 좋음
+
+---
